@@ -1,0 +1,20 @@
+{
+  "name": "PromoHunt - Descuentos en Juegos",
+  "short_name": "PromoHunt",
+  "description": "Encuentra los mejores descuentos y ofertas en videojuegos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#041a5c",
+  "theme_color": "#041a5c",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "shopping", "entertainment"]
+}

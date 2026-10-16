@@ -1,0 +1,586 @@
+/* ==========================
+   PÁGINA
+========================== */
+
+.pagina-juego {
+
+  min-height: 100vh;
+
+  background: #f5f5f5;
+
+}
+
+
+/* ==========================
+   CONTENEDOR
+========================== */
+
+.juego-contenedor {
+
+  width: 100%;
+
+  max-width: 1100px;
+
+  margin: auto;
+
+  padding: 45px 25px 60px;
+
+  box-sizing: border-box;
+
+}
+
+
+/* ==========================
+   CABECERA
+========================== */
+
+.juego-cabecera {
+
+  display: grid;
+
+  grid-template-columns: 430px 1fr;
+
+  gap: 40px;
+
+  align-items: center;
+
+  margin-bottom: 45px;
+
+}
+
+
+.juego-imagen {
+
+  width: 100%;
+
+  height: 260px;
+
+  overflow: hidden;
+
+  border-radius: 16px;
+
+  background: #ddd;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.12);
+
+}
+
+
+.juego-imagen img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+}
+
+
+.juego-informacion {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+}
+
+
+.juego-etiqueta {
+
+  display: inline-block;
+
+  padding: 6px 12px;
+
+  border-radius: 20px;
+
+  background: #f74780;
+
+  color: white;
+
+  font-size: 12px;
+
+  font-weight: bold;
+
+  margin-bottom: 12px;
+
+}
+
+
+.juego-informacion h1 {
+
+  margin: 0 0 12px;
+
+  font-size: 38px;
+
+  color: #222;
+
+}
+
+
+.juego-informacion p {
+
+  margin: 0 0 20px;
+
+  color: #777;
+
+  font-size: 16px;
+
+  line-height: 1.5;
+
+}
+
+
+.juego-fecha {
+
+  display: flex;
+
+  gap: 8px;
+
+  color: #555;
+
+  font-size: 14px;
+
+}
+
+
+/* ==========================
+   OFERTAS
+========================== */
+
+.juego-ofertas {
+
+  margin-top: 20px;
+
+}
+
+
+.seccion-titulo {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 18px;
+
+}
+
+
+.seccion-titulo h2 {
+
+  margin: 0;
+
+  font-size: 25px;
+
+}
+
+
+.seccion-titulo span {
+
+  color: #888;
+
+  font-size: 14px;
+
+}
+
+
+/* ==========================
+   LISTA
+========================== */
+
+.lista-ofertas {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+}
+
+
+.oferta {
+
+  display: grid;
+
+  grid-template-columns: 1fr auto auto;
+
+  align-items: center;
+
+  gap: 25px;
+
+  padding: 18px 20px;
+
+  background: white;
+
+  border-radius: 14px;
+
+  border: 1px solid #eee;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+.oferta:hover {
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.09);
+
+}
+
+
+/* ==========================
+   PLATAFORMA
+========================== */
+
+.oferta-plataforma {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+}
+
+
+.icono-plataforma {
+
+  width: 45px;
+
+  height: 45px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  border-radius: 10px;
+
+  background: #f5f5f5;
+
+  font-size: 22px;
+
+}
+
+
+.oferta-plataforma strong {
+
+  display: block;
+
+  font-size: 16px;
+
+}
+
+
+.oferta-plataforma span {
+
+  display: block;
+
+  margin-top: 3px;
+
+  color: #999;
+
+  font-size: 12px;
+
+}
+
+
+/* ==========================
+   PRECIO
+========================== */
+
+.oferta-precio {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+}
+
+
+.precio-original {
+
+  color: #999;
+
+  font-size: 12px;
+
+  text-decoration: line-through;
+
+}
+
+
+.oferta-precio strong {
+
+  color: #222;
+
+  font-size: 19px;
+
+}
+
+
+.descuento {
+
+  color: #22a447;
+
+  font-size: 12px;
+
+  font-weight: bold;
+
+}
+
+
+/* ==========================
+   BOTÓN OFERTA
+========================== */
+
+.boton-oferta {
+
+  border: none;
+
+  border-radius: 9px;
+
+  padding: 11px 20px;
+
+  background: #f74780;
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+}
+
+
+.boton-oferta:hover {
+
+  background: #e63870;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 6px 15px rgba(247,71,128,0.25);
+
+}
+
+
+/* ==========================
+   SIN OFERTAS
+========================== */
+
+.sin-ofertas {
+
+  padding: 35px;
+
+  text-align: center;
+
+  background: white;
+
+  border-radius: 14px;
+
+  color: #777;
+
+}
+
+
+/* ==========================
+   INFORMACIÓN EXTRA
+========================== */
+
+.juego-extra {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+
+  margin-top: 25px;
+
+}
+
+
+.juego-extra-card {
+
+  padding: 22px;
+
+  background: white;
+
+  border-radius: 14px;
+
+  border: 1px solid #eee;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+}
+
+
+.juego-extra-card h3 {
+
+  margin: 0 0 8px;
+
+  font-size: 15px;
+
+}
+
+
+.juego-extra-card strong {
+
+  font-size: 22px;
+
+  color: #f74780;
+
+}
+
+
+.juego-extra-card span {
+
+  color: #888;
+
+  font-size: 13px;
+
+}
+
+
+/* ==========================
+   CARGANDO
+========================== */
+
+.juego-cargando {
+
+  min-height: 500px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  font-size: 18px;
+
+  color: #777;
+
+}
+
+
+/* ==========================
+   NO ENCONTRADO
+========================== */
+
+.juego-no-encontrado {
+
+  min-height: 500px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 20px;
+
+}
+
+
+.juego-no-encontrado button {
+
+  border: none;
+
+  padding: 12px 25px;
+
+  border-radius: 10px;
+
+  background: #f74780;
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 800px) {
+
+  .juego-cabecera {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .juego-imagen {
+
+    height: 250px;
+
+  }
+
+
+  .juego-informacion h1 {
+
+    font-size: 30px;
+
+  }
+
+
+  .oferta {
+
+    grid-template-columns: 1fr;
+
+    gap: 15px;
+
+  }
+
+
+  .oferta-precio {
+
+    align-items: flex-start;
+
+  }
+
+
+  .boton-oferta {
+
+    width: 100%;
+
+  }
+
+
+  .juego-extra {
+
+    grid-template-columns: 1fr;
+
+  }
+
+}

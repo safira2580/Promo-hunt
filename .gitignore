@@ -1,0 +1,15 @@
+be/.venv/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+node_modules/
+fe/dist/
+fe/.vite/
+.env
+*.env.local
+!.env.example
+.idea/
+.DS_Store
+Thumbs.db
+*.log

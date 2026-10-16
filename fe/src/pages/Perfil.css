@@ -1,0 +1,417 @@
+.pagina-perfil {
+
+  min-height: 100vh;
+
+  padding: 50px 20px;
+
+  background: #f5f5f5;
+
+}
+
+
+.perfil-contenedor {
+
+  width: 100%;
+
+  max-width: 850px;
+
+  margin: auto;
+
+  background: white;
+
+  border-radius: 20px;
+
+  padding: 40px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+
+}
+
+
+/* ==========================
+   CABECERA
+========================== */
+
+.perfil-cabecera {
+
+  text-align: center;
+
+  margin-bottom: 40px;
+
+}
+
+
+.perfil-foto {
+
+  width: 150px;
+
+  height: 150px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+
+  border: 5px solid #f74780;
+
+}
+
+
+.perfil-cabecera h1 {
+
+  margin: 15px 0 5px;
+
+}
+
+
+.perfil-cabecera p {
+
+  color: #777;
+
+}
+
+
+/* ==========================
+   SECCIONES
+========================== */
+
+.perfil-seccion {
+
+  margin-top: 35px;
+
+}
+
+
+.perfil-seccion h2 {
+
+  margin-bottom: 15px;
+
+}
+
+
+.perfil-datos {
+
+  border: 1px solid #eee;
+
+  border-radius: 12px;
+
+  overflow: hidden;
+
+}
+
+
+.perfil-dato {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 16px 20px;
+
+  border-bottom: 1px solid #eee;
+
+}
+
+
+.perfil-dato:last-child {
+
+  border-bottom: none;
+
+}
+
+
+.perfil-dato span {
+
+  color: #777;
+
+}
+
+
+.perfil-dato strong {
+
+  text-align: right;
+
+}
+
+
+/* ==========================
+   CROSSPLAY
+========================== */
+
+.crossplay-descripcion {
+
+  color: #777;
+
+  margin-bottom: 20px;
+
+}
+
+
+.plataformas {
+
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 15px;
+
+}
+
+
+.plataforma {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 18px;
+
+  background: #f8f8f8;
+
+  border-radius: 12px;
+
+}
+
+
+.plataforma-nombre {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  font-weight: 600;
+
+}
+
+
+.plataforma-nombre svg {
+
+  font-size: 24px;
+
+}
+
+
+.icono-texto {
+
+  font-size: 22px;
+
+}
+
+
+.estado {
+
+  color: #999;
+
+  font-size: 14px;
+
+}
+
+
+.estado.conectado {
+
+  color: #22a447;
+
+  font-weight: bold;
+
+}
+
+
+/* ==========================
+   BOTONES
+========================== */
+
+.perfil-botones {
+
+  display: flex;
+
+  justify-content: center;
+
+  gap: 18px;
+
+  margin-top: 40px;
+
+}
+
+
+/* ==========================
+   ESTILO GENERAL
+========================== */
+
+.boton-volver,
+.boton-cerrar {
+
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 13px 28px;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+
+}
+
+
+/* ==========================
+   BOTÓN VOLVER
+========================== */
+
+.boton-volver {
+
+  background: white;
+
+  color: #444;
+
+  border: 2px solid #eeeeee;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+}
+
+
+.boton-volver:hover {
+
+  background: #f74780;
+
+  color: white;
+
+  border-color: #f74780;
+
+  transform: translateY(-3px);
+
+  box-shadow: 0 8px 18px rgba(247, 71, 128, 0.25);
+
+}
+
+
+/* ==========================
+   BOTÓN CERRAR SESIÓN
+========================== */
+
+.boton-cerrar {
+
+  background: #f74780;
+
+  color: white;
+
+  box-shadow: 0 5px 15px rgba(247, 71, 128, 0.25);
+
+}
+
+
+.boton-cerrar:hover {
+
+  background: #e63870;
+
+  transform: translateY(-3px);
+
+  box-shadow: 0 9px 20px rgba(247, 71, 128, 0.35);
+
+}
+
+
+/* ==========================
+   EFECTO AL PRESIONAR
+========================== */
+
+.boton-volver:active,
+.boton-cerrar:active {
+
+  transform: translateY(0);
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+
+}
+
+
+/* ==========================
+   CARGANDO
+========================== */
+
+.perfil-cargando {
+
+  min-height: 100vh;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+}
+
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 650px) {
+
+  .perfil-contenedor {
+
+    padding: 25px;
+
+  }
+
+
+  .plataformas {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .perfil-dato {
+
+    flex-direction: column;
+
+    gap: 5px;
+
+  }
+
+
+  .perfil-dato strong {
+
+    text-align: left;
+
+  }
+
+
+  .perfil-botones {
+
+    flex-direction: column;
+
+  }
+
+}
+
+.boton-admin {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #071a5c;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.boton-admin:hover {
+  background: #0d2b8f;
+  transform: translateY(-2px);
+}
