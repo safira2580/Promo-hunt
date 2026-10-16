@@ -1,21 +1,25 @@
+import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import os
-
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": os.getenv("DB_PORT", "5432"),
-    "user": os.getenv("DB_USER", "promohunt"),
-    "password": os.getenv("DB_PASSWORD", "promohunt"),
-    "database": os.getenv("DB_NAME", "descuentos_juegos"),
-}
-
 
 def obtener_conexion():
-    """Crea y devuelve una nueva conexión a PostgreSQL."""
-    return psycopg2.connect(**DB_CONFIG)
+    try:
+        return psycopg2.connect(
+            host=os.getenv("DB_HOST", "localhost"),
+            port=int(os.getenv("DB_PORT", "5432")),
+            user=os.getenv("DB_USER", "promohunt"),
+            password=os.getenv("DB_PASSWORD", "promohunt"),
+            dbname=os.getenv("DB_NAME", "descuentos_juegos"),
+            client_encoding="UTF8",
+            connect_timeout=5,
+        )
+    except Exception as e:
+        raise ConnectionError(
+            f"No se pudo conectar a PostgreSQL. "
+            f"Revisa Docker (docker compose up -d) y el archivo .env. "
+            f"Error: {type(e).__name__}: {repr(e)}"
+        ) from None
 
 
 def obtener_cursor(conexion):
-    """Cursor que retorna filas como diccionarios."""
     return conexion.cursor(cursor_factory=RealDictCursor)
