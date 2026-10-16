@@ -22,4 +22,8 @@ def obtener_conexion():
 
 
 def obtener_cursor(conexion):
+<<<<<<< HEAD
     return conexion.cursor(cursor_factory=RealDictCursor)
+=======
+    return conexion.cursor(cursor_factory=RealDictCursor)
+>>>>>>> f9c32cd5a866be81fbb1a05df354dc53f16928cc
