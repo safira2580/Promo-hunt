@@ -83,40 +83,77 @@ def inicio():
 @app.route("/api/juegos", methods=["GET"])
 def obtener_juegos():
 
-        verificar_conexion()
+    verificar_conexion()
 
-        cursor = obtener_cursor(conexion)
+    cursor = obtener_cursor(conexion)
 
-        consulta = """
-            SELECT
-                juego.id_juego,
-                juego.nombre,
-                juego.fecha_lanzamiento,
-                juego.imagen,
-                descuento.id_descuento,
-                descuento.id_plataforma,
-                descuento.precio_original,
-                descuento.precio_descuento,
-                descuento.porcentaje_descuento,
-                descuento.ahorro,
-                descuento.estado,
-                plataforma.nombre AS plataforma
-            FROM juego
-            INNER JOIN descuento
-                ON juego.id_juego = descuento.id_juego
-            INNER JOIN plataforma
-                ON descuento.id_plataforma = plataforma.id_plataforma
-            WHERE descuento.estado = 'Activo'
-        """
+    id_categoria = request.args.get("categoria")
 
-        cursor.execute(consulta)
+    consulta = """
+        SELECT
+            juego.id_juego,
+            juego.nombre,
+            juego.fecha_lanzamiento,
+            juego.imagen,
+            juego.id_categoria,
+            categoria.nombre AS categoria,
+            descuento.id_descuento,
+            descuento.id_plataforma,
+            descuento.precio_original,
+            descuento.precio_descuento,
+            descuento.porcentaje_descuento,
+            descuento.ahorro,
+            descuento.estado,
+            plataforma.nombre AS plataforma
+        FROM juego
+        INNER JOIN descuento
+            ON juego.id_juego = descuento.id_juego
+        INNER JOIN plataforma
+            ON descuento.id_plataforma = plataforma.id_plataforma
+        LEFT JOIN categoria
+            ON juego.id_categoria = categoria.id_categoria
+        WHERE descuento.estado = 'Activo'
+    """
 
-        juegos = cursor.fetchall()
+    params = []
 
-        cursor.close()
+    if id_categoria:
+        consulta += " AND juego.id_categoria = %s"
+        params.append(id_categoria)
 
-        return jsonify(juegos)
+    consulta += " ORDER BY descuento.porcentaje_descuento DESC"
 
+    cursor.execute(consulta, params)
+
+    juegos = cursor.fetchall()
+
+    cursor.close()
+
+    return jsonify(juegos)
+
+    # =====================================================
+    # categorias de juegos
+    # =====================================================
+
+
+@app.route("/api/categorias", methods=["GET"])
+def obtener_categorias():
+
+    verificar_conexion()
+
+    cursor = obtener_cursor(conexion)
+
+    cursor.execute("""
+        SELECT id_categoria, nombre, descripcion
+        FROM categoria
+        ORDER BY nombre ASC
+    """)
+
+    categorias = cursor.fetchall()
+
+    cursor.close()
+
+    return jsonify(categorias)
 
     # =====================================================
     # OBTENER DETALLE DE UN JUEGO

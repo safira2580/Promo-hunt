@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import "./App.css";
@@ -15,18 +16,22 @@ import JuegoDetalle from "./pages/JuegoDetalle";
 import Admin from "./pages/Admin/Admin";
 import Registro from "./pages/Registro";
 
-
 function Inicio() {
+  const [categoriaActiva, setCategoriaActiva] = useState<number | null>(null);
+
   return (
     <div className="app">
       <Header />
       <Banner />
       <Features />
       <div id="categorias">
-        <Categories />
+        <Categories
+          categoriaActiva={categoriaActiva}
+          onSeleccionar={setCategoriaActiva}
+        />
       </div>
       <div id="productos">
-        <Products />
+        <Products categoriaActiva={categoriaActiva} />
       </div>
       <Blogs />
       {/* Footer eliminado para que se sienta más como app */}
@@ -35,31 +40,35 @@ function Inicio() {
   );
 }
 
-
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/Login" element={<Login />} />
-        <Route path="/Perfil" element={
-          <div className="app">
-            <Perfil />
-            <BottomNav />
-          </div>
-        } />
-        <Route path="/juego/:id" element={
-          <div className="app">
-            <JuegoDetalle />
-            <BottomNav />
-          </div>
-        } />
+        <Route
+          path="/Perfil"
+          element={
+            <div className="app">
+              <Perfil />
+              <BottomNav />
+            </div>
+          }
+        />
+        <Route
+          path="/juego/:id"
+          element={
+            <div className="app">
+              <JuegoDetalle />
+              <BottomNav />
+            </div>
+          }
+        />
         <Route path="/admin" element={<Admin />} />
         <Route path="/registro" element={<Registro />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
 
 export default App;
