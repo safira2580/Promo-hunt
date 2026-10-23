@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Backend — PromoHunt (FastAPI + PostgreSQL)
 
 ## Setup
@@ -6,10 +7,17 @@
 # Desde la raíz del repo
 docker compose up -d
 
+=======
+# Backend — PromoHunt (Flask + PostgreSQL)
+
+```bash
+# Desde la raíz: docker compose up -d
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 cd be
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+<<<<<<< HEAD
 # o: uv sync
 
 cp .env.example .env
@@ -66,3 +74,9 @@ pytest -v
 - SQL suelto en rutas → **services + models/schemas**
 - Sin tests → **pytest**
 - Merge conflict en database.py → **eliminado**
+=======
+cp .env.example .env
+python app.py
+# → http://localhost:5000
+```
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8

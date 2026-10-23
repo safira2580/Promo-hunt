@@ -1,0 +1,561 @@
+.admin-page {
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 700px;
+}
+
+/* ==============================
+   SIDEBAR
+============================== */
+
+.admin-sidebar {
+  width: 250px;
+  background: #071a5c;
+  padding: 30px 18px;
+  box-sizing: border-box;
+}
+
+.admin-sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  padding: 10px 12px 25px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.admin-sidebar-title > span {
+  font-size: 28px;
+}
+
+.admin-sidebar-title strong {
+  display: block;
+  font-size: 20px;
+}
+
+.admin-sidebar-title small {
+  display: block;
+  margin-top: 3px;
+  color: #aeb9df;
+  font-size: 12px;
+}
+
+.admin-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+.admin-menu button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  padding: 13px 15px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #d9dff2;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-menu button:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+.admin-menu-active {
+  background: #f74780 !important;
+  color: white !important;
+}
+
+/* ==============================
+   CONTENIDO
+============================== */
+
+.admin-content {
+  flex: 1;
+  padding: 45px;
+  box-sizing: border-box;
+}
+
+.admin-header {
+  margin-bottom: 35px;
+}
+
+.admin-label {
+  color: #f74780;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.admin-header h1,
+.admin-section h1 {
+  margin: 8px 0;
+  color: #18203a;
+  font-size: 32px;
+}
+
+.admin-header p,
+.admin-section > p {
+  color: #70788e;
+  margin: 0;
+}
+
+/* ==============================
+   TARJETAS
+============================== */
+
+.admin-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.admin-card {
+  padding: 25px;
+  background: white;
+  border: 1px solid #e7eaf2;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(7,26,92,0.10);
+}
+
+.admin-card-icon {
+  display: block;
+  font-size: 32px;
+  margin-bottom: 15px;
+}
+
+.admin-card h3 {
+  margin: 0 0 8px;
+  color: #18203a;
+  font-size: 18px;
+}
+
+.admin-card p {
+  margin: 0;
+  color: #7b8295;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ==============================
+   SECCIONES
+============================== */
+
+.admin-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.admin-add-button {
+  border: none;
+  border-radius: 9px;
+  padding: 12px 18px;
+  background: #f74780;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-add-button:hover {
+  background: #e63870;
+  transform: translateY(-2px);
+}
+
+.admin-empty {
+  margin-top: 30px;
+  padding: 70px 30px;
+  background: white;
+  border: 1px solid #e7eaf2;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.admin-empty span {
+  font-size: 50px;
+}
+
+.admin-empty h2 {
+  margin: 15px 0 8px;
+  color: #18203a;
+}
+
+.admin-empty p {
+  margin: 0;
+  color: #7b8295;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 900px) {
+
+  .admin-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-sidebar {
+    width: 210px;
+  }
+
+  .admin-content {
+    padding: 30px;
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+  }
+
+  .admin-menu {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-section-header {
+    flex-direction: column;
+  }
+
+}
+
+.admin-tabla {
+  margin-top: 30px;
+  background: white;
+  border: 1px solid #e7eaf2;
+  border-radius: 15px;
+  overflow-x: auto;
+}
+
+.admin-tabla table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-tabla th {
+  padding: 15px;
+  text-align: left;
+  background: #f5f7fb;
+  color: #18203a;
+  font-size: 13px;
+}
+
+.admin-tabla td {
+  padding: 15px;
+  border-top: 1px solid #e7eaf2;
+  color: #5f6678;
+  font-size: 14px;
+}
+
+.admin-tabla td strong {
+  color: #18203a;
+}
+
+.admin-editar,
+.admin-eliminar {
+  border: none;
+  border-radius: 7px;
+  padding: 8px 10px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+.admin-editar {
+  background: #eef2ff;
+}
+
+.admin-eliminar {
+  background: #ffe9ee;
+}
+
+/* =================================
+   BOTÓN VER
+================================= */
+
+.admin-ver {
+  border: none;
+  border-radius: 7px;
+  padding: 8px 10px;
+  margin-right: 6px;
+  cursor: pointer;
+  background: #eef2ff;
+}
+
+
+/* =================================
+   MODAL
+================================= */
+
+.admin-modal-fondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(7, 26, 92, 0.55);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+  box-sizing: border-box;
+
+  z-index: 9999;
+}
+
+
+.admin-modal {
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+
+  background: white;
+  border-radius: 18px;
+
+  padding: 30px;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.20);
+}
+
+
+/* =================================
+   HEADER MODAL
+================================= */
+
+.admin-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  margin-bottom: 30px;
+}
+
+
+.admin-modal-header h2 {
+  margin: 8px 0 0;
+
+  color: #18203a;
+
+  font-size: 28px;
+}
+
+
+.admin-modal-cerrar {
+  border: none;
+
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  background: #f5f7fb;
+
+  color: #18203a;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+
+.admin-modal-cerrar:hover {
+  background: #ffe9ee;
+  color: #f74780;
+}
+
+
+/* =================================
+   GRID INFORMACIÓN
+================================= */
+
+.admin-detalles-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+
+  margin-bottom: 25px;
+}
+
+
+.admin-detalle {
+  padding: 16px;
+
+  background: #f5f7fb;
+
+  border-radius: 10px;
+}
+
+
+.admin-detalle span,
+.admin-detalle-grande span,
+.admin-detalle-multimedia span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #7b8295;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+
+.admin-detalle strong {
+  color: #18203a;
+
+  font-size: 14px;
+}
+
+
+/* =================================
+   CAMPOS GRANDES
+================================= */
+
+.admin-detalle-grande {
+  margin-bottom: 18px;
+
+  padding: 18px;
+
+  background: #f5f7fb;
+
+  border-radius: 10px;
+}
+
+
+.admin-detalle-grande p {
+  margin: 0;
+
+  color: #5f6678;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  white-space: pre-wrap;
+}
+
+
+/* =================================
+   MULTIMEDIA
+================================= */
+
+.admin-detalle-multimedia {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+
+  margin-bottom: 25px;
+}
+
+
+.admin-detalle-multimedia > div {
+  padding: 16px;
+
+  background: #f5f7fb;
+
+  border-radius: 10px;
+}
+
+
+.admin-detalle-multimedia p {
+  margin: 0;
+
+  color: #5f6678;
+
+  font-size: 13px;
+
+  word-break: break-word;
+}
+
+
+/* =================================
+   FOOTER MODAL
+================================= */
+
+.admin-modal-footer {
+  display: flex;
+
+  justify-content: flex-end;
+
+  padding-top: 10px;
+
+  border-top: 1px solid #e7eaf2;
+}
+
+
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 800px) {
+
+  .admin-detalles-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-detalle-multimedia {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 550px) {
+
+  .admin-modal-fondo {
+    padding: 15px;
+  }
+
+  .admin-modal {
+    padding: 20px;
+  }
+
+  .admin-detalles-grid {
+    grid-template-columns: 1fr;
+  }
+
+}

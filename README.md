@@ -1,5 +1,6 @@
 # 🎮 PromoHunt
 
+<<<<<<< HEAD
 > Proyecto educativo | 2026  
 > Plataforma de descuentos y ofertas en videojuegos
 
@@ -19,10 +20,33 @@
 - Node.js 18+
 - Docker + Docker Compose
 - Git Bash en Windows
+=======
+> Proyecto educativo | 2026
+
+Plataforma web de descuentos y ofertas en videojuegos.
+
+## Stack
+
+| Capa | Tecnologías |
+|------|-------------|
+| **Backend** | Python, Flask, Flask-CORS, psycopg2 |
+| **Frontend** | React 19, TypeScript, Vite |
+| **Base de datos** | PostgreSQL 17 (Docker Compose) |
+
+## Prerrequisitos
+
+- Python 3.10+
+- Node.js 18+
+- Docker + Docker Compose
+- Git
+
+> Windows: usa **Git Bash**.
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 
 ## Instalación
 
 ```bash
+<<<<<<< HEAD
 git clone <tu-repo>
 cd PromoHunt
 
@@ -31,17 +55,36 @@ docker compose up -d
 # db :5432 | db-test :5433 | mailpit UI :8025
 
 # 2. Backend
+=======
+# 1. Clonar
+git clone <url>
+cd PromoHunt
+
+# 2. Base de datos
+docker compose up -d
+
+# 3. Backend
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 cd be
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
+<<<<<<< HEAD
 uvicorn app.main:app --reload
 # → http://localhost:8000/docs
 
 # 3. Frontend (otra terminal)
 cd fe
 npm install   # o pnpm install
+=======
+python app.py
+# → http://localhost:5000
+
+# 4. Frontend (otra terminal)
+cd fe
+npm install
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 npm run dev
 # → http://localhost:5173
 ```
@@ -50,6 +93,7 @@ npm run dev
 
 ```
 PromoHunt/
+<<<<<<< HEAD
 ├── docker-compose.yml      # db + db-test + mailpit
 ├── BITACORA.md             # Checklist de aprendizaje
 ├── README.md
@@ -89,3 +133,30 @@ Actualiza las llamadas API de `/api/...` a `/api/v1/...` y el login para usar `A
 - [Arquitectura](./docs/referencia-tecnica/architecture.md)
 - [Endpoints](./docs/referencia-tecnica/api-endpoints.md)
 - [Backend README](./be/README.md)
+=======
+├── docker-compose.yml
+├── .gitignore
+├── README.md
+├── assets/
+├── docs/
+│   ├── DOCUMENTACION.md
+│   ├── requisitos/
+│   ├── diagramas/
+│   ├── presentaciones/
+│   ├── actas/
+│   └── glosario/
+├── be/                    # Backend Flask
+│   ├── app.py
+│   ├── database.py
+│   ├── requirements.txt
+│   ├── descuentos_juegos_postgres.sql
+│   └── .env.example
+└── fe/                    # Frontend React
+    ├── src/
+    └── package.json
+```
+
+## Documentación
+
+Ver carpeta `docs/`.
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8

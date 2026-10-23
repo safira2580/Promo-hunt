@@ -52,9 +52,13 @@ CREATE TABLE IF NOT EXISTS usuario (
   contrasena VARCHAR(255) NOT NULL,
   foto_perfil VARCHAR(255),
   fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+<<<<<<< HEAD
   rol VARCHAR(30) NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
   is_verified BOOLEAN DEFAULT FALSE
+=======
+  rol VARCHAR(30) NOT NULL
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 );
 
 CREATE TABLE IF NOT EXISTS juego (

@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 # PromoHunt — PostgreSQL + Mailpit + BD de tests
 # Uso: docker compose up -d
 
+=======
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 services:
   db:
     image: postgres:17-alpine
@@ -21,6 +24,7 @@ services:
       timeout: 5s
       retries: 5
 
+<<<<<<< HEAD
   # BD exclusiva para tests (pytest). Sin volumen: se borra al bajar el contenedor.
   db-test:
     image: postgres:17-alpine
@@ -46,5 +50,7 @@ services:
       - "8025:8025"   # UI web
     restart: unless-stopped
 
+=======
+>>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 volumes:
   promohunt_data:
