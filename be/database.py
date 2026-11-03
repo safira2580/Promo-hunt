@@ -1,6 +1,9 @@
 import os
 import psycopg2
+from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
+
+load_dotenv()  # lee be/.env (Flask no lo hacia solo)
 
 def obtener_conexion():
     try:
@@ -22,8 +25,4 @@ def obtener_conexion():
 
 
 def obtener_cursor(conexion):
-<<<<<<< HEAD
     return conexion.cursor(cursor_factory=RealDictCursor)
-=======
-    return conexion.cursor(cursor_factory=RealDictCursor)
->>>>>>> f9c32cd5a866be81fbb1a05df354dc53f16928cc

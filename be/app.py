@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request, session
 from flask_cors import CORS
 from database import obtener_conexion, obtener_cursor
@@ -9,7 +10,7 @@ app = Flask(__name__)
 # CONFIGURACIÓN DE SESIÓN
 # ===========================
 
-app.secret_key = "clave-secreta-proyecto"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "clave-secreta-proyecto")
 
 app.config["SESSION_COOKIE_NAME"] = "promohunt_session"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -88,6 +89,7 @@ def obtener_juegos():
     cursor = obtener_cursor(conexion)
 
     id_categoria = request.args.get("categoria")
+    buscar = request.args.get("buscar", "").strip()
 
     consulta = """
         SELECT
@@ -120,6 +122,10 @@ def obtener_juegos():
     if id_categoria:
         consulta += " AND juego.id_categoria = %s"
         params.append(id_categoria)
+
+    if buscar:
+        consulta += " AND juego.nombre ILIKE %s"
+        params.append(f"%{buscar}%")
 
     consulta += " ORDER BY descuento.porcentaje_descuento DESC"
 

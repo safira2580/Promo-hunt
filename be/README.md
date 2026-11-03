@@ -1,54 +1,36 @@
-<<<<<<< HEAD
-# Backend — PromoHunt (FastAPI + PostgreSQL)
+# Backend — PromoHunt (PostgreSQL)
 
-## Setup
+Hay dos backends; ver el README de la raíz para el estado de cada uno.
+
+## Setup común
 
 ```bash
 # Desde la raíz del repo
 docker compose up -d
 
-=======
-# Backend — PromoHunt (Flask + PostgreSQL)
-
-```bash
-# Desde la raíz: docker compose up -d
->>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8
 cd be
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-<<<<<<< HEAD
-# o: uv sync
-
 cp .env.example .env
-# Editar SECRET_KEY si quieres
+```
 
+## Flask (activo, lo usa el frontend)
+
+```bash
+python app.py
+# -> http://localhost:5000
+```
+
+Rutas bajo `/api/...` (juegos, categorías, login, usuario, admin/*). Usa sesión por cookie.
+
+## FastAPI (en migración)
+
+```bash
 uvicorn app.main:app --reload
-# → http://localhost:8000
-# → Swagger: http://localhost:8000/docs
+# -> http://localhost:8000
+# -> Swagger: http://localhost:8000/docs
 ```
-
-## Estructura
-
-```
-be/
-├── app/
-│   ├── main.py
-│   ├── config.py
-│   ├── database.py
-│   ├── dependencies.py
-│   ├── models/
-│   ├── schemas/
-│   ├── routers/
-│   ├── services/
-│   ├── utils/
-│   └── tests/
-├── alembic/
-├── pyproject.toml
-└── requirements.txt
-```
-
-## Endpoints principales
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
@@ -59,24 +41,11 @@ be/
 | GET | /api/v1/juegos/{id} | No | Detalle + descuentos |
 | GET | /api/v1/categorias | No | Categorías |
 
-## Tests
+Pendiente de migrar: perfil, panel admin (juegos, descuentos, desarrolladores, géneros, categorías, reseñas).
+
+## Tests (FastAPI)
 
 ```bash
 docker compose up -d db-test
 pytest -v
 ```
-
-## Cambios vs Flask anterior
-
-- Flask → **FastAPI**
-- Sesiones cookie → **JWT**
-- Contraseñas en texto plano → **bcrypt**
-- SQL suelto en rutas → **services + models/schemas**
-- Sin tests → **pytest**
-- Merge conflict en database.py → **eliminado**
-=======
-cp .env.example .env
-python app.py
-# → http://localhost:5000
-```
->>>>>>> 1bbdc2b537ebff5efa47f4a78fb85b869405ecb8

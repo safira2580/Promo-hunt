@@ -1,8 +1,14 @@
+# --- Backend Flask actual (be/app.py) ---
+flask
+flask-cors
+psycopg2-binary
+python-dotenv
+
+# --- Backend FastAPI en migracion (be/app/) ---
 fastapi
 uvicorn[standard]
 sqlalchemy>=2.0
 alembic
-psycopg2-binary
 pydantic-settings
 email-validator
 python-multipart
@@ -10,5 +16,7 @@ pyjwt
 python-jose[cryptography]
 passlib[bcrypt]
 bcrypt==4.0.1
+
+# --- Tests ---
 pytest
 httpx

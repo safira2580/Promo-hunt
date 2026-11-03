@@ -56,7 +56,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
    * OBTENER JUEGOS DESDE FLASK
    */
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/juegos")
+    fetch("http://localhost:5000/api/juegos")
       .then((respuesta) => {
         if (!respuesta.ok) {
           throw new Error("No se pudieron obtener los juegos");
