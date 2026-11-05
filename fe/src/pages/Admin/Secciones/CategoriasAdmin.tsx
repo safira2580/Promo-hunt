@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../../config";
 
 function CategoriasAdmin() {
 
@@ -19,7 +20,7 @@ function CategoriasAdmin() {
     try {
 
       const respuesta = await fetch(
-        "http://localhost:5000/api/admin/categoria",
+        `${API_URL}/api/admin/categoria`,
         {
           credentials: "include"
         }
@@ -79,8 +80,8 @@ function CategoriasAdmin() {
       const respuesta = await fetch(
 
         editar
-          ? `http://localhost:5000/api/admin/categoria/${categoriaEditando.id_categoria}`
-          : "http://localhost:5000/api/admin/categoria",
+          ? `${API_URL}/api/admin/categoria/${categoriaEditando.id_categoria}`
+          : `${API_URL}/api/admin/categoria`,
 
         {
 
@@ -153,7 +154,7 @@ function CategoriasAdmin() {
 
       const respuesta = await fetch(
 
-        `http://localhost:5000/api/admin/categoria/${id}`,
+        `${API_URL}/api/admin/categoria/${id}`,
 
         {
 

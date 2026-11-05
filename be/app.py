@@ -14,8 +14,12 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "clave-secreta-proyecto")
 
 app.config["SESSION_COOKIE_NAME"] = "promohunt_session"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = False
+
+# En produccion (frontend y backend en dominios distintos, con HTTPS) la cookie
+# de sesion debe ser SameSite=None + Secure. En local se mantiene Lax.
+EN_PRODUCCION = os.getenv("ENVIRONMENT", "development") == "production"
+app.config["SESSION_COOKIE_SAMESITE"] = "None" if EN_PRODUCCION else "Lax"
+app.config["SESSION_COOKIE_SECURE"] = EN_PRODUCCION
 
 
     # ===========================
@@ -26,7 +30,9 @@ CORS(
     app,
         supports_credentials=True,
         origins=[
-            "http://localhost:5173"
+            o.strip()
+            for o in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+            if o.strip()
         ]
     )
 
@@ -2642,9 +2648,10 @@ def admin_eliminar_resena(id_resena):
     # =====================================================
 
 if __name__ == "__main__":
+    # Solo para desarrollo local. En produccion se usa gunicorn (ver README).
     verificar_conexion()
     app.run(
-            debug=True,
+            debug=not EN_PRODUCCION,
             host="localhost",
             port=5000
         )

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../../config";
 
 function DesarrolladoresAdmin() {
 
@@ -18,7 +19,7 @@ function DesarrolladoresAdmin() {
     try {
 
       const respuesta = await fetch(
-        "http://localhost:5000/api/admin/desarrolladores",
+        `${API_URL}/api/admin/desarrolladores`,
         {
           credentials: "include"
         }
@@ -158,9 +159,9 @@ function DesarrolladoresAdmin() {
 
         editar
 
-          ? `http://localhost:5000/api/admin/desarrolladores/${desarrolladorEditando.id_desarrollador}`
+          ? `${API_URL}/api/admin/desarrolladores/${desarrolladorEditando.id_desarrollador}`
 
-          : "http://localhost:5000/api/admin/desarrolladores",
+          : `${API_URL}/api/admin/desarrolladores`,
 
         {
 
@@ -273,7 +274,7 @@ function DesarrolladoresAdmin() {
 
       const respuesta = await fetch(
 
-        `http://localhost:5000/api/admin/desarrolladores/${id}`,
+        `${API_URL}/api/admin/desarrolladores/${id}`,
 
         {
 

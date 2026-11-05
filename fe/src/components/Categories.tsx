@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../config";
 
 interface Categoria {
   id_categoria: number;
@@ -16,7 +17,7 @@ function Categories({ categoriaActiva, onSeleccionar }: CategoriesProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/categorias")
+    fetch(`${API_URL}/api/categorias`)
       .then((res) => {
         if (!res.ok) throw new Error("No se pudieron cargar las categorías");
         return res.json();

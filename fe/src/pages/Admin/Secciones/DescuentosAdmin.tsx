@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../../config";
 
 function DescuentosAdmin() {
 
@@ -18,7 +19,7 @@ function DescuentosAdmin() {
       setCargando(true);
 
       const respuesta = await fetch(
-        "http://localhost:5000/api/admin/descuentos",
+        `${API_URL}/api/admin/descuentos`,
         {
           credentials: "include"
         }
@@ -169,9 +170,9 @@ function DescuentosAdmin() {
 
         editar
 
-          ? `http://localhost:5000/api/admin/descuentos/${descuentoEditando.id_descuento}`
+          ? `${API_URL}/api/admin/descuentos/${descuentoEditando.id_descuento}`
 
-          : "http://localhost:5000/api/admin/descuentos",
+          : `${API_URL}/api/admin/descuentos`,
 
         {
 
@@ -291,7 +292,7 @@ function DescuentosAdmin() {
 
       const respuesta = await fetch(
 
-        `http://localhost:5000/api/admin/descuentos/${id}`,
+        `${API_URL}/api/admin/descuentos/${id}`,
 
         {
 

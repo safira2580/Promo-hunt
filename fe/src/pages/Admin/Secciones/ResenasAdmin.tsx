@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../../config";
 
 function ResenasAdmin() {
 
@@ -19,7 +20,7 @@ function ResenasAdmin() {
     try {
 
       const respuesta = await fetch(
-        "http://localhost:5000/api/admin/resenas",
+        `${API_URL}/api/admin/resenas`,
         {
           credentials: "include"
         }
@@ -87,8 +88,8 @@ function ResenasAdmin() {
       const respuesta = await fetch(
 
         editar
-          ? `http://localhost:5000/api/admin/resenas/${resenaEditando.id_resena}`
-          : "http://localhost:5000/api/admin/resenas",
+          ? `${API_URL}/api/admin/resenas/${resenaEditando.id_resena}`
+          : `${API_URL}/api/admin/resenas`,
 
         {
 
@@ -161,7 +162,7 @@ function ResenasAdmin() {
 
       const respuesta = await fetch(
 
-        `http://localhost:5000/api/admin/resenas/${id}`,
+        `${API_URL}/api/admin/resenas/${id}`,
 
         {
 

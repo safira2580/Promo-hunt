@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../../config";
 
 function GenerosAdmin() {
 
@@ -19,7 +20,7 @@ function GenerosAdmin() {
     try {
 
       const respuesta = await fetch(
-        "http://localhost:5000/api/admin/generos",
+        `${API_URL}/api/admin/generos`,
         {
           credentials: "include"
         }
@@ -79,8 +80,8 @@ function GenerosAdmin() {
       const respuesta = await fetch(
 
         editar
-          ? `http://localhost:5000/api/admin/generos/${generoEditando.id_genero}`
-          : "http://localhost:5000/api/admin/generos",
+          ? `${API_URL}/api/admin/generos/${generoEditando.id_genero}`
+          : `${API_URL}/api/admin/generos`,
 
         {
 
@@ -153,7 +154,7 @@ function GenerosAdmin() {
 
       const respuesta = await fetch(
 
-        `http://localhost:5000/api/admin/generos/${id}`,
+        `${API_URL}/api/admin/generos/${id}`,
 
         {
 

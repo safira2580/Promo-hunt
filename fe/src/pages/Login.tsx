@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa6";
 
 import "./Login.css";
+import { API_URL } from "../config";
 
 function Login() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function Login() {
 
     try {
      const respuesta = await fetch(
-  "http://localhost:5000/api/login",
+  `${API_URL}/api/login`,
         {
           method: "POST",
           headers: {

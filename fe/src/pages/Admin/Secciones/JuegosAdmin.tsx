@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../../config";
 
 function JuegosAdmin() {
 
@@ -18,7 +19,7 @@ function JuegosAdmin() {
     try {
 
       const respuesta = await fetch(
-        "http://localhost:5000/api/admin/juegos",
+        `${API_URL}/api/admin/juegos`,
         {
           credentials: "include"
         }
@@ -66,8 +67,8 @@ function JuegosAdmin() {
 
       const respuesta = await fetch(
         editar
-          ? `http://localhost:5000/api/admin/juegos/${juegoEditando.id_juego}`
-          : "http://localhost:5000/api/admin/juegos",
+          ? `${API_URL}/api/admin/juegos/${juegoEditando.id_juego}`
+          : `${API_URL}/api/admin/juegos`,
         {
           method: editar ? "PUT" : "POST",
           credentials: "include",
@@ -112,7 +113,7 @@ function JuegosAdmin() {
     try {
 
       const respuesta = await fetch(
-        `http://localhost:5000/api/admin/juegos/${id}`,
+        `${API_URL}/api/admin/juegos/${id}`,
         {
           method: "DELETE",
           credentials: "include"

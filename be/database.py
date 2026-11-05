@@ -7,6 +7,9 @@ load_dotenv()  # lee be/.env (Flask no lo hacia solo)
 
 def obtener_conexion():
     try:
+        url = os.getenv("DATABASE_URL")
+        if url:  # Railway / produccion
+            return psycopg2.connect(url, client_encoding="UTF8", connect_timeout=5)
         return psycopg2.connect(
             host=os.getenv("DB_HOST", "localhost"),
             port=int(os.getenv("DB_PORT", "5432")),

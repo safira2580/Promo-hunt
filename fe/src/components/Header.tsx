@@ -18,6 +18,7 @@ import mirage from "../assets/img/asc mirage.jpg";
 import fc26 from "../assets/img/fc26.jpg";
 import spider2 from "../assets/img/spider2.jpg";
 import forza6 from "../assets/img/Forza6.jpg";
+import { API_URL } from "../config";
 
 
 interface Juego {
@@ -98,7 +99,7 @@ function Header() {
   useEffect(() => {
 
     fetch(
-      "http://localhost:5000/api/usuario/me",
+      `${API_URL}/api/usuario/me`,
       {
         method: "GET",
         credentials: "include",
@@ -163,7 +164,7 @@ function Header() {
 
 
     fetch(
-      `http://localhost:5000/api/juegos?buscar=${encodeURIComponent(busqueda)}`
+      `${API_URL}/api/juegos?buscar=${encodeURIComponent(busqueda)}`
     )
 
       .then(res => res.json())

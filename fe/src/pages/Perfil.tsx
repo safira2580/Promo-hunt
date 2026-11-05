@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa6";
 
 import "./Perfil.css";
+import { API_URL } from "../config";
 
 interface Usuario {
   id_usuario: number;
@@ -77,7 +78,7 @@ function Perfil() {
       try {
 
         const respuesta = await fetch(
-          "http://localhost:5000/api/usuario/perfil",
+          `${API_URL}/api/usuario/perfil`,
           {
             method: "GET",
             credentials: "include",
@@ -239,7 +240,7 @@ function Perfil() {
     try {
 
       const respuesta = await fetch(
-        "http://localhost:5000/api/usuario/editar",
+        `${API_URL}/api/usuario/editar`,
         {
           method: "PUT",
 
@@ -343,7 +344,7 @@ function Perfil() {
     try {
 
       await fetch(
-        "http://localhost:5000/api/logout",
+        `${API_URL}/api/logout`,
         {
           method: "POST",
           credentials: "include"
