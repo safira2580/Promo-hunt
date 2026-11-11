@@ -7,7 +7,9 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 
-def list_juegos(db: Session, categoria_id: int | None = None) -> list[dict]:
+def list_juegos(
+    db: Session, categoria_id: int | None = None, buscar: str | None = None
+) -> list[dict]:
     sql = """
         SELECT
             juego.id_juego,
@@ -34,38 +36,50 @@ def list_juegos(db: Session, categoria_id: int | None = None) -> list[dict]:
     if categoria_id is not None:
         sql += " AND juego.id_categoria = :categoria_id"
         params["categoria_id"] = categoria_id
-    sql += " ORDER BY descuento.porcentaje_descuento DESC"
+    if buscar and buscar.strip():
+        # Escapa comodines LIKE para que "50%" o "_" se busquen literalmente
+        term = buscar.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        sql += " AND juego.nombre ILIKE :buscar ESCAPE '\\'"
+        params["buscar"] = f"%{term}%"
+    sql += " ORDER BY descuento.porcentaje_descuento DESC, juego.id_juego ASC"
 
     rows = db.execute(text(sql), params).mappings().all()
     return [dict(r) for r in rows]
 
 
 def list_categorias(db: Session) -> list[dict]:
-    rows = db.execute(
-        text(
-            "SELECT id_categoria, nombre, descripcion FROM categoria ORDER BY nombre ASC"
+    rows = (
+        db.execute(
+            text("SELECT id_categoria, nombre, descripcion FROM categoria ORDER BY nombre ASC")
         )
-    ).mappings().all()
+        .mappings()
+        .all()
+    )
     return [dict(r) for r in rows]
 
 
 def get_juego_detalle(db: Session, id_juego: int) -> dict:
-    juego = db.execute(
-        text(
-            """
+    juego = (
+        db.execute(
+            text(
+                """
             SELECT id_juego, nombre, fecha_lanzamiento, imagen, descripcion
             FROM juego WHERE id_juego = :id
             """
-        ),
-        {"id": id_juego},
-    ).mappings().first()
+            ),
+            {"id": id_juego},
+        )
+        .mappings()
+        .first()
+    )
 
     if not juego:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Juego no encontrado")
 
-    descuentos = db.execute(
-        text(
-            """
+    descuentos = (
+        db.execute(
+            text(
+                """
             SELECT
                 d.id_descuento,
                 d.id_plataforma,
@@ -80,9 +94,12 @@ def get_juego_detalle(db: Session, id_juego: int) -> dict:
             WHERE d.id_juego = :id AND d.estado = 'Activo'
             ORDER BY d.precio_descuento ASC
             """
-        ),
-        {"id": id_juego},
-    ).mappings().all()
+            ),
+            {"id": id_juego},
+        )
+        .mappings()
+        .all()
+    )
 
     return {
         "ok": True,

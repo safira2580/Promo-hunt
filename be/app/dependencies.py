@@ -42,3 +42,13 @@ def get_current_user(
             detail="Usuario no encontrado o desactivado",
         )
     return user
+
+
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    """Autorización por rol: solo administradores (401 si no hay sesión, 403 si no es admin)."""
+    if current_user.rol != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos de administrador",
+        )
+    return current_user

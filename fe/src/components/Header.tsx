@@ -18,6 +18,7 @@ import mirage from "../assets/img/asc mirage.jpg";
 import fc26 from "../assets/img/fc26.jpg";
 import spider2 from "../assets/img/spider2.jpg";
 import forza6 from "../assets/img/Forza6.jpg";
+import { API_V1, apiFetch, getToken, setToken } from "../api";
 
 
 interface Juego {
@@ -89,6 +90,9 @@ function Header() {
      ========================================== */
 
   const [usuario, setUsuario] = useState<Usuario | null>(null);
+  // La BD puede guardar solo un nombre de archivo (p. ej. "juan.jpg") o una URL caída:
+  // en ese caso se muestra el icono de usuario en lugar de una imagen rota.
+  const [fotoRota, setFotoRota] = useState(false);
 
 
   /* ==========================================
@@ -97,49 +101,24 @@ function Header() {
 
   useEffect(() => {
 
-    fetch(
-      "http://localhost:5000/api/usuario/me",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    )
+    // Sin token no hay sesión: se evita una petición inútil en cada carga
+    if (!getToken()) {
+      return;
+    }
 
+    apiFetch("/api/v1/auth/me")
       .then(async (respuesta) => {
-
         if (!respuesta.ok) {
-
+          // Token expirado o inválido: se descarta
+          setToken(null);
           setUsuario(null);
-
           return;
-
         }
-
-
-        const datos = await respuesta.json();
-
-
-        if (datos.logueado) {
-
-          setUsuario(datos.usuario);
-
-        } else {
-
-          setUsuario(null);
-
-        }
-
+        setUsuario(await respuesta.json());
       })
-
       .catch((error) => {
-
-        console.error(
-          "Error comprobando sesión:",
-          error
-        );
-
+        console.error("Error comprobando sesión:", error);
         setUsuario(null);
-
       });
 
   }, []);
@@ -152,40 +131,35 @@ function Header() {
   useEffect(() => {
 
     if (busqueda.trim() === "") {
-
-      setJuegos([]);
-
-      setMostrarResultados(false);
-
       return;
-
     }
 
-
-    fetch(
-      `http://localhost:5000/api/juegos?buscar=${encodeURIComponent(busqueda)}`
-    )
-
-      .then(res => res.json())
-
-      .then(data => {
-
-        setJuegos(data);
-
-        setMostrarResultados(true);
-
+    // Debounce (300 ms) + AbortController: una petición por pausa al teclear,
+    // no una por tecla, y se cancela la anterior si llega otra.
+    const controlador = new AbortController();
+    const temporizador = setTimeout(() => {
+      fetch(`${API_V1}/juegos?buscar=${encodeURIComponent(busqueda.trim())}`, {
+        signal: controlador.signal,
       })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          setJuegos(data);
+          setMostrarResultados(true);
+        })
+        .catch((error) => {
+          if (error.name === "AbortError") return;
+          console.error("Error buscando juegos:", error);
+          setJuegos([]);
+        });
+    }, 300);
 
-      .catch(error => {
-
-        console.error(
-          "Error buscando juegos:",
-          error
-        );
-
-        setJuegos([]);
-
-      });
+    return () => {
+      clearTimeout(temporizador);
+      controlador.abort();
+    };
 
   }, [busqueda]);
 
@@ -290,12 +264,13 @@ function Header() {
 
             >
 
-              {usuario?.foto_perfil ? (
+              {usuario?.foto_perfil && !fotoRota && /^(https?:|data:|\/)/.test(usuario.foto_perfil) ? (
 
                 <img
                   src={usuario.foto_perfil}
                   alt="Foto de perfil"
                   className="user-photo"
+                  onError={() => setFotoRota(true)}
                 />
 
               ) : (

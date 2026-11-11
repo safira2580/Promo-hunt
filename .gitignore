@@ -13,3 +13,14 @@ fe/.vite/
 .DS_Store
 Thumbs.db
 *.log
+
+# Secretos de despliegue (NUNCA al repositorio)
+.env.prod
+!.env.prod.example
+backups/
+*.dump
+*.sql.gz
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/

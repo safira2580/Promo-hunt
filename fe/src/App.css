@@ -497,7 +497,7 @@ input {
             rgba(0, 0, 0, 0.8),
             rgba(0, 0, 0, 0.2)
         ),
-        url('./assets/img/banner.png');
+        url('./assets/img/banner.webp');
 
     background-size: cover;
     background-position: center;
@@ -1748,7 +1748,7 @@ body {
 
 .banner {
   background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,58,138,0.7)),
-              url('./assets/img/banner.png') center/cover no-repeat !important;
+              url('./assets/img/banner.webp') center/cover no-repeat !important;
   border-radius: 0 0 2.8rem 2.8rem !important;
   min-height: 42rem !important;
 }

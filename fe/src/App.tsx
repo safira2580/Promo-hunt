@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import RutaProtegida from "./components/RutaProtegida";
 
 import "./App.css";
 
@@ -13,7 +15,7 @@ import BottomNav from "./components/BottomNav";
 import Login from "./pages/Login";
 import Perfil from "./pages/Perfil";
 import JuegoDetalle from "./pages/JuegoDetalle";
-import Admin from "./pages/Admin/Admin";
+const Admin = lazy(() => import("./pages/Admin/Admin"));
 import Registro from "./pages/Registro";
 
 function Inicio() {
@@ -49,10 +51,12 @@ function App() {
         <Route
           path="/Perfil"
           element={
-            <div className="app">
-              <Perfil />
-              <BottomNav />
-            </div>
+            <RutaProtegida>
+              <div className="app">
+                <Perfil />
+                <BottomNav />
+              </div>
+            </RutaProtegida>
           }
         />
         <Route
@@ -64,7 +68,16 @@ function App() {
             </div>
           }
         />
-        <Route path="/admin" element={<Admin />} />
+        <Route
+          path="/admin"
+          element={
+            <RutaProtegida rol="admin">
+              <Suspense fallback={<p style={{ padding: "2rem" }}>Cargando panel…</p>}>
+                <Admin />
+              </Suspense>
+            </RutaProtegida>
+          }
+        />
         <Route path="/registro" element={<Registro />} />
       </Routes>
     </BrowserRouter>

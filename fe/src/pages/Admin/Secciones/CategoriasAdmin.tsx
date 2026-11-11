@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL, authFetch } from "../../../api";
 
 function CategoriasAdmin() {
 
@@ -18,10 +19,9 @@ function CategoriasAdmin() {
 
     try {
 
-      const respuesta = await fetch(
-        "http://localhost:5000/api/admin/categoria",
+      const respuesta = await authFetch(
+        `${API_URL}/api/v1/admin/categoria`,
         {
-          credentials: "include"
         }
       );
 
@@ -76,17 +76,15 @@ function CategoriasAdmin() {
 
     try {
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
         editar
-          ? `http://localhost:5000/api/admin/categoria/${categoriaEditando.id_categoria}`
-          : "http://localhost:5000/api/admin/categoria",
+          ? `${API_URL}/api/v1/admin/categoria/${categoriaEditando.id_categoria}`
+          : `${API_URL}/api/v1/admin/categoria`,
 
         {
 
           method: editar ? "PUT" : "POST",
-
-          credentials: "include",
 
           headers: {
             "Content-Type": "application/json"
@@ -151,15 +149,13 @@ function CategoriasAdmin() {
 
     try {
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
-        `http://localhost:5000/api/admin/categoria/${id}`,
+        `${API_URL}/api/v1/admin/categoria/${id}`,
 
         {
 
           method: "DELETE",
-
-          credentials: "include"
 
         }
 

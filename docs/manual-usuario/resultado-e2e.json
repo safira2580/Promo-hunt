@@ -1,0 +1,98 @@
+{
+  "fecha": "2026-11-10T19:27:06.537Z",
+  "base": "http://localhost:8080",
+  "resultados": [
+    {
+      "nombre": "Inicio carga con imágenes",
+      "ok": true
+    },
+    {
+      "nombre": "Catálogo muestra juegos desde la API",
+      "ok": true
+    },
+    {
+      "nombre": "Búsqueda con debounce devuelve resultados",
+      "ok": true
+    },
+    {
+      "nombre": "Detalle de juego carga",
+      "ok": true
+    },
+    {
+      "nombre": "Guarda: anónimo en /admin es redirigido a /Login",
+      "ok": true
+    },
+    {
+      "nombre": "Guarda: anónimo en /Perfil es redirigido a /Login",
+      "ok": true
+    },
+    {
+      "nombre": "Login con clave incorrecta muestra mensaje y no entra",
+      "ok": true
+    },
+    {
+      "nombre": "Registro de cuenta nueva",
+      "ok": true
+    },
+    {
+      "nombre": "Sin errores JS ni 5xx (visitante)",
+      "ok": false
+    },
+    {
+      "nombre": "Login de usuario normal redirige a inicio",
+      "ok": true
+    },
+    {
+      "nombre": "Perfil muestra los datos del usuario",
+      "ok": true
+    },
+    {
+      "nombre": "Guarda: usuario normal en /admin es expulsado a inicio",
+      "ok": true
+    },
+    {
+      "nombre": "Sin errores JS ni 5xx (usuario)",
+      "ok": false
+    },
+    {
+      "nombre": "Admin accede a /admin",
+      "ok": true
+    },
+    {
+      "nombre": "Admin › juegos lista datos de la API",
+      "ok": true
+    },
+    {
+      "nombre": "Admin › descuentos lista datos de la API",
+      "ok": true
+    },
+    {
+      "nombre": "Admin › desarrolladores lista datos de la API",
+      "ok": true
+    },
+    {
+      "nombre": "Admin › generos lista datos de la API",
+      "ok": true
+    },
+    {
+      "nombre": "Admin › categorias lista datos de la API",
+      "ok": true
+    },
+    {
+      "nombre": "Admin › resenas lista datos de la API",
+      "ok": true
+    },
+    {
+      "nombre": "Menú admin con 7 entradas",
+      "ok": true
+    },
+    {
+      "nombre": "Sin errores JS ni 5xx (admin)",
+      "ok": false
+    },
+    {
+      "nombre": "Móvil: sin desbordamiento horizontal",
+      "ok": true
+    }
+  ]
+}
