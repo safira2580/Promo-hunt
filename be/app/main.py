@@ -1,4 +1,4 @@
-﻿"""
+"""
 Punto de entrada FastAPI — PromoHunt API.
 """
 
