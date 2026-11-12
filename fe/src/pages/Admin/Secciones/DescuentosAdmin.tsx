@@ -1,5 +1,20 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../../../config";
+import { API_URL, authFetch } from "../../../api";
+
+/** Porcentaje y ahorro derivados de los precios (el backend los recalcula igualmente). */
+function calcularDerivados(original: string, conDescuento: string) {
+  const po = parseFloat(original);
+  const pd = parseFloat(conDescuento);
+  if (Number.isNaN(po) || Number.isNaN(pd) || po <= 0 || pd > po) {
+    return { porcentaje_descuento: "", ahorro: "" };
+  }
+  return {
+    porcentaje_descuento: (((po - pd) / po) * 100).toFixed(2),
+    ahorro: (po - pd).toFixed(2),
+  };
+}
+
+
 
 function DescuentosAdmin() {
 
@@ -18,10 +33,9 @@ function DescuentosAdmin() {
 
       setCargando(true);
 
-      const respuesta = await fetch(
-        `${API_URL}/api/admin/descuentos`,
+      const respuesta = await authFetch(
+        `${API_URL}/api/v1/admin/descuentos`,
         {
-          credentials: "include"
         }
       );
 
@@ -166,21 +180,19 @@ function DescuentosAdmin() {
         !!descuentoEditando.id_descuento;
 
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
         editar
 
-          ? `${API_URL}/api/admin/descuentos/${descuentoEditando.id_descuento}`
+          ? `${API_URL}/api/v1/admin/descuentos/${descuentoEditando.id_descuento}`
 
-          : `${API_URL}/api/admin/descuentos`,
+          : `${API_URL}/api/v1/admin/descuentos`,
 
         {
 
           method: editar
             ? "PUT"
             : "POST",
-
-          credentials: "include",
 
           headers: {
             "Content-Type": "application/json"
@@ -290,15 +302,13 @@ function DescuentosAdmin() {
 
     try {
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
-        `${API_URL}/api/admin/descuentos/${id}`,
+        `${API_URL}/api/v1/admin/descuentos/${id}`,
 
         {
 
           method: "DELETE",
-
-          credentials: "include"
 
         }
 
@@ -747,8 +757,12 @@ function DescuentosAdmin() {
 
                     ...descuentoEditando,
 
-                    precio_original:
-                      e.target.value
+                    precio_original: e.target.value,
+
+                    ...calcularDerivados(
+                      e.target.value,
+                      String(descuentoEditando.precio_descuento)
+                    ),
 
                   })
                 }
@@ -774,8 +788,12 @@ function DescuentosAdmin() {
 
                     ...descuentoEditando,
 
-                    precio_descuento:
+                    precio_descuento: e.target.value,
+
+                    ...calcularDerivados(
+                      String(descuentoEditando.precio_original),
                       e.target.value
+                    ),
 
                   })
                 }
@@ -787,7 +805,7 @@ function DescuentosAdmin() {
               {/* PORCENTAJE */}
 
               <label>
-                Porcentaje de descuento
+                Porcentaje de descuento (automático)
               </label>
 
               <input
@@ -796,17 +814,10 @@ function DescuentosAdmin() {
                 value={
                   descuentoEditando.porcentaje_descuento
                 }
-                onChange={(e) =>
-                  setDescuentoEditando({
-
-                    ...descuentoEditando,
-
-                    porcentaje_descuento:
-                      e.target.value
-
-                  })
-                }
-                placeholder="Ej: 67"
+                readOnly
+                style={{ background: "#eef1f6", cursor: "not-allowed" }}
+                title="Se calcula automáticamente a partir de los precios"
+                placeholder="Automático"
               />
 
 
@@ -814,7 +825,7 @@ function DescuentosAdmin() {
               {/* AHORRO */}
 
               <label>
-                Ahorro
+                Ahorro (automático)
               </label>
 
               <input
@@ -823,17 +834,10 @@ function DescuentosAdmin() {
                 value={
                   descuentoEditando.ahorro
                 }
-                onChange={(e) =>
-                  setDescuentoEditando({
-
-                    ...descuentoEditando,
-
-                    ahorro:
-                      e.target.value
-
-                  })
-                }
-                placeholder="Ej: 40.00"
+                readOnly
+                style={{ background: "#eef1f6", cursor: "not-allowed" }}
+                title="Se calcula automáticamente a partir de los precios"
+                placeholder="Automático"
               />
 
 

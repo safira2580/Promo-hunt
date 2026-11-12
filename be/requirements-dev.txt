@@ -1,0 +1,8 @@
+-r requirements.txt
+# Desarrollo y calidad
+pytest~=9.2.0
+pytest-cov~=7.1.0
+httpx~=0.28.1
+ruff~=0.17.4
+pip-audit~=2.10.1
+locust~=2.47.0

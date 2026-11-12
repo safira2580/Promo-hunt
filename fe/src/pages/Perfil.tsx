@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa6";
 
 import "./Perfil.css";
-import { API_URL } from "../config";
+import { API_URL, authFetch, setToken } from "../api";
 
 interface Usuario {
   id_usuario: number;
@@ -77,11 +77,10 @@ function Perfil() {
 
       try {
 
-        const respuesta = await fetch(
-          `${API_URL}/api/usuario/perfil`,
+        const respuesta = await authFetch(
+          `${API_URL}/api/v1/usuario/perfil`,
           {
             method: "GET",
-            credentials: "include",
             headers: {
               "Content-Type": "application/json"
             }
@@ -239,16 +238,14 @@ function Perfil() {
 
     try {
 
-      const respuesta = await fetch(
-        `${API_URL}/api/usuario/editar`,
+      const respuesta = await authFetch(
+        `${API_URL}/api/v1/usuario/editar`,
         {
           method: "PUT",
 
           headers: {
             "Content-Type": "application/json"
           },
-
-          credentials: "include",
 
           body: JSON.stringify({
 
@@ -343,13 +340,8 @@ function Perfil() {
 
     try {
 
-      await fetch(
-        `${API_URL}/api/logout`,
-        {
-          method: "POST",
-          credentials: "include"
-        }
-      );
+      // JWT sin estado: cerrar sesión = descartar el token en el cliente
+      setToken(null);
 
       navigate("/");
       window.location.reload();

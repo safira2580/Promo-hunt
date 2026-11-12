@@ -14,7 +14,7 @@ import mirage from "../assets/img/asc mirage.jpg";
 import fc26 from "../assets/img/fc26.jpg";
 import spider2 from "../assets/img/spider2.jpg";
 import forza6 from "../assets/img/Forza6.jpg";
-import { API_URL } from "../config";
+import { API_V1 } from "../api";
 
 interface Juego {
   id_juego: number;
@@ -57,7 +57,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
    * OBTENER JUEGOS DESDE FLASK
    */
   useEffect(() => {
-    fetch(`${API_URL}/api/juegos`)
+    fetch(`${API_V1}/juegos`)
       .then((respuesta) => {
         if (!respuesta.ok) {
           throw new Error("No se pudieron obtener los juegos");
@@ -65,7 +65,6 @@ function Products({ categoriaActiva = null }: ProductsProps) {
         return respuesta.json();
       })
       .then((datos: Juego[]) => {
-        console.log("Juegos recibidos:", datos);
         setJuegos(datos);
         setCargando(false);
       })

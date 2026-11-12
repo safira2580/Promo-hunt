@@ -1,8 +1,6 @@
-# Backend — PromoHunt (PostgreSQL)
+# Backend — PromoHunt (FastAPI + PostgreSQL)
 
-Hay dos backends; ver el README de la raíz para el estado de cada uno.
-
-## Setup común
+## Setup
 
 ```bash
 # Desde la raíz del repo
@@ -12,25 +10,37 @@ cd be
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+# o: uv sync
+
 cp .env.example .env
-```
+# Editar SECRET_KEY si quieres
 
-## Flask (activo, lo usa el frontend)
-
-```bash
-python app.py
-# -> http://localhost:5000
-```
-
-Rutas bajo `/api/...` (juegos, categorías, login, usuario, admin/*). Usa sesión por cookie.
-
-## FastAPI (en migración)
-
-```bash
 uvicorn app.main:app --reload
-# -> http://localhost:8000
-# -> Swagger: http://localhost:8000/docs
+# → http://localhost:8000
+# → Swagger: http://localhost:8000/docs
 ```
+
+## Estructura
+
+```
+be/
+├── app/
+│   ├── main.py
+│   ├── config.py
+│   ├── database.py
+│   ├── dependencies.py
+│   ├── models/
+│   ├── schemas/
+│   ├── routers/
+│   ├── services/
+│   ├── utils/
+│   └── tests/
+├── alembic/
+├── pyproject.toml
+└── requirements.txt
+```
+
+## Endpoints principales
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
@@ -41,11 +51,18 @@ uvicorn app.main:app --reload
 | GET | /api/v1/juegos/{id} | No | Detalle + descuentos |
 | GET | /api/v1/categorias | No | Categorías |
 
-Pendiente de migrar: perfil, panel admin (juegos, descuentos, desarrolladores, géneros, categorías, reseñas).
-
-## Tests (FastAPI)
+## Tests
 
 ```bash
 docker compose up -d db-test
 pytest -v
 ```
+
+## Cambios vs Flask anterior
+
+- Flask → **FastAPI**
+- Sesiones cookie → **JWT**
+- Contraseñas en texto plano → **bcrypt**
+- SQL suelto en rutas → **services + models/schemas**
+- Sin tests → **pytest**
+- Merge conflict en database.py → **eliminado**

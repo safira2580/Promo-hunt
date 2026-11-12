@@ -1,23 +1,12 @@
-# --- Backend Flask actual (be/app.py) ---
-flask
-flask-cors
-psycopg2-binary
-python-dotenv
-gunicorn
-
-# --- Backend FastAPI en migracion (be/app/) ---
-fastapi
-uvicorn[standard]
-sqlalchemy>=2.0
-alembic
-pydantic-settings
-email-validator
-python-multipart
-pyjwt
-python-jose[cryptography]
-passlib[bcrypt]
-bcrypt==4.0.1
-
-# --- Tests ---
-pytest
-httpx
+# Dependencias de EJECUCIÓN (versiones probadas; ~= permite solo parches compatibles)
+fastapi~=0.162.0
+uvicorn[standard]~=0.54.0
+sqlalchemy~=2.1.6
+alembic~=1.20.1
+psycopg2-binary~=2.9.13
+pydantic-settings~=2.16.2
+email-validator~=2.3.0
+python-multipart~=0.0.33
+pyjwt~=2.15.1
+passlib[bcrypt]~=1.7.4
+bcrypt==4.0.1   # passlib 1.7.4 es incompatible con bcrypt>=4.1

@@ -12,8 +12,12 @@ from app.config import get_settings
 settings = get_settings()
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    settings.database_url_sync,
     pool_pre_ping=True,
+    pool_size=settings.DB_POOL_SIZE,
+    max_overflow=settings.DB_MAX_OVERFLOW,
+    pool_recycle=1800,
+    connect_args={"client_encoding": "utf8"},
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

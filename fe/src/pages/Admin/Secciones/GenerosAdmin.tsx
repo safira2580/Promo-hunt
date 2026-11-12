@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../../../config";
+import { API_URL, authFetch } from "../../../api";
 
 function GenerosAdmin() {
 
@@ -19,10 +19,9 @@ function GenerosAdmin() {
 
     try {
 
-      const respuesta = await fetch(
-        `${API_URL}/api/admin/generos`,
+      const respuesta = await authFetch(
+        `${API_URL}/api/v1/admin/generos`,
         {
-          credentials: "include"
         }
       );
 
@@ -77,17 +76,15 @@ function GenerosAdmin() {
 
     try {
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
         editar
-          ? `${API_URL}/api/admin/generos/${generoEditando.id_genero}`
-          : `${API_URL}/api/admin/generos`,
+          ? `${API_URL}/api/v1/admin/generos/${generoEditando.id_genero}`
+          : `${API_URL}/api/v1/admin/generos`,
 
         {
 
           method: editar ? "PUT" : "POST",
-
-          credentials: "include",
 
           headers: {
             "Content-Type": "application/json"
@@ -152,15 +149,13 @@ function GenerosAdmin() {
 
     try {
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
-        `${API_URL}/api/admin/generos/${id}`,
+        `${API_URL}/api/v1/admin/generos/${id}`,
 
         {
 
           method: "DELETE",
-
-          credentials: "include"
 
         }
 

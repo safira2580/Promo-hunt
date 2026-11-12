@@ -10,10 +10,11 @@ router = APIRouter(prefix="/api/v1", tags=["games"])
 @router.get("/juegos")
 def obtener_juegos(
     categoria: int | None = Query(None, description="Filtrar por id_categoria"),
+    buscar: str | None = Query(None, max_length=100, description="Buscar por nombre"),
     db: Session = Depends(get_db),
 ):
     """Lista juegos con descuentos activos (compatible con el frontend actual)."""
-    return game_service.list_juegos(db, categoria)
+    return game_service.list_juegos(db, categoria, buscar)
 
 
 @router.get("/categorias")

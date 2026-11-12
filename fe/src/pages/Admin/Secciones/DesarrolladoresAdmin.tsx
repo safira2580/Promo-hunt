@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../../../config";
+import { API_URL, authFetch } from "../../../api";
 
 function DesarrolladoresAdmin() {
 
@@ -18,10 +18,9 @@ function DesarrolladoresAdmin() {
 
     try {
 
-      const respuesta = await fetch(
-        `${API_URL}/api/admin/desarrolladores`,
+      const respuesta = await authFetch(
+        `${API_URL}/api/v1/admin/desarrolladores`,
         {
-          credentials: "include"
         }
       );
 
@@ -155,13 +154,13 @@ function DesarrolladoresAdmin() {
 
     try {
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
         editar
 
-          ? `${API_URL}/api/admin/desarrolladores/${desarrolladorEditando.id_desarrollador}`
+          ? `${API_URL}/api/v1/admin/desarrolladores/${desarrolladorEditando.id_desarrollador}`
 
-          : `${API_URL}/api/admin/desarrolladores`,
+          : `${API_URL}/api/v1/admin/desarrolladores`,
 
         {
 
@@ -169,8 +168,6 @@ function DesarrolladoresAdmin() {
             editar
               ? "PUT"
               : "POST",
-
-          credentials: "include",
 
           headers: {
             "Content-Type": "application/json"
@@ -272,15 +269,13 @@ function DesarrolladoresAdmin() {
 
     try {
 
-      const respuesta = await fetch(
+      const respuesta = await authFetch(
 
-        `${API_URL}/api/admin/desarrolladores/${id}`,
+        `${API_URL}/api/v1/admin/desarrolladores/${id}`,
 
         {
 
           method: "DELETE",
-
-          credentials: "include"
 
         }
 

@@ -53,8 +53,8 @@ CREATE TABLE IF NOT EXISTS usuario (
   foto_perfil VARCHAR(255),
   fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   rol VARCHAR(30) NOT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
-  is_verified BOOLEAN DEFAULT FALSE
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  is_verified BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS juego (
@@ -195,20 +195,20 @@ INSERT INTO plataforma (id_plataforma, nombre, url_tienda, logo, descripcion, pa
 (8, 'Microsoft Store', 'https://www.microsoft.com/store', 'microsoft.png', 'Tienda Microsoft', 'Estados Unidos', '2012-10-26');
 
 INSERT INTO usuario (id_usuario, nombre, correo, contrasena, foto_perfil, fecha_registro, rol) VALUES
-(1, 'Juan Perez', 'juan@gmail.com', '123456', 'juan.jpg', '2026-06-16 07:58:52', 'admin'),
-(2, 'Maria Lopez', 'maria@gmail.com', '123456', 'maria.jpg', '2026-06-16 07:58:52', 'user'),
-(3, 'Carlos Ruiz', 'carlos@gmail.com', '123456', 'carlos.jpg', '2026-06-16 07:58:52', 'user'),
-(4, 'Anas Torres', 'ana@gmail.com', '1234567', 'ana.jpg', '2026-06-16 07:58:52', 'user'),
-(5, 'Luis Gomez', 'luis@gmail.com', '123456', 'luis.jpg', '2026-06-16 07:58:52', 'user'),
-(6, 'Sofia Diaz', 'sofia@gmail.com', '123456', 'sofia.jpg', '2026-06-16 07:58:52', 'user'),
-(7, 'Pedro Silva', 'pedro@gmail.com', '123456', 'pedro.jpg', '2026-06-16 07:58:52', 'user'),
-(8, 'Laura Castro', 'laura@gmail.com', '123456', 'laura.jpg', '2026-06-16 07:58:52', 'user'),
-(9, 'Sebastian Aguilar', 'juanysaurio@gmail.com', 'sapohpta', NULL, '2026-06-16 11:42:25', 'user'),
-(10, 'earatstyrh', 'sadsad@asdasda', '1234567', NULL, '2026-06-16 11:42:42', 'user'),
-(11, 'oscar', 'puto@gmail.com', 'puto', NULL, '2026-06-16 12:20:36', 'user'),
-(12, 'casallas', 'puto2@gmail.com', 'puto3', NULL, '2026-06-16 12:23:16', 'user'),
-(13, 'hyjhjhfljkf kgfikl gkl', 'hgfkhgf@xn--hlhylh-0wa', '1234', NULL, '2026-07-27 20:17:39', 'user'),
-(14, 'sebs', 'juanysaurio2@gmail.com', '1234', NULL, '2026-09-07 01:22:33', 'user');
+(1, 'Juan Perez', 'juan@gmail.com', '$2b$12$sWjTF1.YcrFwm9tuGESFoOPKf.4WpBI8iiwQoGTIFoxnd17rlLvw.', 'juan.jpg', '2026-06-16 07:58:52', 'admin'),
+(2, 'Maria Lopez', 'maria@gmail.com', '$2b$12$sWjTF1.YcrFwm9tuGESFoOPKf.4WpBI8iiwQoGTIFoxnd17rlLvw.', 'maria.jpg', '2026-06-16 07:58:52', 'user'),
+(3, 'Carlos Ruiz', 'carlos@gmail.com', '$2b$12$sWjTF1.YcrFwm9tuGESFoOPKf.4WpBI8iiwQoGTIFoxnd17rlLvw.', 'carlos.jpg', '2026-06-16 07:58:52', 'user'),
+(4, 'Anas Torres', 'ana@gmail.com', '$2b$12$S/gS3eqMHTtsEfUjFlCLdOi9AemUUdUoOGno5uKxJZCclsUd/ZOki', 'ana.jpg', '2026-06-16 07:58:52', 'user'),
+(5, 'Luis Gomez', 'luis@gmail.com', '$2b$12$sWjTF1.YcrFwm9tuGESFoOPKf.4WpBI8iiwQoGTIFoxnd17rlLvw.', 'luis.jpg', '2026-06-16 07:58:52', 'user'),
+(6, 'Sofia Diaz', 'sofia@gmail.com', '$2b$12$sWjTF1.YcrFwm9tuGESFoOPKf.4WpBI8iiwQoGTIFoxnd17rlLvw.', 'sofia.jpg', '2026-06-16 07:58:52', 'user'),
+(7, 'Pedro Silva', 'pedro@gmail.com', '$2b$12$sWjTF1.YcrFwm9tuGESFoOPKf.4WpBI8iiwQoGTIFoxnd17rlLvw.', 'pedro.jpg', '2026-06-16 07:58:52', 'user'),
+(8, 'Laura Castro', 'laura@gmail.com', '$2b$12$sWjTF1.YcrFwm9tuGESFoOPKf.4WpBI8iiwQoGTIFoxnd17rlLvw.', 'laura.jpg', '2026-06-16 07:58:52', 'user'),
+(9, 'Sebastian Aguilar', 'juanysaurio@gmail.com', '$2b$12$1wjDp4C49tK/8/PeAo9Z3.I6xxsPylOw/3SWkrBishvSlKSwIuXrC', NULL, '2026-06-16 11:42:25', 'user'),
+(10, 'earatstyrh', 'sadsad@asdasda', '$2b$12$S/gS3eqMHTtsEfUjFlCLdOi9AemUUdUoOGno5uKxJZCclsUd/ZOki', NULL, '2026-06-16 11:42:42', 'user'),
+(11, 'oscar', 'puto@gmail.com', '$2b$12$GSEo01M.7nRPr8dgIlz7Qu.BM.j43QVr6GkCwT6cAM5nY5CyopnfC', NULL, '2026-06-16 12:20:36', 'user'),
+(12, 'casallas', 'puto2@gmail.com', '$2b$12$n19Hu/Yg1tIke7V0U6uNNewJswJJNlp9DeHxLInUE1kVqk.rNdkuq', NULL, '2026-06-16 12:23:16', 'user'),
+(13, 'hyjhjhfljkf kgfikl gkl', 'hgfkhgf@xn--hlhylh-0wa', '$2b$12$BMafYKyGVuuXAHuJinf2AeHcO1cBaakC6vknleKhMn4xWS.PlPFm6', NULL, '2026-07-27 20:17:39', 'user'),
+(14, 'sebs', 'juanysaurio2@gmail.com', '$2b$12$BMafYKyGVuuXAHuJinf2AeHcO1cBaakC6vknleKhMn4xWS.PlPFm6', NULL, '2026-09-07 01:22:33', 'user');
 
 INSERT INTO juego (id_juego, nombre, descripcion, fecha_lanzamiento, imagen, portada, trailer, edad_minima, idiomas_disponibles, requisitos_minimos, requisitos_recomendados, modo_juego, estado, id_categoria, id_genero, id_desarrollador, id_noticia) VALUES
 (1, 'GTA V', 'Mundo abierto criminal', '2026-09-01', 'gta5.jpg', 'gta5_portada.jpg', 'gta5.mp4', 19, 'ES,EN', '8GB RAM', '16GB RAM', 'Online', 'Disponible', 3, 2, 1, 1),
@@ -307,3 +307,13 @@ SELECT setval(pg_get_serial_sequence('historial_precios', 'id_historial'), COALE
 SELECT setval(pg_get_serial_sequence('resena', 'id_resena'), COALESCE((SELECT MAX(id_resena) FROM resena), 1));
 SELECT setval(pg_get_serial_sequence('venta', 'id_venta'), COALESCE((SELECT MAX(id_venta) FROM venta), 1));
 SELECT setval(pg_get_serial_sequence('wishlist', 'id_wishlist'), COALESCE((SELECT MAX(id_wishlist) FROM wishlist), 1));
+
+-- ============================================================
+-- Índices para las consultas de lectura más frecuentes
+-- (listado de ofertas activas, filtro por categoría, detalle)
+-- ============================================================
+CREATE UNIQUE INDEX IF NOT EXISTS ix_usuario_correo ON usuario (correo);
+CREATE INDEX IF NOT EXISTS ix_juego_categoria ON juego (id_categoria);
+CREATE INDEX IF NOT EXISTS ix_descuento_juego ON descuento (id_juego);
+CREATE INDEX IF NOT EXISTS ix_descuento_plataforma ON descuento (id_plataforma);
+CREATE INDEX IF NOT EXISTS ix_descuento_activo_pct ON descuento (porcentaje_descuento DESC) WHERE estado = 'Activo';
