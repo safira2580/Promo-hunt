@@ -497,7 +497,7 @@ input {
             rgba(0, 0, 0, 0.8),
             rgba(0, 0, 0, 0.2)
         ),
-        url('./assets/img/banner.webp');
+        url('./assets/img/banner.png');
 
     background-size: cover;
     background-position: center;
@@ -1748,7 +1748,7 @@ body {
 
 .banner {
   background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,58,138,0.7)),
-              url('./assets/img/banner.webp') center/cover no-repeat !important;
+              url('./assets/img/banner.png') center/cover no-repeat !important;
   border-radius: 0 0 2.8rem 2.8rem !important;
   min-height: 42rem !important;
 }
@@ -1941,4 +1941,36 @@ p, span, li {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+}
+
+/* Categorías más pequeñas */
+.container-categories {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 1.2rem !important;
+}
+
+/* flex-grow: las tarjetas de la última fila se estiran y no queda espacio vacío */
+.container-categories .card-category {
+  flex: 1 1 14rem !important;
+}
+
+.card-category {
+  min-height: 8rem !important;
+  padding: 1rem !important;
+  gap: 0.3rem !important;
+  border-radius: 1.2rem !important;
+}
+
+.card-category p {
+  font-size: 1.4rem !important;
+}
+
+.card-category span {
+  font-size: 1rem !important;
+  margin-top: 0.2rem !important;
+}
+
+.top-categories {
+  margin-bottom: 3rem !important;
 }
