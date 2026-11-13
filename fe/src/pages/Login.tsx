@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa6";
 
 import "./Login.css";
-import { API_V1, mensajeDeError, setToken } from "../api";
+import { API_URL } from "../config";
 
 function Login() {
   const navigate = useNavigate();
@@ -21,12 +21,13 @@ function Login() {
 
     try {
      const respuesta = await fetch(
-  `${API_V1}/auth/login`,
+  `${API_URL}/api/login`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({
             correo: correo,
             contrasena: contrasena,
@@ -38,13 +39,13 @@ function Login() {
 
       if (!respuesta.ok) {
         setMensaje(
-          mensajeDeError(datos, "Correo o contraseña incorrectos")
+          datos.mensaje || "Correo o contraseña incorrectos"
         );
         setCargando(false);
         return;
       }
 
-      setToken(datos.access_token);
+      console.log("Usuario conectado:", datos.usuario);
 
       navigate("/");
     } catch (error) {
