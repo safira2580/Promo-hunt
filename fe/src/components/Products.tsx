@@ -14,7 +14,10 @@ import mirage from "../assets/img/asc mirage.jpg";
 import fc26 from "../assets/img/fc26.jpg";
 import spider2 from "../assets/img/spider2.jpg";
 import forza6 from "../assets/img/Forza6.jpg";
-import { API_V1 } from "../api";
+import { API_URL } from "../config";
+import defaultImg from "../assets/img/default.jpg";
+import { useFavoritos } from "../useFavoritos";
+import "./Extras.css";
 
 interface Juego {
   id_juego: number;
@@ -38,6 +41,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
   const [error, setError] = useState<string | null>(null);
 
   const [filtro, setFiltro] = useState("destacados");
+  const { ids: favoritos, alternar } = useFavoritos();
 
   /*
    * IMÁGENES
@@ -57,7 +61,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
    * OBTENER JUEGOS DESDE FLASK
    */
   useEffect(() => {
-    fetch(`${API_V1}/juegos`)
+    fetch(`${API_URL}/api/juegos`)
       .then((respuesta) => {
         if (!respuesta.ok) {
           throw new Error("No se pudieron obtener los juegos");
@@ -65,6 +69,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
         return respuesta.json();
       })
       .then((datos: Juego[]) => {
+        console.log("Juegos recibidos:", datos);
         setJuegos(datos);
         setCargando(false);
       })
@@ -144,7 +149,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
         {!cargando &&
           !error &&
           juegosFiltrados.map((juego) => {
-            const imagen = imagenes[juego.nombre];
+            const imagen = imagenes[juego.nombre] || defaultImg;
 
             return (
               <div className="card-product" key={juego.id_juego}>
@@ -163,7 +168,14 @@ function Products({ categoriaActiva = null }: ProductsProps) {
                     <span>
                       <FaEye />
                     </span>
-                    <span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className={favoritos.includes(juego.id_juego) ? "fav-activo" : ""}
+                      aria-label={favoritos.includes(juego.id_juego) ? "Quitar de favoritos" : "Agregar a favoritos"}
+                      onClick={() => alternar(juego.id_juego)}
+                      onKeyDown={(e) => e.key === "Enter" && alternar(juego.id_juego)}
+                    >
                       <FaHeart />
                     </span>
                     <span>

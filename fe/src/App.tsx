@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import RutaProtegida from "./components/RutaProtegida";
 
 import "./App.css";
 
@@ -15,8 +13,12 @@ import BottomNav from "./components/BottomNav";
 import Login from "./pages/Login";
 import Perfil from "./pages/Perfil";
 import JuegoDetalle from "./pages/JuegoDetalle";
-const Admin = lazy(() => import("./pages/Admin/Admin"));
+import Admin from "./pages/Admin/Admin";
 import Registro from "./pages/Registro";
+import Favoritos from "./pages/Favoritos";
+import Resenas from "./pages/Resenas";
+import Reembolsos from "./pages/Reembolsos";
+import TarjetasRegalo from "./pages/TarjetasRegalo";
 
 function Inicio() {
   const [categoriaActiva, setCategoriaActiva] = useState<number | null>(null);
@@ -51,12 +53,10 @@ function App() {
         <Route
           path="/Perfil"
           element={
-            <RutaProtegida>
-              <div className="app">
-                <Perfil />
-                <BottomNav />
-              </div>
-            </RutaProtegida>
+            <div className="app">
+              <Perfil />
+              <BottomNav />
+            </div>
           }
         />
         <Route
@@ -69,15 +69,42 @@ function App() {
           }
         />
         <Route
-          path="/admin"
+          path="/favoritos"
           element={
-            <RutaProtegida rol="admin">
-              <Suspense fallback={<p style={{ padding: "2rem" }}>Cargando panel…</p>}>
-                <Admin />
-              </Suspense>
-            </RutaProtegida>
+            <div className="app">
+              <Favoritos />
+              <BottomNav />
+            </div>
           }
         />
+        <Route
+          path="/resenas"
+          element={
+            <div className="app">
+              <Resenas />
+              <BottomNav />
+            </div>
+          }
+        />
+        <Route
+          path="/reembolsos"
+          element={
+            <div className="app">
+              <Reembolsos />
+              <BottomNav />
+            </div>
+          }
+        />
+        <Route
+          path="/tarjetas-regalo"
+          element={
+            <div className="app">
+              <TarjetasRegalo />
+              <BottomNav />
+            </div>
+          }
+        />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/registro" element={<Registro />} />
       </Routes>
     </BrowserRouter>
