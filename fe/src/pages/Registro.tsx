@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa6";
 
 import "./Login.css";
-import { API_V1, mensajeDeError } from "../api";
+import { API_URL } from "../config";
 
 function Registro() {
 
@@ -30,7 +30,7 @@ function Registro() {
     try {
 
       const respuesta = await fetch(
-        `${API_V1}/auth/register`,
+        `${API_URL}/api/registrate`,
         {
           method: "POST",
 
@@ -53,7 +53,7 @@ function Registro() {
       if (!respuesta.ok) {
 
         setMensaje(
-          mensajeDeError(datos, "No se pudo crear la cuenta")
+          datos.mensaje || "No se pudo crear la cuenta"
         );
 
         setCargando(false);
