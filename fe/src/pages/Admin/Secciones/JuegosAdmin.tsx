@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_URL, authFetch } from "../../../api";
+import { API_URL } from "../../../config";
 
 function JuegosAdmin() {
 
@@ -18,9 +18,10 @@ function JuegosAdmin() {
 
     try {
 
-      const respuesta = await authFetch(
-        `${API_URL}/api/v1/admin/juegos`,
+      const respuesta = await fetch(
+        `${API_URL}/api/admin/juegos`,
         {
+          credentials: "include"
         }
       );
 
@@ -64,12 +65,13 @@ function JuegosAdmin() {
 
     try {
 
-      const respuesta = await authFetch(
+      const respuesta = await fetch(
         editar
-          ? `${API_URL}/api/v1/admin/juegos/${juegoEditando.id_juego}`
-          : `${API_URL}/api/v1/admin/juegos`,
+          ? `${API_URL}/api/admin/juegos/${juegoEditando.id_juego}`
+          : `${API_URL}/api/admin/juegos`,
         {
           method: editar ? "PUT" : "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json"
           },
@@ -110,10 +112,11 @@ function JuegosAdmin() {
 
     try {
 
-      const respuesta = await authFetch(
-        `${API_URL}/api/v1/admin/juegos/${id}`,
+      const respuesta = await fetch(
+        `${API_URL}/api/admin/juegos/${id}`,
         {
           method: "DELETE",
+          credentials: "include"
         }
       );
 

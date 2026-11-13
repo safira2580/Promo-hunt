@@ -559,14 +559,3 @@
   }
 
 }
-/* Títulos de sección: heredaban el color claro del tema oscuro y quedaban ilegibles
-   sobre el fondo claro del panel (contraste insuficiente). */
-.admin-section-header h2 {
-  color: #18203a;
-  margin: 0 0 4px;
-}
-
-.admin-section-header p {
-  color: #70788e;
-  margin: 0;
-}

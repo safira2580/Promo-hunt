@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_URL, authFetch } from "../../../api";
+import { API_URL } from "../../../config";
 
 function ResenasAdmin() {
 
@@ -19,9 +19,10 @@ function ResenasAdmin() {
 
     try {
 
-      const respuesta = await authFetch(
-        `${API_URL}/api/v1/admin/resenas`,
+      const respuesta = await fetch(
+        `${API_URL}/api/admin/resenas`,
         {
+          credentials: "include"
         }
       );
 
@@ -84,15 +85,17 @@ function ResenasAdmin() {
 
     try {
 
-      const respuesta = await authFetch(
+      const respuesta = await fetch(
 
         editar
-          ? `${API_URL}/api/v1/admin/resenas/${resenaEditando.id_resena}`
-          : `${API_URL}/api/v1/admin/resenas`,
+          ? `${API_URL}/api/admin/resenas/${resenaEditando.id_resena}`
+          : `${API_URL}/api/admin/resenas`,
 
         {
 
           method: editar ? "PUT" : "POST",
+
+          credentials: "include",
 
           headers: {
             "Content-Type": "application/json"
@@ -157,13 +160,15 @@ function ResenasAdmin() {
 
     try {
 
-      const respuesta = await authFetch(
+      const respuesta = await fetch(
 
-        `${API_URL}/api/v1/admin/resenas/${id}`,
+        `${API_URL}/api/admin/resenas/${id}`,
 
         {
 
           method: "DELETE",
+
+          credentials: "include"
 
         }
 
