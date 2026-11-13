@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa6";
 
 import "./Login.css";
@@ -7,6 +7,7 @@ import { API_URL } from "../config";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
@@ -47,7 +48,7 @@ function Login() {
 
       console.log("Usuario conectado:", datos.usuario);
 
-      navigate("/");
+      navigate((location.state as { desde?: string } | null)?.desde ?? "/");
     } catch (error) {
       console.error("Error iniciando sesión:", error);
       setMensaje("No se pudo conectar con el servidor");

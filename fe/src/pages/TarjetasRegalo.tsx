@@ -1,22 +1,30 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaGift, FaArrowLeft, FaCircleCheck } from "react-icons/fa6";
+import { FaGift, FaArrowLeft } from "react-icons/fa6";
+import { API_URL } from "../config";
 import "../components/Extras.css";
 
 const CORREO = "promohunt@gmail.com";
 
-// estado: "pedir" = se puede pedir por correo, "no-disponible" = aún no se vende,
-// "adquirida" = el usuario ya la tiene.
-type Estado = "pedir" | "no-disponible" | "adquirida";
-
-const tarjetas: { valor: number; nombre: string; detalle: string; especial?: boolean; estado: Estado }[] = [
-  { valor: 10, nombre: "Tarjeta Básica", detalle: "Ideal para un juego indie o un DLC.", estado: "no-disponible" },
-  { valor: 25, nombre: "Tarjeta Plata", detalle: "Alcanza para un juego en oferta.", estado: "no-disponible" },
-  { valor: 50, nombre: "Tarjeta Oro", detalle: "Bono especial con regalo adicional.", especial: true, estado: "adquirida" },
-  { valor: 100, nombre: "Tarjeta Platino", detalle: "Bono especial con regalo adicional.", especial: true, estado: "pedir" },
+const tarjetas: { valor: number; nombre: string; detalle: string; especial?: boolean }[] = [
+  { valor: 10, nombre: "Tarjeta Básica", detalle: "Ideal para un juego indie o un DLC." },
+  { valor: 25, nombre: "Tarjeta Plata", detalle: "Alcanza para un juego en oferta." },
+  { valor: 50, nombre: "Tarjeta Oro", detalle: "Bono especial con regalo adicional.", especial: true },
+  { valor: 100, nombre: "Tarjeta Platino", detalle: "Bono especial con regalo adicional.", especial: true },
 ];
 
 function TarjetasRegalo() {
   const navigate = useNavigate();
+  // null = comprobando, true = con sesión, false = sin sesión
+  const [sesion, setSesion] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/usuario/me`, { credentials: "include" })
+      .then((r) => setSesion(r.ok))
+      .catch(() => setSesion(false));
+  }, []);
+
+  const irALogin = () => navigate("/login", { state: { desde: "/tarjetas-regalo" } });
 
   const pedir = (nombre: string, valor: number) => {
     const asunto = encodeURIComponent(`Pedido ${nombre} $${valor} USD`);
@@ -24,6 +32,14 @@ function TarjetasRegalo() {
       `Hola, quiero pedir una ${nombre} de $${valor} USD.\nCorreo del destinatario:`,
     );
     window.location.href = `mailto:${CORREO}?subject=${asunto}&body=${cuerpo}`;
+  };
+
+  const alPresionar = (nombre: string, valor: number) => {
+    if (sesion === false) {
+      irALogin();
+    } else if (sesion === true) {
+      pedir(nombre, valor);
+    }
   };
 
   return (
@@ -36,26 +52,27 @@ function TarjetasRegalo() {
 
       <div className="grid-tarjetas">
         {tarjetas.map((t) => (
-          <div className={`tarjeta-regalo${t.especial ? " tarjeta-especial" : ""}`} key={t.valor}>
+          <div
+            className={`tarjeta-regalo${t.especial ? " tarjeta-especial" : ""}`}
+            key={t.valor}
+            onClick={() => sesion === false && irALogin()}
+            style={sesion === false ? { cursor: "pointer" } : undefined}
+          >
             <FaGift />
             <h3>{t.nombre}</h3>
             <p className="tarjeta-valor">${t.valor} USD</p>
             <p>{t.detalle}</p>
-            {t.estado === "pedir" && (
-              <button className="boton-principal" type="button" onClick={() => pedir(t.nombre, t.valor)}>
-                Pedir tarjeta
-              </button>
-            )}
-            {t.estado === "no-disponible" && (
-              <button className="boton-principal boton-deshabilitado" type="button" disabled>
-                No disponible aún
-              </button>
-            )}
-            {t.estado === "adquirida" && (
-              <span className="etiqueta-tiene">
-                <FaCircleCheck /> Ya la tienes
-              </span>
-            )}
+            <button
+              className={`boton-principal${sesion === false ? " boton-deshabilitado" : ""}`}
+              type="button"
+              disabled={sesion === null}
+              onClick={(e) => {
+                e.stopPropagation();
+                alPresionar(t.nombre, t.valor);
+              }}
+            >
+              {sesion === false ? "Inicia sesión para pedir" : "Pedir tarjeta"}
+            </button>
           </div>
         ))}
       </div>
