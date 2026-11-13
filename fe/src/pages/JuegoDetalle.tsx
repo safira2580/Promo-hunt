@@ -15,7 +15,7 @@ import forza6 from "../assets/img/Forza6.jpg";
 
 
 import "./JuegoDetalle.css";
-import { API_V1 } from "../api";
+import { API_URL } from "../config";
 
 
 interface Juego {
@@ -91,7 +91,7 @@ function JuegoDetalle() {
       try {
 
         const respuesta = await fetch(
-          `${API_V1}/juegos/${id}`
+          `${API_URL}/api/juegos/${id}`
         );
 
 
