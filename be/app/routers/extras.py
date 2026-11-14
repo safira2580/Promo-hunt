@@ -15,18 +15,21 @@ router = APIRouter(prefix="/api/v1", tags=["extras"])
 # ---------------------------------------------------------------- juegos-lista
 @router.get("/juegos-lista")
 def juegos_lista(db: Session = Depends(get_db)):
-    rows = db.execute(
-        text("SELECT id_juego, nombre, imagen FROM juego ORDER BY nombre ASC")
-    ).mappings().all()
+    rows = (
+        db.execute(text("SELECT id_juego, nombre, imagen FROM juego ORDER BY nombre ASC"))
+        .mappings()
+        .all()
+    )
     return [dict(r) for r in rows]
 
 
 # --------------------------------------------------------------------- reseñas
 @router.get("/resenas")
 def resenas_publicas(db: Session = Depends(get_db)):
-    rows = db.execute(
-        text(
-            """
+    rows = (
+        db.execute(
+            text(
+                """
             SELECT r.id_resena, u.nombre AS usuario, r.id_juego, j.nombre AS juego,
                    j.imagen, r.titulo, r.comentario, r.calificacion, r.fecha_publicacion
             FROM resena r
@@ -34,19 +37,21 @@ def resenas_publicas(db: Session = Depends(get_db)):
             INNER JOIN juego j ON j.id_juego = r.id_juego
             ORDER BY r.fecha_publicacion DESC NULLS LAST, r.id_resena DESC
             """
+            )
         )
-    ).mappings().all()
+        .mappings()
+        .all()
+    )
     return [dict(r) for r in rows]
 
 
 # ------------------------------------------------------------------- favoritos
 @router.get("/favoritos")
-def listar_favoritos(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-):
-    rows = db.execute(
-        text(
-            """
+def listar_favoritos(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    rows = (
+        db.execute(
+            text(
+                """
             SELECT j.id_juego, j.nombre, j.imagen,
                    d.porcentaje_descuento, d.precio_descuento, d.precio_original
             FROM favorito f
@@ -61,16 +66,17 @@ def listar_favoritos(
             WHERE f.id_usuario = :uid
             ORDER BY f.id_favorito DESC
             """
-        ),
-        {"uid": current_user.id_usuario},
-    ).mappings().all()
+            ),
+            {"uid": current_user.id_usuario},
+        )
+        .mappings()
+        .all()
+    )
     return [dict(r) for r in rows]
 
 
 def _existe_juego(db: Session, id_juego: int) -> None:
-    ok = db.execute(
-        text("SELECT 1 FROM juego WHERE id_juego = :id"), {"id": id_juego}
-    ).first()
+    ok = db.execute(text("SELECT 1 FROM juego WHERE id_juego = :id"), {"id": id_juego}).first()
     if not ok:
         raise HTTPException(404, "El juego no existe")
 
@@ -119,18 +125,22 @@ class ReembolsoIn(BaseModel):
 def listar_reembolsos(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    rows = db.execute(
-        text(
-            """
+    rows = (
+        db.execute(
+            text(
+                """
             SELECT r.id_reembolso, j.nombre AS juego, r.motivo, r.estado, r.fecha_solicitud
             FROM reembolso r
             INNER JOIN juego j ON j.id_juego = r.id_juego
             WHERE r.id_usuario = :uid
             ORDER BY r.id_reembolso DESC
             """
-        ),
-        {"uid": current_user.id_usuario},
-    ).mappings().all()
+            ),
+            {"uid": current_user.id_usuario},
+        )
+        .mappings()
+        .all()
+    )
     return [dict(r) for r in rows]
 
 
@@ -147,9 +157,7 @@ def solicitar_reembolso(
     if not juego:
         raise HTTPException(404, "Ese juego no existe")
     db.execute(
-        text(
-            "INSERT INTO reembolso (id_usuario, id_juego, motivo) VALUES (:u, :j, :m)"
-        ),
+        text("INSERT INTO reembolso (id_usuario, id_juego, motivo) VALUES (:u, :j, :m)"),
         {"u": current_user.id_usuario, "j": juego[0], "m": datos.motivo},
     )
     db.commit()
