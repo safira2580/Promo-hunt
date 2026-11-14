@@ -21,6 +21,7 @@ interface Juego {
   plataforma: string;
   id_categoria?: number;
   categoria?: string;
+  imagen?: string | null;
 }
 
 interface ProductsProps {
