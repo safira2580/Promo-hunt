@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
 import { FaXmark, FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { API_URL } from "../config";
 import { imagenJuego } from "../imagenJuego";
-import { urlTiendaJuego } from "../tiendas";
 import "./Extras.css";
 
 interface Oferta {
@@ -97,15 +97,6 @@ function JuegoModal({ idJuego, nombre, imagen, completo, onCerrar }: Props) {
         <div className="jm-info">
           <h2>{titulo}</h2>
           {completo && fecha && <p className="jm-fecha">Lanzamiento: {fecha}</p>}
-          {completo && (
-            <p className="jm-desc">
-              {detalle
-                ? juego?.descripcion?.trim() || "Este juego aún no tiene descripción."
-                : error
-                  ? ""
-                  : "Cargando descripción..."}
-            </p>
-          )}
 
           <h3 className="jm-subtitulo">
             {ofertas.length > 1 ? `Disponible en ${ofertas.length} tiendas` : "Disponible en"}
@@ -116,29 +107,32 @@ function JuegoModal({ idJuego, nombre, imagen, completo, onCerrar }: Props) {
           {detalle && ofertas.length === 0 && <p className="jm-vacio">Por ahora no hay tiendas con oferta activa.</p>}
 
           <ul className="jm-tiendas">
-            {ofertas.map((o) => {
-              const url = urlTiendaJuego(o.plataforma, titulo, o.url_tienda);
-              return (
-                <li key={o.id_descuento} className="jm-tienda">
-                  <div className="jm-tienda-nombre">
-                    <strong>{o.plataforma}</strong>
-                    <span className="jm-etiqueta">-{Math.round(Number(o.porcentaje_descuento))}%</span>
-                  </div>
-                  <div className="jm-tienda-precio">
-                    <b>{precio(o.precio_descuento)}</b>
-                    <s>{precio(o.precio_original)}</s>
-                  </div>
-                  {url ? (
-                    <a className="jm-ir" href={url} target="_blank" rel="noopener noreferrer">
-                      Ir a la tienda <FaArrowUpRightFromSquare />
-                    </a>
-                  ) : (
-                    <span className="jm-ir jm-ir-off">Sin enlace</span>
-                  )}
-                </li>
-              );
-            })}
+            {ofertas.map((o) => (
+              <li key={o.id_descuento} className="jm-tienda">
+                <div className="jm-tienda-nombre">
+                  {ofertas.length > 1 && <strong>{o.plataforma}</strong>}
+                  <span className="jm-etiqueta">-{Math.round(Number(o.porcentaje_descuento))}%</span>
+                </div>
+                <div className="jm-tienda-precio">
+                  <b>{precio(o.precio_descuento)}</b>
+                  <s>{precio(o.precio_original)}</s>
+                </div>
+                <Link className="jm-ir" to={`/juego/${idJuego}`} onClick={onCerrar}>
+                  Ir a la tienda <FaArrowUpRightFromSquare />
+                </Link>
+              </li>
+            ))}
           </ul>
+
+          {completo && (
+            <p className="jm-desc">
+              {detalle
+                ? juego?.descripcion?.trim() || "Este juego aún no tiene descripción."
+                : error
+                  ? ""
+                  : "Cargando descripción..."}
+            </p>
+          )}
         </div>
       </div>
     </div>,

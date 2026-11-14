@@ -132,9 +132,10 @@
 .jm-tienda { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 1.6rem; padding: 1.4rem 1.6rem; background: var(--background-color); border: 1px solid var(--light-gray); border-radius: 1.2rem; }
 .jm-tienda-nombre { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 1.6rem; }
 .jm-etiqueta { background: #ef4444; color: #fff; font-size: 1.2rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 999px; }
-.jm-tienda-precio { display: grid; justify-items: end; font-size: 1.6rem; }
+.jm-tienda-precio { display: flex; align-items: baseline; justify-content: flex-end; gap: 0.8rem; font-size: 1.6rem; }
 .jm-tienda-precio b { color: var(--secondary-color); }
-.jm-tienda-precio s { font-size: 1.2rem; color: var(--gray); }
+.jm-tienda-precio s { font-size: 1.3rem; color: var(--gray); }
+.jm-info .jm-tiendas + .jm-desc { margin-top: 1rem; padding-top: 1.6rem; border-top: 1px solid var(--light-gray); }
 .jm-ir { display: inline-flex; align-items: center; gap: 0.7rem; background: var(--gradient); color: #fff; text-decoration: none; font-size: 1.4rem; font-weight: 600; padding: 1rem 1.6rem; border-radius: 999px; white-space: nowrap; transition: filter 0.2s, transform 0.2s; }
 .jm-ir:hover { filter: brightness(1.15); transform: translateY(-2px); }
 .jm-ir-off { background: var(--light-gray); color: var(--gray); }

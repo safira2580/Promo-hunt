@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaXmark } from "react-icons/fa6";
 import { items } from "./featuresData";
 import "./Extras.css";
+import MejoresResenas from "./MejoresResenas";
 
 
 function Features() {
@@ -67,6 +68,7 @@ function Features() {
                 <li key={p}>{p}</li>
               ))}
             </ul>
+            {actual.titulo === "Reseñas mundiales" && <MejoresResenas />}
             {accion && (
               <button
                 className="modal-accion"

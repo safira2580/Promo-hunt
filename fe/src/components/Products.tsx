@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   FaEye,
   FaHeart,
-  FaArrowUpRightFromSquare,
 } from "react-icons/fa6";
 
 import { API_URL } from "../config";
@@ -180,16 +179,6 @@ function Products({ categoriaActiva = null }: ProductsProps) {
                       onKeyDown={(e) => e.key === "Enter" && alternar(juego.id_juego)}
                     >
                       <FaHeart />
-                    </span>
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Ver tiendas donde está ${juego.nombre}`}
-                      title="Ver tiendas"
-                      onClick={() => setModal({ juego, completo: false })}
-                      onKeyDown={(e) => e.key === "Enter" && setModal({ juego, completo: false })}
-                    >
-                      <FaArrowUpRightFromSquare />
                     </span>
                   </div>
                 </div>
