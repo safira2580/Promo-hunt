@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.database import get_db
 from app.errors import register_error_handlers
-from app.routers import admin, auth, games, users
+from app.routers import admin, auth, extras, games, users
 
 settings = get_settings()
 settings.validate_for_production()
@@ -49,6 +49,7 @@ register_error_handlers(app)
 app.include_router(auth.router)
 app.include_router(games.router)
 app.include_router(users.router)
+app.include_router(extras.router)
 app.include_router(admin.router)
 
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "./config";
+import { authFetch, getToken } from "./api";
 
 export function useFavoritos() {
   const navigate = useNavigate();
@@ -9,7 +10,12 @@ export function useFavoritos() {
 
   const cargar = useCallback(async () => {
     try {
-      const r = await fetch(`${API_URL}/api/favoritos`, { credentials: "include" });
+      if (!getToken()) {
+        setItems([]);
+        setSesion(false);
+        return;
+      }
+      const r = await authFetch(`${API_URL}/api/v1/favoritos`);
       if (r.status === 401) {
         setItems([]);
         setSesion(false);
@@ -28,9 +34,8 @@ export function useFavoritos() {
 
   const alternar = async (id: number) => {
     const esFav = items.some((x) => x.id_juego === id);
-    const r = await fetch(`${API_URL}/api/favoritos/${id}`, {
+    const r = await authFetch(`${API_URL}/api/v1/favoritos/${id}`, {
       method: esFav ? "DELETE" : "POST",
-      credentials: "include",
     });
     if (r.status === 401) {
       navigate("/login");

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa6";
 import { API_URL } from "../config";
+import { authFetch, getToken, mensajeDeError } from "../api";
 import { imagenJuego } from "../imagenJuego";
 import "../components/Extras.css";
 
@@ -33,7 +34,11 @@ function Reembolsos() {
 
   const cargar = async () => {
     try {
-      const r = await fetch(`${API_URL}/api/reembolsos`, { credentials: "include" });
+      if (!getToken()) {
+        setSesion(false);
+        return;
+      }
+      const r = await authFetch(`${API_URL}/api/v1/reembolsos`);
       if (r.status === 401) {
         setSesion(false);
         return;
@@ -47,7 +52,7 @@ function Reembolsos() {
 
   useEffect(() => {
     cargar();
-    fetch(`${API_URL}/api/juegos-lista`)
+    fetch(`${API_URL}/api/v1/juegos-lista`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setJuegos)
       .catch(() => setErrorLista(true));
@@ -62,9 +67,8 @@ function Reembolsos() {
     setEnviando(true);
     setMensaje(null);
     try {
-      const r = await fetch(`${API_URL}/api/reembolsos`, {
+      const r = await authFetch(`${API_URL}/api/v1/reembolsos`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ juego, motivo }),
       });
@@ -75,7 +79,7 @@ function Reembolsos() {
         setMotivo("");
         cargar();
       } else {
-        setMensaje({ ok: false, texto: datos.error || "No se pudo enviar la solicitud." });
+        setMensaje({ ok: false, texto: mensajeDeError(datos, "No se pudo enviar la solicitud.") });
       }
     } catch {
       setMensaje({ ok: false, texto: "No se pudo conectar con el servidor." });
