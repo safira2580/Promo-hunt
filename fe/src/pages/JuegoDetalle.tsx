@@ -91,7 +91,7 @@ function JuegoDetalle() {
       try {
 
         const respuesta = await fetch(
-          `${API_URL}/api/juegos/${id}`
+          `${API_URL}/api/v1/juegos/${id}`
         );
 
 

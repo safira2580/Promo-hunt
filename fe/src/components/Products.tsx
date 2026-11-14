@@ -61,7 +61,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
    * OBTENER JUEGOS DESDE FLASK
    */
   useEffect(() => {
-    fetch(`${API_URL}/api/juegos`)
+    fetch(`${API_URL}/api/v1/juegos`)
       .then((respuesta) => {
         if (!respuesta.ok) {
           throw new Error("No se pudieron obtener los juegos");
