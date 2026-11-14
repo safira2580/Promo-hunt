@@ -584,36 +584,90 @@
   }
 
 }
-/* ===== NUEVA-RESENA: 4 tiendas ===== */
+
+/* ===== NUEVA-RESENA-V2: tarjetas de tiendas ===== */
+.seccion-titulo h2 { color: #1a1a2e; }
+.juego-extra-card h3 { color: #1a1a2e; }
+
 .tiendas-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: stretch;
 }
+
 .tienda-card {
-  background: white;
+  background: #fff;
   border: 1px solid #eee;
-  border-radius: 14px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.tienda-card h3 { margin: 0; font-size: 18px; }
-.tienda-vacio { color: #777; font-size: 14px; margin: 0; }
-.tienda-ofertas { display: flex; flex-direction: column; gap: 10px; }
-.tienda-oferta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.tienda-oferta > div { display: flex; flex-direction: column; }
-.tienda-nombre-extra { font-size: 12px; color: #999; }
-.resumen-votos { display: flex; align-items: center; gap: 8px; }
-.resumen-votos strong { font-size: 26px; color: #f74780; }
-.resumen-votos span { color: #888; font-size: 13px; }
-.resenas-mini { display: flex; flex-direction: column; gap: 10px; }
-.resena-mini { background: #f7f7f9; border-radius: 10px; padding: 10px 12px; font-size: 13px; }
-.resena-mini p { margin: 4px 0 0; color: #555; }
-.resena-mini-top { display: flex; justify-content: space-between; align-items: center; }
+.tienda-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
 
-@media (max-width: 800px) {
+.tienda-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  color: #fff;
+}
+.tienda-epic .tienda-cabecera { background: linear-gradient(135deg, #2b2b2b, #0d0d0d); }
+.tienda-steam .tienda-cabecera { background: linear-gradient(135deg, #1b2838, #2a475e); }
+.tienda-promohunt .tienda-cabecera { background: linear-gradient(135deg, #f74780, #e63870); }
+
+.tienda-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+}
+.tienda-cabecera h3 { margin: 0; font-size: 18px; color: #fff; }
+
+.tienda-cuerpo {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+.tienda-cuerpo strong,
+.tienda-cuerpo b { color: #1a1a2e; }
+.tienda-cuerpo > .boton-oferta { width: 100%; margin-top: auto; }
+
+.tienda-vacio { margin: 0; color: #777; font-size: 14px; }
+
+.tienda-ofertas { display: flex; flex-direction: column; gap: 12px; }
+.tienda-oferta { display: flex; flex-direction: column; gap: 10px; }
+.tienda-oferta .boton-oferta { width: 100%; }
+.tienda-precios { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.tienda-nombre-extra { flex-basis: 100%; font-size: 12px; color: #999; }
+.tienda-cuerpo .precio-final { font-size: 22px; }
+
+.tienda-calif {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #e5e5e5;
+}
+.tienda-calif > div { display: flex; flex-direction: column; gap: 2px; }
+.tienda-calif-nota { font-size: 30px; font-weight: 700; color: #f74780; line-height: 1; }
+.tienda-calif .votos { color: #888; font-size: 13px; }
+
+@media (max-width: 900px) {
   .tiendas-grid { grid-template-columns: 1fr; }
 }

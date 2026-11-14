@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Header from "../components/Header";
@@ -28,19 +29,13 @@ interface Descuento {
   url_tienda?: string | null;
 }
 
-interface ResenaJuego {
-  id_resena: number;
-  usuario: string;
-  titulo: string | null;
-  comentario: string | null;
-  calificacion: number | null;
-  fecha_publicacion: string | null;
-}
-
-interface ResenasData {
+interface Calificacion {
   promedio: number | null;
   total: number;
-  resenas: ResenaJuego[];
+}
+
+interface ResenasData extends Calificacion {
+  por_tienda?: Record<string, Calificacion>;
 }
 
 const precio = (n: number) => `COL$${Number(n).toLocaleString("es-CO")}`;
@@ -51,10 +46,10 @@ function Ofertas({ ofertas, vacio }: { ofertas: Descuento[]; vacio: string }) {
     <div className="tienda-ofertas">
       {ofertas.map((d) => (
         <div className="tienda-oferta" key={d.id_descuento}>
-          <div>
+          <div className="tienda-precios">
             {ofertas.length > 1 && <span className="tienda-nombre-extra">{d.plataforma}</span>}
             <span className="precio-original">{precio(d.precio_original)}</span>
-            <strong>{precio(d.precio_descuento)}</strong>
+            <strong className="precio-final">{precio(d.precio_descuento)}</strong>
             <span className="descuento">-{d.porcentaje_descuento}%</span>
           </div>
           <button
@@ -66,6 +61,49 @@ function Ofertas({ ofertas, vacio }: { ofertas: Descuento[]; vacio: string }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function BloqueCalificacion({ calif }: { calif: Calificacion }) {
+  if (calif.total === 0 || calif.promedio === null) {
+    return <p className="tienda-vacio">Aún sin calificaciones.</p>;
+  }
+  return (
+    <div className="tienda-calif">
+      <span className="tienda-calif-nota">{calif.promedio}</span>
+      <div>
+        <Estrellas valor={calif.promedio} />
+        <span className="votos">
+          {calif.total} {calif.total === 1 ? "voto" : "votos"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+interface TarjetaProps {
+  clase: string;
+  logo: string;
+  nombre: string;
+  ofertas?: Descuento[];
+  vacio?: string;
+  calif?: Calificacion;
+  children?: ReactNode;
+}
+
+function TarjetaTienda({ clase, logo, nombre, ofertas, vacio, calif, children }: TarjetaProps) {
+  return (
+    <article className={`tienda-card tienda-${clase}`}>
+      <header className="tienda-cabecera">
+        <span className="tienda-logo">{logo}</span>
+        <h3>{nombre}</h3>
+      </header>
+      <div className="tienda-cuerpo">
+        {ofertas && <Ofertas ofertas={ofertas} vacio={vacio ?? "Sin oferta por ahora."} />}
+        {calif && <BloqueCalificacion calif={calif} />}
+        {children}
+      </div>
+    </article>
   );
 }
 
@@ -131,7 +169,10 @@ function JuegoDetalle() {
   const nombre = (d: Descuento) => d.plataforma.toLowerCase();
   const epic = descuentos.filter((d) => nombre(d).includes("epic"));
   const steam = descuentos.filter((d) => nombre(d).includes("steam"));
-  const otras = descuentos.filter((d) => !nombre(d).includes("epic") && !nombre(d).includes("steam"));
+
+  const califPromoHunt: Calificacion | undefined = resenas
+    ? { promedio: resenas.promedio, total: resenas.total }
+    : undefined;
 
   return (
     <div className="pagina-juego">
@@ -159,58 +200,34 @@ function JuegoDetalle() {
 
         <section className="juego-ofertas">
           <div className="seccion-titulo">
-            <h2>Ofertas y reseñas</h2>
+            <h2>Ofertas y calificaciones</h2>
             <span>{descuentos.length} plataformas</span>
           </div>
 
           <div className="tiendas-grid">
-            <article className="tienda-card">
-              <h3>🟦 Epic Games</h3>
-              <Ofertas ofertas={epic} vacio="Sin oferta en Epic por ahora." />
-            </article>
+            <TarjetaTienda
+              clase="epic"
+              logo="E"
+              nombre="Epic Games"
+              ofertas={epic}
+              vacio="Sin oferta en Epic por ahora."
+              calif={resenas?.por_tienda?.epic}
+            />
 
-            <article className="tienda-card">
-              <h3>🎮 Steam</h3>
-              <Ofertas ofertas={steam} vacio="Sin oferta en Steam por ahora." />
-            </article>
+            <TarjetaTienda
+              clase="steam"
+              logo="S"
+              nombre="Steam"
+              ofertas={steam}
+              vacio="Sin oferta en Steam por ahora."
+              calif={resenas?.por_tienda?.steam}
+            />
 
-            <article className="tienda-card">
-              <h3>🛒 Otra tienda</h3>
-              <Ofertas ofertas={otras} vacio="Sin ofertas en otras tiendas." />
-            </article>
-
-            <article className="tienda-card tienda-promohunt">
-              <h3>⭐ PromoHunt</h3>
-
-              {resenas && resenas.total > 0 ? (
-                <>
-                  <div className="resumen-votos">
-                    <strong>{resenas.promedio}</strong>
-                    <Estrellas valor={resenas.promedio ?? 0} />
-                    <span>({resenas.total} votos)</span>
-                  </div>
-
-                  <div className="resenas-mini">
-                    {resenas.resenas.slice(0, 3).map((r) => (
-                      <div className="resena-mini" key={r.id_resena}>
-                        <div className="resena-mini-top">
-                          <b>{r.usuario}</b>
-                          <Estrellas valor={r.calificacion ?? 0} />
-                        </div>
-                        {r.titulo && <strong>{r.titulo}</strong>}
-                        {r.comentario && <p>{r.comentario}</p>}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <p className="tienda-vacio">Aún no hay reseñas de este juego.</p>
-              )}
-
+            <TarjetaTienda clase="promohunt" logo="P" nombre="PromoHunt" calif={califPromoHunt}>
               <button className="boton-oferta" onClick={() => navigate("/resenas")}>
-                Ver todas las reseñas
+                Ver reseñas mundiales
               </button>
-            </article>
+            </TarjetaTienda>
           </div>
         </section>
 
