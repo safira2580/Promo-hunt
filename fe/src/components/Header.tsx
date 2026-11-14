@@ -1,167 +1,335 @@
-.card-feature[role="button"] { cursor: pointer; }
-.card-feature[role="button"]:focus-visible,
-.modal-cerrar:focus-visible,
-.button-group span[role="button"]:focus-visible { outline: 3px solid var(--secondary-color); outline-offset: 2px; }
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-.modal-fondo { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; }
-.modal-caja { position: relative; background: var(--white); color: var(--text-color); border: 1px solid var(--light-gray); border-radius: 1.2rem; padding: 2rem; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
-.modal-caja h3 { margin: 0.5rem 0; font-size: 1.5rem; }
-.modal-caja p { margin: 0 0 1rem; }
-.modal-caja ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.5rem; }
-.modal-icono svg { font-size: 2.5rem; color: var(--secondary-color); }
-.modal-cerrar { position: absolute; top: 0.8rem; right: 0.8rem; background: none; border: 0; color: var(--text-color); font-size: 1.3rem; cursor: pointer; }
+import {
+  FaHeadset,
+  FaUser,
+  FaBars,
+  FaMagnifyingGlass
+} from "react-icons/fa6";
 
-.button-group span[role="button"] { cursor: pointer; }
-.button-group span.fav-activo svg { color: #ef4444; fill: #ef4444; }
-.pagina-favoritos { padding: 1.5rem 0 6rem; }
-.favoritos-vacio { text-align: center; display: grid; gap: 1rem; justify-items: center; }
-.favoritos-vacio button { background: var(--primary-color); color: #fff; border: 0; border-radius: 999px; padding: 0.7rem 1.6rem; font: inherit; cursor: pointer; }
+import logo from "../assets/img/logo.png";
 
-/* Botón de acción dentro de las ventanas de Features */
-.modal-accion, .boton-principal { background: var(--primary-color); color: #fff; border: 0; border-radius: 999px; padding: 0.7rem 1.6rem; font: inherit; cursor: pointer; }
-.modal-accion { margin-top: 1.2rem; width: 100%; }
-.modal-accion:hover, .boton-principal:hover { filter: brightness(1.1); }
-.boton-principal:disabled { opacity: 0.6; cursor: wait; }
+import { imagenJuego } from "../imagenJuego";
+import { API_URL } from "../config";
+import { apiFetch, getToken, setToken } from "../api";
 
-/* Páginas nuevas: reseñas, reembolsos, tarjetas de regalo */
-.pagina-extra { padding: 1.5rem 0 6rem; display: grid; gap: 1rem; align-content: start; }
-.boton-volver { justify-self: start; display: inline-flex; align-items: center; gap: 0.5rem; background: none; border: 0; color: var(--text-color); font: inherit; cursor: pointer; }
-.texto-ayuda { color: var(--gray); margin: 0; }
-.estado-vacio { text-align: center; display: grid; gap: 1rem; justify-items: center; color: var(--gray); }
-.subtitulo-extra { margin-top: 1rem; }
 
-.lista-resenas { display: grid; gap: 1rem; }
-.resena-card { background: var(--white); border: 1px solid var(--light-gray); border-radius: 1rem; padding: 1.2rem; display: grid; gap: 0.5rem; }
-.resena-card header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-.resena-card h3 { margin: 0; }
-.resena-card p { margin: 0; }
-.resena-card footer { color: var(--gray); font-size: 0.9rem; }
-.estrellas { display: inline-flex; gap: 0.15rem; color: #facc15; }
-.etiqueta-estado { background: var(--light-gray); border-radius: 999px; padding: 0.2rem 0.8rem; font-size: 0.85rem; }
-
-.form-extra { display: grid; gap: 1rem; max-width: 520px; }
-.form-extra label { display: grid; gap: 0.4rem; }
-.form-extra input, .form-extra textarea { background: var(--white); color: var(--text-color); border: 1px solid var(--light-gray); border-radius: 0.6rem; padding: 0.7rem; font: inherit; }
-.msg-ok { color: #4ade80; margin: 0; }
-.msg-error { color: #f87171; margin: 0; }
-
-.grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-.tarjeta-regalo { background: var(--white); border: 1px solid var(--light-gray); border-radius: 1.2rem; padding: 1.5rem; display: grid; gap: 0.6rem; justify-items: center; text-align: center; }
-.tarjeta-regalo > svg { font-size: 2.5rem; color: var(--secondary-color); }
-.tarjeta-regalo h3, .tarjeta-regalo p { margin: 0; }
-.tarjeta-valor { font-size: 1.8rem; font-weight: 700; }
-.tarjeta-especial { border-color: var(--accent-color); }
-
-/* Reseñas: imagen del juego */
-.resena-juego { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
-.resena-img { width: 80px !important; height: 80px !important; min-width: 80px; max-width: 80px; aspect-ratio: 1 / 1; object-fit: cover; object-position: center; border-radius: 0.8rem; flex: 0 0 80px; display: block; }
-
-/* Tarjetas de regalo: estados */
-.boton-principal.boton-deshabilitado,
-.boton-principal.boton-deshabilitado:disabled { background: var(--gray); opacity: 0.7; cursor: not-allowed; filter: none; }
-.etiqueta-tiene { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.7rem 1.6rem; border-radius: 999px; border: 1px solid var(--accent-color); color: var(--accent-color); font-weight: 600; }
-
-/* Reembolsos: lista desplegable de juegos */
-.combo-juegos { position: relative; }
-.combo-juegos input { width: 100%; box-sizing: border-box; }
-.combo-lista { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 0.3rem; list-style: none; max-height: 260px; overflow-y: auto; background: var(--white); border: 1px solid var(--light-gray); border-radius: 0.6rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); }
-.combo-lista li { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.6rem; border-radius: 0.4rem; cursor: pointer; color: var(--text-color); }
-.combo-lista li:hover { background: var(--light-gray); }
-.combo-lista li img { width: 32px; height: 32px; object-fit: cover; border-radius: 0.3rem; }
-.combo-lista li.combo-vacio { cursor: default; color: var(--gray); }
-
-/* ===== Reembolsos: formulario centrado con tarjetas a los lados ===== */
-.reembolso-pagina { padding: 2rem 20px 6rem; }
-.reembolso-cabecera { position: relative; display: grid; justify-items: center; gap: 0.8rem; text-align: center; margin-bottom: 3rem; }
-.reembolso-cabecera .boton-volver { position: absolute; left: 0; top: 0; background: var(--white); border: 1px solid var(--light-gray); border-radius: 999px; padding: 0.8rem 1.6rem; font-size: 1.4rem; }
-.reembolso-cabecera .boton-volver:hover { border-color: var(--primary-color); color: var(--primary-color); }
-.reembolso-icono { width: 6.4rem; height: 6.4rem; border-radius: 50%; display: grid; place-items: center; background: var(--gradient); color: #fff; font-size: 2.6rem; box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35); }
-.reembolso-cabecera .heading-1 { margin: 0.4rem 0 0 !important; }
-.reembolso-cabecera .texto-ayuda { font-size: 1.5rem; max-width: 56rem; }
-
-.reembolso-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 52rem) minmax(0, 1fr); gap: 3rem; align-items: start; }
-.reembolso-centro { background: var(--white); border: 1px solid var(--light-gray); border-radius: 2rem; padding: 3rem; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); }
-.reembolso-centro .form-extra { max-width: none; gap: 1.8rem; }
-.reembolso-centro .form-extra label { font-size: 1.4rem; font-weight: 600; gap: 0.8rem; }
-.reembolso-centro .form-extra input,
-.reembolso-centro .form-extra textarea { background: var(--background-color); font-size: 1.5rem; font-weight: 400; padding: 1.2rem 1.4rem; border-radius: 1rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-.reembolso-centro .form-extra input:focus,
-.reembolso-centro .form-extra textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); }
-.reembolso-centro .form-extra textarea { resize: vertical; min-height: 12rem; }
-.reembolso-centro .boton-principal { font-size: 1.6rem; font-weight: 600; padding: 1.3rem; border-radius: 1rem; background: var(--gradient); }
-.reembolso-centro .estado-vacio { font-size: 1.5rem; padding: 1rem 0; }
-.reembolso-centro .msg-ok,
-.reembolso-centro .msg-error { font-size: 1.4rem; text-align: center; }
-.reembolso-centro .combo-lista li { font-size: 1.4rem; }
-
-.reembolso-lado { display: grid; gap: 2rem; align-content: start; }
-.lado-card { display: flex; align-items: center; gap: 1.6rem; text-align: left; width: 100%; background: var(--white); color: var(--text-color); border: 1px solid var(--light-gray); border-radius: 1.6rem; padding: 2rem; font: inherit; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
-.lado-card svg { flex: 0 0 auto; font-size: 3.2rem; color: var(--secondary-color); }
-.lado-texto { display: grid; gap: 0.3rem; }
-.lado-texto strong { font-size: 1.6rem; color: var(--primary-color); }
-.lado-texto small { font-size: 1.3rem; color: var(--gray); }
-.lado-card:not(:disabled):hover { transform: translateY(-4px); border-color: var(--primary-color); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); }
-.lado-card:disabled { cursor: default; }
-.lado-card.lado-activo { border-color: var(--primary-color); background: rgba(59, 130, 246, 0.08); }
-
-.reembolso-solicitudes { max-width: 80rem; margin: 5rem auto 0; }
-.reembolso-solicitudes .subtitulo-extra { text-align: center; font-size: 2.2rem; margin-bottom: 1.5rem; color: var(--primary-color); }
-
-@media (max-width: 1000px) {
-  .reembolso-grid { grid-template-columns: minmax(0, 1fr); max-width: 52rem; margin: 0 auto; gap: 2rem; }
-  .reembolso-centro { order: -1; padding: 2.2rem; }
-  .reembolso-lado { grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr)); gap: 1.6rem; }
-  .reembolso-cabecera .boton-volver { position: static; justify-self: start; }
+interface Juego {
+  id_juego: number;
+  nombre: string;
+  porcentaje_descuento?: number;
+  precio_descuento?: number;
+  precio_original?: number;
+  imagen?: string | null;
 }
 
-/* ===== Ventana de juego: descripción y tiendas ===== */
-.jm-fondo { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1.6rem; background: rgba(2, 6, 14, 0.82); backdrop-filter: blur(4px); }
-.jm-caja { position: relative; width: min(92vw, 52rem); max-height: 90vh; display: flex; flex-direction: column; background: var(--white); color: var(--text-color); border: 1px solid var(--light-gray); border-radius: 2rem; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); overflow: hidden; animation: jm-entrada 0.2s ease; }
-.jm-completo { width: min(96vw, 110rem); height: min(92vh, 76rem); display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 1fr); }
-.jm-cerrar { position: absolute; top: 1.2rem; right: 1.2rem; z-index: 2; width: 4rem; height: 4rem; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 1.8rem; cursor: pointer; }
-.jm-cerrar:hover { background: var(--primary-color); }
-.jm-imagen { background: var(--background-color); min-height: 0; display: grid; place-items: center; }
-.jm-imagen img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.jm-info { padding: 3.2rem; overflow-y: auto; display: grid; gap: 1.4rem; align-content: start; }
-.jm-info h2 { font-size: 3rem; line-height: 1.2; color: var(--primary-color); padding-right: 4rem; }
-.jm-fecha { font-size: 1.4rem; color: var(--gray); }
-.jm-desc { font-size: 1.6rem; line-height: 1.7; white-space: pre-line; }
-.jm-subtitulo { font-size: 1.8rem; margin-top: 1rem; padding-top: 1.6rem; border-top: 1px solid var(--light-gray); }
-.jm-vacio { font-size: 1.4rem; color: var(--gray); }
-.jm-tiendas { list-style: none; display: grid; gap: 1.2rem; }
-.jm-tienda { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 1.6rem; padding: 1.4rem 1.6rem; background: var(--background-color); border: 1px solid var(--light-gray); border-radius: 1.2rem; }
-.jm-tienda-nombre { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 1.6rem; }
-.jm-etiqueta { background: #ef4444; color: #fff; font-size: 1.2rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 999px; }
-.jm-tienda-precio { display: grid; justify-items: end; font-size: 1.6rem; }
-.jm-tienda-precio b { color: var(--secondary-color); }
-.jm-tienda-precio s { font-size: 1.2rem; color: var(--gray); }
-.jm-ir { display: inline-flex; align-items: center; gap: 0.7rem; background: var(--gradient); color: #fff; text-decoration: none; font-size: 1.4rem; font-weight: 600; padding: 1rem 1.6rem; border-radius: 999px; white-space: nowrap; transition: filter 0.2s, transform 0.2s; }
-.jm-ir:hover { filter: brightness(1.15); transform: translateY(-2px); }
-.jm-ir-off { background: var(--light-gray); color: var(--gray); }
-@keyframes jm-entrada { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-@media (max-width: 800px) {
-  .jm-fondo { padding: 0.8rem; }
-  .jm-completo { grid-template-columns: minmax(0, 1fr); grid-template-rows: 26vh minmax(0, 1fr); height: 94vh; width: 96vw; }
-  .jm-info { padding: 2rem; }
-  .jm-info h2 { font-size: 2.4rem; }
-  .jm-tienda { grid-template-columns: minmax(0, 1fr) auto; }
-  .jm-ir { grid-column: 1 / -1; justify-content: center; }
+
+interface Usuario {
+  id_usuario: number;
+  nombre: string;
+  correo: string;
+  foto_perfil?: string | null;
+  fecha_registro?: string;
+  rol?: string;
 }
 
-/* ===== Tarjetas de características: las 4 iguales, resaltado solo al pasar el mouse ===== */
-.container-features .card-feature { background: #1e293b !important; border: 1px solid #334155 !important; transform: none; }
-.container-features .card-feature:hover { background: linear-gradient(145deg, #0f1f3d, #0b1630) !important; border-color: #3b82f6 !important; transform: translateY(-5px); }
-.container-features .card-feature:focus:not(:focus-visible) { outline: none; background: #1e293b !important; border-color: #334155 !important; }
-.container-features .card-feature:focus:not(:focus-visible):hover { background: linear-gradient(145deg, #0f1f3d, #0b1630) !important; border-color: #3b82f6 !important; }
 
-/* ===== Ojo: tarjeta de visualización casi a pantalla completa ===== */
-.jm-completo { width: 98vw; height: 96vh; grid-template-columns: minmax(0, 50%) minmax(0, 1fr); }
-.jm-completo .jm-info { padding: 4rem; }
-.jm-completo .jm-info h2 { font-size: 3.6rem; }
-.jm-completo .jm-desc { font-size: 1.8rem; }
+/* ==========================================
+   IMÁGENES DE LOS JUEGOS
+   ========================================== */
 
-/* ===== Corazón: queda visible en la tarjeta cuando el juego es favorito ===== */
-.card-product .container-img { position: relative; }
-.fav-badge { position: absolute; top: 1rem; right: 1rem; width: 3.5rem; height: 3.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #fff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); z-index: 2; transition: opacity 0.2s; pointer-events: none; }
-.fav-badge svg { font-size: 1.5rem; color: #ef4444; fill: #ef4444; }
-.card-product:hover .fav-badge { opacity: 0; }
+
+
+/* ==========================================
+   HEADER
+   ========================================== */
+
+function Header() {
+
+  const navigate = useNavigate();
+
+
+  /* BUSCADOR */
+
+  const [busqueda, setBusqueda] = useState("");
+  const [juegos, setJuegos] = useState<Juego[]>([]);
+  const [mostrarResultados, setMostrarResultados] = useState(false);
+
+
+  /* USUARIO */
+
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+
+
+  /* ==========================================
+     COMPROBAR SESIÓN
+     El backend usa token Bearer (guardado en localStorage),
+     no cookies. /api/v1/auth/me devuelve el usuario directamente.
+     ========================================== */
+
+  useEffect(() => {
+
+    // Sin token no hay sesión: se evita una petición inútil en cada carga
+    if (!getToken()) {
+      return;
+    }
+
+    apiFetch("/api/v1/auth/me")
+
+      .then(async (respuesta) => {
+
+        if (!respuesta.ok) {
+
+          // Solo se descarta el token si el servidor dice que no es válido.
+          // Un 404/500 temporal no debe cerrar la sesión.
+          if (respuesta.status === 401) {
+            setToken(null);
+          }
+
+          setUsuario(null);
+          return;
+
+        }
+
+        setUsuario(await respuesta.json());
+
+      })
+
+      .catch((error) => {
+
+        console.error("Error comprobando sesión:", error);
+        setUsuario(null);
+
+      });
+
+  }, []);
+
+
+  /* ==========================================
+     BUSCAR JUEGOS
+     ========================================== */
+
+  useEffect(() => {
+
+    if (busqueda.trim() === "") {
+      setJuegos([]);
+      setMostrarResultados(false);
+      return;
+    }
+
+    fetch(`${API_URL}/api/v1/juegos?buscar=${encodeURIComponent(busqueda)}`)
+
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+
+      .then((data) => {
+        setJuegos(Array.isArray(data) ? data : []);
+        setMostrarResultados(true);
+      })
+
+      .catch((error) => {
+        console.error("Error buscando juegos:", error);
+        setJuegos([]);
+      });
+
+  }, [busqueda]);
+
+
+  /* ABRIR JUEGO */
+
+  const abrirJuego = (id: number) => {
+    window.location.href = `/juego/${id}`;
+  };
+
+
+  const resultados = juegos.filter((juego) =>
+    juego.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+
+  /* ==========================================
+     RENDER
+     ========================================== */
+
+  return (
+
+    <header>
+
+      {/* PARTE SUPERIOR */}
+
+      <div className="container-hero">
+
+        <div className="container hero">
+
+          {/* SOPORTE */}
+
+          <div className="customer-support">
+
+            <FaHeadset />
+
+            <div className="content-customer-support">
+
+              <span className="text">
+                Soporte al cliente
+              </span>
+
+              <span className="number">
+                +57 319-6896747 o +57 3046829643
+              </span>
+
+            </div>
+
+          </div>
+
+
+          {/* LOGO */}
+
+          <div className="container-logo">
+
+            <img src={logo} alt="Logo" />
+
+            <h1 className="logo">
+              <a href="/">PromoHunt</a>
+            </h1>
+
+          </div>
+
+
+          {/* USUARIO */}
+
+          <div className="container-user">
+
+            <button
+              className="user-button"
+              onClick={() => {
+                if (usuario) {
+                  navigate("/perfil");
+                } else {
+                  navigate("/login");
+                }
+              }}
+              title={usuario ? "Ver perfil" : "Iniciar sesión"}
+            >
+
+              {usuario?.foto_perfil ? (
+
+                <img
+                  src={usuario.foto_perfil}
+                  alt="Foto de perfil"
+                  className="user-photo"
+                />
+
+              ) : (
+
+                <FaUser />
+
+              )}
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {/* NAVBAR */}
+
+      <div className="container-navbar">
+
+        <nav className="navbar container">
+
+          <FaBars />
+
+          <ul className="menu">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="#">Descuentos</a></li>
+            <li><a href="#">Juegos</a></li>
+            <li><a href="#">Plataformas</a></li>
+            <li><a href="#">Comunidad</a></li>
+          </ul>
+
+
+          {/* BUSCADOR */}
+
+          <form
+            className="search-form"
+            onSubmit={(e) => e.preventDefault()}
+          >
+
+            <input
+              type="search"
+              placeholder="Buscar juegos..."
+              value={busqueda}
+              onChange={(e) => {
+                setBusqueda(e.target.value);
+              }}
+              onFocus={() => {
+                if (busqueda.trim() !== "") {
+                  setMostrarResultados(true);
+                }
+              }}
+            />
+
+            <button type="submit" className="btn-search">
+              <FaMagnifyingGlass />
+            </button>
+
+
+            {/* RESULTADOS */}
+
+            {mostrarResultados && busqueda.trim() !== "" && (
+
+              <div className="search-results">
+
+                {resultados.length > 0 ? (
+
+                  resultados.map((juego) => (
+
+                    <div
+                      className="search-result"
+                      key={juego.id_juego}
+                      onClick={() => abrirJuego(juego.id_juego)}
+                    >
+
+                      <div className="search-result-info">
+                        <FaMagnifyingGlass />
+                        <span>{juego.nombre}</span>
+                      </div>
+
+                      <img
+                        src={imagenJuego(juego.nombre, juego.imagen)}
+                        alt={juego.nombre}
+                      />
+
+                    </div>
+
+                  ))
+
+                ) : (
+
+                  <div className="no-results">
+                    No se encontraron juegos
+                  </div>
+
+                )}
+
+              </div>
+
+            )}
+
+          </form>
+
+        </nav>
+
+      </div>
+
+    </header>
+
+  );
+
+}
+
+
+export default Header;
