@@ -35,6 +35,16 @@ for (const [ruta, url] of Object.entries(archivos)) {
   porArchivo[ruta.split("/").pop()!.toLowerCase()] = url;
 }
 
+// "DiRT Rally 2.0" -> "dirt_rally_2_0"; "Civilization VI" -> "civilization_vi"
+function slug(nombre: string): string {
+  return nombre
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
 export function imagenJuego(nombre?: string | null, imagenBD?: string | null): string {
   const clave = (nombre ?? "").trim().toLowerCase();
   if (porNombre[clave]) return porNombre[clave];
@@ -42,6 +52,14 @@ export function imagenJuego(nombre?: string | null, imagenBD?: string | null): s
   const archivo = (imagenBD ?? "").trim().toLowerCase();
   if (archivo && porArchivo[archivo]) return porArchivo[archivo];
   if (archivo.startsWith("http")) return imagenBD as string;
+
+  // 3) Por convención: assets/img/<nombre_del_juego>.<ext>
+  const base = slug(nombre ?? "");
+  if (base) {
+    for (const ext of ["jpg", "jpeg", "png", "webp"]) {
+      if (porArchivo[`${base}.${ext}`]) return porArchivo[`${base}.${ext}`];
+    }
+  }
 
   return defaultImg;
 }

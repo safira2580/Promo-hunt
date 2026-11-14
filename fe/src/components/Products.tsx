@@ -1,3 +1,4 @@
+import { imagenJuego } from "../imagenJuego";
 import { useEffect, useState } from "react";
 
 import {
@@ -6,16 +7,7 @@ import {
   FaCodeCompare,
 } from "react-icons/fa6";
 
-import gta5 from "../assets/img/gta5.jpg";
-import f125 from "../assets/img/f125.jpg";
-import requiem from "../assets/img/requiem.jpg";
-import dytb from "../assets/img/DYTB.jpg";
-import mirage from "../assets/img/asc mirage.jpg";
-import fc26 from "../assets/img/fc26.jpg";
-import spider2 from "../assets/img/spider2.jpg";
-import forza6 from "../assets/img/Forza6.jpg";
 import { API_URL } from "../config";
-import defaultImg from "../assets/img/default.jpg";
 import { useFavoritos } from "../useFavoritos";
 import "./Extras.css";
 
@@ -29,6 +21,7 @@ interface Juego {
   plataforma: string;
   id_categoria?: number;
   categoria?: string;
+  imagen?: string | null;
 }
 
 interface ProductsProps {
@@ -43,19 +36,6 @@ function Products({ categoriaActiva = null }: ProductsProps) {
   const [filtro, setFiltro] = useState("destacados");
   const { ids: favoritos, alternar } = useFavoritos();
 
-  /*
-   * IMÁGENES
-   */
-  const imagenes: Record<string, string> = {
-    "GTA V": gta5,
-    "F1 25": f125,
-    "resident evil requiem": requiem,
-    "Dying Light The Beast": dytb,
-    "Assassins Creed Mirage": mirage,
-    "EA FC 26": fc26,
-    "Spiderman 2": spider2,
-    "Forza Horizon 6": forza6,
-  };
 
   /*
    * OBTENER JUEGOS DESDE FLASK
@@ -149,7 +129,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
         {!cargando &&
           !error &&
           juegosFiltrados.map((juego) => {
-            const imagen = imagenes[juego.nombre] || defaultImg;
+            const imagen = imagenJuego(juego.nombre, juego.imagen);
 
             return (
               <div className="card-product" key={juego.id_juego}>
