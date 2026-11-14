@@ -168,3 +168,63 @@
 /* ===== Últimas noticias: sin iconos sobre la imagen y sin botón "Leer más" ===== */
 .card-blog .button-group-blog,
 .card-blog .btn-read-more { display: none !important; }
+/* ===== NUEVA-RESENA: cabecera Volver | título | Nueva reseña ===== */
+.resenas-cabecera {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.resenas-cabecera .heading-1 { margin: 0; justify-self: center; }
+.resenas-cabecera .boton-volver { justify-self: start; }
+.resenas-cabecera .boton-nueva-resena,
+.resenas-cabecera > span { justify-self: end; }
+
+.boton-nueva-resena {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.boton-nueva-resena:disabled { opacity: 0.6; cursor: wait; }
+
+@media (max-width: 520px) {
+  .resenas-cabecera { grid-template-columns: auto 1fr auto; }
+  .resenas-cabecera .heading-1 { font-size: 20px; }
+}
+
+/* ===== Modal nueva reseña ===== */
+.modal-resena-fondo {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-resena {
+  width: 100%; max-width: 440px;
+  background: #0f172a; color: #fff;
+  border: 1px solid #1e293b; border-radius: 16px;
+  padding: 22px; display: flex; flex-direction: column; gap: 14px;
+}
+.modal-resena h2 { margin: 0; }
+.modal-resena label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.modal-resena select,
+.modal-resena input,
+.modal-resena textarea {
+  background: #111827; color: #fff;
+  border: 1px solid #334155; border-radius: 10px; padding: 10px; font: inherit;
+}
+.modal-resena-estrellas { display: flex; gap: 6px; }
+.modal-resena-estrellas button {
+  background: none; border: none; cursor: pointer;
+  color: #facc15; font-size: 26px; padding: 0;
+}
+.modal-resena-error { color: #f87171; margin: 0; font-size: 14px; }
+.modal-resena-acciones { display: flex; justify-content: flex-end; gap: 10px; }
+.btn-cancelar {
+  background: transparent; color: #cbd5e1;
+  border: 1px solid #334155; border-radius: 12px; padding: 10px 16px; cursor: pointer;
+}

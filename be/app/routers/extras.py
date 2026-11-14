@@ -162,3 +162,99 @@ def solicitar_reembolso(
     )
     db.commit()
     return {"ok": True}
+
+
+# ------------------------------------------------------------------ calificar y mejores reseñas
+class CalificarIn(BaseModel):
+    id_juego: int
+    calificacion: int
+    comentario: str | None = None
+    titulo: str | None = None
+
+
+@router.post("/resenas", status_code=201)
+def calificar_juego(
+    datos: CalificarIn,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    from fastapi import HTTPException
+
+    if not 1 <= datos.calificacion <= 5:
+        raise HTTPException(status_code=422, detail="La calificación debe ser de 1 a 5")
+    comentario = (datos.comentario or "").strip()[:1000] or None
+    titulo = (datos.titulo or "").strip()[:100] or None
+    juego = db.execute(text("SELECT 1 FROM juego WHERE id_juego = :j"), {"j": datos.id_juego}).first()
+    if not juego:
+        raise HTTPException(status_code=404, detail="Juego no encontrado")
+    previa = db.execute(
+        text("SELECT id_resena FROM resena WHERE id_usuario = :u AND id_juego = :j"),
+        {"u": current_user.id_usuario, "j": datos.id_juego},
+    ).first()
+    if previa:
+        db.execute(
+            text(
+                "UPDATE resena SET calificacion = :c, comentario = :m, titulo = :t, "
+                "fecha_publicacion = CURRENT_TIMESTAMP WHERE id_resena = :i"
+            ),
+            {"c": datos.calificacion, "m": comentario, "t": titulo, "i": previa[0]},
+        )
+    else:
+        db.execute(
+            text(
+                "INSERT INTO resena (id_usuario, id_juego, titulo, comentario, calificacion) "
+                "VALUES (:u, :j, :t, :m, :c)"
+            ),
+            {"u": current_user.id_usuario, "j": datos.id_juego, "t": titulo, "m": comentario, "c": datos.calificacion},
+        )
+    db.commit()
+    return {"ok": True}
+
+
+@router.get("/resenas/mejores")
+def mejores_resenas(db: Session = Depends(get_db)):
+    rows = (
+        db.execute(
+            text(
+                """
+            SELECT r.id_resena, u.nombre AS usuario, r.id_juego, j.nombre AS juego,
+                   j.imagen, r.titulo, r.comentario, r.calificacion, r.fecha_publicacion
+            FROM resena r
+            INNER JOIN usuario u ON u.id_usuario = r.id_usuario
+            INNER JOIN juego j ON j.id_juego = r.id_juego
+            ORDER BY r.calificacion DESC NULLS LAST,
+                     (r.comentario IS NOT NULL AND r.comentario <> '') DESC,
+                     r.fecha_publicacion DESC NULLS LAST, r.id_resena DESC
+            LIMIT 10
+            """
+            )
+        )
+        .mappings()
+        .all()
+    )
+    return [dict(r) for r in rows]
+
+
+@router.get("/juegos/{id_juego}/resenas")
+def resenas_de_juego(id_juego: int, db: Session = Depends(get_db)):
+    rows = (
+        db.execute(
+            text(
+                """
+            SELECT r.id_resena, u.nombre AS usuario, r.titulo, r.comentario,
+                   r.calificacion, r.fecha_publicacion
+            FROM resena r
+            INNER JOIN usuario u ON u.id_usuario = r.id_usuario
+            WHERE r.id_juego = :j
+            ORDER BY r.fecha_publicacion DESC NULLS LAST, r.id_resena DESC
+            """
+            ),
+            {"j": id_juego},
+        )
+        .mappings()
+        .all()
+    )
+    items = [dict(r) for r in rows]
+    notas = [r["calificacion"] for r in items if r["calificacion"]]
+    promedio = round(sum(notas) / len(notas), 1) if notas else None
+    return {"promedio": promedio, "total": len(notas), "resenas": items}

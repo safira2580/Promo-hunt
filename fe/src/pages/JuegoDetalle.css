@@ -584,3 +584,36 @@
   }
 
 }
+/* ===== NUEVA-RESENA: 4 tiendas ===== */
+.tiendas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+.tienda-card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.tienda-card h3 { margin: 0; font-size: 18px; }
+.tienda-vacio { color: #777; font-size: 14px; margin: 0; }
+.tienda-ofertas { display: flex; flex-direction: column; gap: 10px; }
+.tienda-oferta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tienda-oferta > div { display: flex; flex-direction: column; }
+.tienda-nombre-extra { font-size: 12px; color: #999; }
+.resumen-votos { display: flex; align-items: center; gap: 8px; }
+.resumen-votos strong { font-size: 26px; color: #f74780; }
+.resumen-votos span { color: #888; font-size: 13px; }
+.resenas-mini { display: flex; flex-direction: column; gap: 10px; }
+.resena-mini { background: #f7f7f9; border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+.resena-mini p { margin: 4px 0 0; color: #555; }
+.resena-mini-top { display: flex; justify-content: space-between; align-items: center; }
+
+@media (max-width: 800px) {
+  .tiendas-grid { grid-template-columns: 1fr; }
+}

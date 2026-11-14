@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaStar, FaRegStar, FaArrowLeft } from "react-icons/fa6";
 import { API_URL } from "../config";
+import { obtenerSesion } from "../api";
+import type { UsuarioSesion } from "../api";
 import { imagenJuego } from "../imagenJuego.ts";
+import NuevaResenaModal from "../components/NuevaResenaModal";
 import "../components/Extras.css";
 
 interface Resena {
@@ -29,20 +32,38 @@ function Resenas() {
   const navigate = useNavigate();
   const [resenas, setResenas] = useState<Resena[] | null>(null);
   const [error, setError] = useState(false);
+  const [sesion, setSesion] = useState<UsuarioSesion | null>(null);
+  const [modalAbierto, setModalAbierto] = useState(false);
 
-  useEffect(() => {
+  const cargar = useCallback(() => {
     fetch(`${API_URL}/api/v1/resenas`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setResenas)
       .catch(() => setError(true));
   }, []);
 
+  useEffect(() => {
+    cargar();
+    obtenerSesion().then(setSesion);
+  }, [cargar]);
+
   return (
     <section className="container pagina-extra">
-      <button className="boton-volver" type="button" onClick={() => navigate("/")}>
-        <FaArrowLeft /> Volver
-      </button>
-      <h1 className="heading-1">Reseñas mundiales</h1>
+      <div className="resenas-cabecera">
+        <button className="boton-volver" type="button" onClick={() => navigate("/")}>
+          <FaArrowLeft /> Volver
+        </button>
+
+        <h1 className="heading-1">Reseñas mundiales</h1>
+
+        {sesion ? (
+          <button className="boton-nueva-resena" type="button" onClick={() => setModalAbierto(true)}>
+            + Nueva reseña
+          </button>
+        ) : (
+          <span />
+        )}
+      </div>
 
       {error && <p className="estado-vacio">No se pudieron cargar las reseñas. Revisa que el backend esté corriendo.</p>}
       {!error && resenas === null && <p className="estado-vacio">Cargando reseñas...</p>}
@@ -71,6 +92,8 @@ function Resenas() {
           </article>
         ))}
       </div>
+
+      {modalAbierto && <NuevaResenaModal onClose={() => setModalAbierto(false)} onCreada={cargar} />}
     </section>
   );
 }
