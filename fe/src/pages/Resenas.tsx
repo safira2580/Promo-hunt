@@ -31,7 +31,7 @@ function Resenas() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/resenas`)
+    fetch(`${API_URL}/api/v1/resenas`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setResenas)
       .catch(() => setError(true));
