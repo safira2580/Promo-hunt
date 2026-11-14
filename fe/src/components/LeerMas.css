@@ -1,0 +1,6 @@
+.btn-leer-mas { display: inline-block; margin-top: 1.5rem; padding: 0.9rem 2rem; border: 0; border-radius: 2rem; background-color: var(--primary-color); color: #fff; font: inherit; font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: 0.3s ease; }
+.btn-leer-mas:hover { background-color: var(--secondary-color); }
+
+.noticia-modal { max-width: 520px; }
+.noticia-fecha { color: #22d3ee; font-weight: 600; }
+.noticia-img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 1rem; margin: 0 0 1rem; display: block; }

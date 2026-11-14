@@ -1,3 +1,4 @@
+import LeerMas from "./LeerMas";
 import {
   FaMagnifyingGlass,
   FaLink
@@ -55,7 +56,7 @@ function Blogs() {
               <h3>{n.titulo}</h3>
               <span>{n.fecha}</span>
               <p>{n.contenido}</p>
-              <div className="btn-read-more">Leer más</div>
+              <LeerMas noticia={n} />
             </div>
           </div>
         ))}
