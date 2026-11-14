@@ -4,6 +4,7 @@ import { FaUser, FaLock, FaEnvelope } from "react-icons/fa6";
 
 import "./Login.css";
 import { API_URL } from "../config";
+import { mensajeDeError } from "../api";
 
 function Registro() {
 
@@ -26,72 +27,43 @@ function Registro() {
     setExito("");
     setCargando(true);
 
-
     try {
 
-      const respuesta = await fetch(
-        `${API_URL}/api/registrate`,
-        {
-          method: "POST",
+      const respuesta = await fetch(`${API_URL}/api/v1/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: nombre.trim(),
+          correo: correo.trim(),
+          contrasena: contrasena,
+        }),
+      });
 
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            nombre: nombre,
-            correo: correo,
-            contrasena: contrasena,
-          }),
-        }
-      );
-
-
-      const datos = await respuesta.json();
-
+      const datos = await respuesta.json().catch(() => ({}));
 
       if (!respuesta.ok) {
-
-        setMensaje(
-          datos.mensaje || "No se pudo crear la cuenta"
-        );
-
+        // Muestra el detalle del backend (correo repetido, contraseña débil, etc.)
+        setMensaje(mensajeDeError(datos, "No se pudo crear la cuenta"));
         setCargando(false);
-
         return;
       }
 
-
-      setExito(
-        "Cuenta creada correctamente ✅"
-      );
-
+      setExito("Cuenta creada correctamente ✅");
 
       setNombre("");
       setCorreo("");
       setContrasena("");
 
-
       setTimeout(() => {
-
         navigate("/login");
-
       }, 1500);
-
 
     } catch (error) {
 
-      console.error(
-        "Error registrando usuario:",
-        error
-      );
-
-      setMensaje(
-        "No se pudo conectar con el servidor"
-      );
+      console.error("Error registrando usuario:", error);
+      setMensaje("No se pudo conectar con el servidor");
 
     }
-
 
     setCargando(false);
 
@@ -106,9 +78,7 @@ function Registro() {
 
         <form onSubmit={registrarse}>
 
-          <h1>
-            Crear cuenta
-          </h1>
+          <h1>Crear cuenta</h1>
 
 
           {/* NOMBRE */}
@@ -119,9 +89,7 @@ function Registro() {
               type="text"
               placeholder="Nombre"
               value={nombre}
-              onChange={(e) =>
-                setNombre(e.target.value)
-              }
+              onChange={(e) => setNombre(e.target.value)}
               required
             />
 
@@ -138,9 +106,7 @@ function Registro() {
               type="email"
               placeholder="Correo"
               value={correo}
-              onChange={(e) =>
-                setCorreo(e.target.value)
-              }
+              onChange={(e) => setCorreo(e.target.value)}
               required
             />
 
@@ -157,9 +123,7 @@ function Registro() {
               type="password"
               placeholder="Contraseña"
               value={contrasena}
-              onChange={(e) =>
-                setContrasena(e.target.value)
-              }
+              onChange={(e) => setContrasena(e.target.value)}
               required
             />
 
@@ -171,22 +135,18 @@ function Registro() {
           {/* MENSAJE ERROR */}
 
           {mensaje && (
-
             <div className="error">
               {mensaje}
             </div>
-
           )}
 
 
           {/* MENSAJE ÉXITO */}
 
           {exito && (
-
             <div className="success">
               {exito}
             </div>
-
           )}
 
 
@@ -197,11 +157,7 @@ function Registro() {
             className="btn"
             disabled={cargando}
           >
-
-            {cargando
-              ? "Creando cuenta..."
-              : "Registrarse"}
-
+            {cargando ? "Creando cuenta..." : "Registrarse"}
           </button>
 
 
@@ -218,11 +174,8 @@ function Registro() {
               <a
                 href="#"
                 onClick={(e) => {
-
                   e.preventDefault();
-
                   navigate("/login");
-
                 }}
               >
                 Inicia sesión
@@ -231,7 +184,6 @@ function Registro() {
             </p>
 
           </div>
-
 
         </form>
 

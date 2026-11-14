@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaGift, FaArrowLeft } from "react-icons/fa6";
-import { API_URL } from "../config";
+import { obtenerSesion } from "../api";
 import "../components/Extras.css";
 
 const CORREO = "promohunt@gmail.com";
@@ -19,8 +19,10 @@ function TarjetasRegalo() {
   const [sesion, setSesion] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/usuario/me`, { credentials: "include" })
-      .then((r) => setSesion(r.ok))
+    // obtenerSesion() consulta /api/v1/auth/me con el token Bearer
+    // y devuelve null si no hay token o no es válido.
+    obtenerSesion()
+      .then((usuario) => setSesion(usuario !== null))
       .catch(() => setSesion(false));
   }, []);
 
