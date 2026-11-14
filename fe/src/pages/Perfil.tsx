@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 import {
   FaSteam,
   FaXbox,
@@ -10,6 +9,7 @@ import {
 
 import "./Perfil.css";
 import { API_URL } from "../config";
+import { authFetch, getToken, setToken, mensajeDeError } from "../api";
 
 interface Usuario {
   id_usuario: number;
@@ -32,96 +32,72 @@ function Perfil() {
 
   const navigate = useNavigate();
 
-  const [usuario, setUsuario] =
-    useState<Usuario | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [crossplay, setCrossplay] = useState<Crossplay | null>(null);
+  const [cargando, setCargando] = useState(true);
 
-  const [crossplay, setCrossplay] =
-    useState<Crossplay | null>(null);
-
-  const [cargando, setCargando] =
-    useState(true);
-
-  // ==========================================
   // EDITAR PERFIL
-  // ==========================================
-
-  const [editando, setEditando] =
-    useState(false);
-
-  const [nombreEditado, setNombreEditado] =
-    useState("");
-
-  const [correoEditado, setCorreoEditado] =
-    useState("");
-
-  const [contrasenaActual, setContrasenaActual] =
-    useState("");
-
-  const [nuevaContrasena, setNuevaContrasena] =
-    useState("");
-
-  const [mensaje, setMensaje] =
-    useState("");
-
-  const [guardando, setGuardando] =
-    useState(false);
+  const [editando, setEditando] = useState(false);
+  const [nombreEditado, setNombreEditado] = useState("");
+  const [correoEditado, setCorreoEditado] = useState("");
+  const [contrasenaActual, setContrasenaActual] = useState("");
+  const [nuevaContrasena, setNuevaContrasena] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [guardando, setGuardando] = useState(false);
 
 
   // ==========================================
   // OBTENER PERFIL
+  // El backend usa token Bearer (localStorage), no cookies.
   // ==========================================
 
   useEffect(() => {
+
+    // Sin token no hay sesión: directo al login
+    if (!getToken()) {
+      navigate("/login");
+      return;
+    }
 
     const obtenerPerfil = async () => {
 
       try {
 
-        const respuesta = await fetch(
-          `${API_URL}/api/usuario/perfil`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
+        const respuesta = await authFetch(`${API_URL}/api/v1/usuario/perfil`);
 
-        const datos = await respuesta.json();
-
-        console.log(
-          "Respuesta perfil:",
-          datos
-        );
+        const datos = await respuesta.json().catch(() => ({}));
 
         if (!respuesta.ok) {
 
-          console.log(
-            "La sesión no fue reconocida por Flask"
-          );
+          // Solo un 401 significa que la sesión no es válida
+          if (respuesta.status === 401) {
+            setToken(null);
+            navigate("/login");
+            return;
+          }
 
-          navigate("/login");
-
+          console.error("Error obteniendo perfil:", respuesta.status, datos);
+          setMensaje(mensajeDeError(datos, "No se pudo cargar el perfil"));
+          setCargando(false);
           return;
         }
 
-        setUsuario(datos.usuario);
-        setCrossplay(datos.crossplay);
+        // Admite { usuario, crossplay } o el usuario directamente
+        const u: Usuario = datos.usuario ?? datos;
+
+        setUsuario(u);
+        setCrossplay(datos.crossplay ?? null);
 
         // Datos iniciales para edición
-        setNombreEditado(datos.usuario.nombre);
-        setCorreoEditado(datos.usuario.correo);
+        setNombreEditado(u.nombre);
+        setCorreoEditado(u.correo);
 
         setCargando(false);
 
       } catch (error) {
 
-        console.error(
-          "Error obteniendo perfil:",
-          error
-        );
-
+        console.error("Error obteniendo perfil:", error);
+        setMensaje("No se pudo conectar con el servidor");
         setCargando(false);
 
       }
@@ -134,7 +110,7 @@ function Perfil() {
 
 
   // ==========================================
-  // ACTIVAR EDICIÓN
+  // ACTIVAR / CANCELAR EDICIÓN
   // ==========================================
 
   const comenzarEdicion = () => {
@@ -145,19 +121,12 @@ function Perfil() {
 
     setNombreEditado(usuario.nombre);
     setCorreoEditado(usuario.correo);
-
     setContrasenaActual("");
     setNuevaContrasena("");
     setMensaje("");
-
     setEditando(true);
 
   };
-
-
-  // ==========================================
-  // CANCELAR EDICIÓN
-  // ==========================================
 
   const cancelarEdicion = () => {
 
@@ -167,11 +136,9 @@ function Perfil() {
 
     setNombreEditado(usuario.nombre);
     setCorreoEditado(usuario.correo);
-
     setContrasenaActual("");
     setNuevaContrasena("");
     setMensaje("");
-
     setEditando(false);
 
   };
@@ -188,145 +155,77 @@ function Perfil() {
     }
 
     if (!nombreEditado.trim()) {
-
-      setMensaje(
-        "El nombre de usuario no puede estar vacío"
-      );
-
+      setMensaje("El nombre de usuario no puede estar vacío");
       return;
     }
 
     if (!correoEditado.trim()) {
-
-      setMensaje(
-        "El correo no puede estar vacío"
-      );
-
+      setMensaje("El correo no puede estar vacío");
       return;
     }
 
-    // Si quiere cambiar contraseña,
-    // debe llenar ambos campos
-
-    if (
-      nuevaContrasena &&
-      !contrasenaActual
-    ) {
-
-      setMensaje(
-        "Debes ingresar tu contraseña actual"
-      );
-
+    // Si quiere cambiar contraseña, debe llenar ambos campos
+    if (nuevaContrasena && !contrasenaActual) {
+      setMensaje("Debes ingresar tu contraseña actual");
       return;
     }
 
-    if (
-      contrasenaActual &&
-      !nuevaContrasena
-    ) {
-
-      setMensaje(
-        "Debes ingresar la nueva contraseña"
-      );
-
+    if (contrasenaActual && !nuevaContrasena) {
+      setMensaje("Debes ingresar la nueva contraseña");
       return;
     }
-
 
     setMensaje("");
     setGuardando(true);
 
-
     try {
 
-      const respuesta = await fetch(
-        `${API_URL}/api/usuario/editar`,
-        {
-          method: "PUT",
+      const respuesta = await authFetch(`${API_URL}/api/v1/usuario/editar`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: nombreEditado.trim(),
+          correo: correoEditado.trim(),
+          contrasena_actual: contrasenaActual,
+          nueva_contrasena: nuevaContrasena
+        })
+      });
 
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          credentials: "include",
-
-          body: JSON.stringify({
-
-            nombre:
-              nombreEditado.trim(),
-
-            correo:
-              correoEditado.trim(),
-
-            contrasena_actual:
-              contrasenaActual,
-
-            nueva_contrasena:
-              nuevaContrasena
-
-          })
-
-        }
-      );
-
-
-      const datos = await respuesta.json();
-
+      const datos = await respuesta.json().catch(() => ({}));
 
       if (!respuesta.ok) {
 
-        setMensaje(
-          datos.mensaje ||
-          "No se pudieron guardar los cambios"
-        );
+        if (respuesta.status === 401 && !contrasenaActual) {
+          // Token vencido o inválido
+          setToken(null);
+          navigate("/login");
+          return;
+        }
 
+        setMensaje(mensajeDeError(datos, "No se pudieron guardar los cambios"));
         setGuardando(false);
-
         return;
+
       }
 
-
-      // ==========================================
       // ACTUALIZAR DATOS EN PANTALLA
-      // ==========================================
-
       setUsuario({
-
         ...usuario,
-
-        nombre:
-          nombreEditado.trim(),
-
-        correo:
-          correoEditado.trim()
-
+        nombre: nombreEditado.trim(),
+        correo: correoEditado.trim()
       });
 
-
-      // ==========================================
       // LIMPIAR CONTRASEÑAS
-      // ==========================================
-
       setContrasenaActual("");
       setNuevaContrasena("");
 
-
-      setMensaje(
-        "Perfil actualizado correctamente ✓"
-      );
-
+      setMensaje("Perfil actualizado correctamente ✓");
       setEditando(false);
 
     } catch (error) {
 
-      console.error(
-        "Error actualizando perfil:",
-        error
-      );
-
-      setMensaje(
-        "No se pudo conectar con el servidor"
-      );
+      console.error("Error actualizando perfil:", error);
+      setMensaje("No se pudo conectar con el servidor");
 
     }
 
@@ -337,31 +236,14 @@ function Perfil() {
 
   // ==========================================
   // CERRAR SESIÓN
+  // El backend no tiene /logout: el token vive en el navegador,
+  // así que basta con descartarlo y recargar.
   // ==========================================
 
-  const cerrarSesion = async () => {
+  const cerrarSesion = () => {
 
-    try {
-
-      await fetch(
-        `${API_URL}/api/logout`,
-        {
-          method: "POST",
-          credentials: "include"
-        }
-      );
-
-      navigate("/");
-      window.location.reload();
-
-    } catch (error) {
-
-      console.error(
-        "Error cerrando sesión:",
-        error
-      );
-
-    }
+    setToken(null);
+    window.location.assign("/");
 
   };
 
@@ -380,9 +262,12 @@ function Perfil() {
 
   }
 
-
   if (!usuario) {
-    return null;
+
+    return mensaje ? (
+      <div className="perfil-cargando">{mensaje}</div>
+    ) : null;
+
   }
 
 
@@ -391,34 +276,20 @@ function Perfil() {
   // ==========================================
 
   const fotoPerfil = usuario.foto_perfil
-  ? usuario.foto_perfil
-  : "/img/default-user.jpg";
+    ? usuario.foto_perfil
+    : "/img/default-user.jpg";
 
 
   // ==========================================
   // PLATAFORMAS
   // ==========================================
 
-  const estaConectada = (
-    estado?: number | boolean
-  ) => {
-
-    return (
-      estado === 1 ||
-      estado === true
-    );
-
+  const estaConectada = (estado?: number | boolean) => {
+    return estado === 1 || estado === true;
   };
 
-
-  const estadoPlataforma = (
-    estado?: number | boolean
-  ) => {
-
-    return estaConectada(estado)
-      ? "✓ Conectada"
-      : "No conectada";
-
+  const estadoPlataforma = (estado?: number | boolean) => {
+    return estaConectada(estado) ? "✓ Conectada" : "No conectada";
   };
 
 
@@ -432,10 +303,7 @@ function Perfil() {
 
       <div className="perfil-contenedor">
 
-
-        {/* =====================================
-            CABECERA
-        ===================================== */}
+        {/* CABECERA */}
 
         <div className="perfil-cabecera">
 
@@ -445,28 +313,20 @@ function Perfil() {
             className="perfil-foto"
           />
 
-          <h1>
-            {usuario.nombre}
-          </h1>
+          <h1>{usuario.nombre}</h1>
 
-          <p>
-            Usuario de PromoHunt
-          </p>
+          <p>Usuario de PromoHunt</p>
 
         </div>
 
 
-        {/* =====================================
-            INFORMACIÓN DE USUARIO
-        ===================================== */}
+        {/* INFORMACIÓN DE USUARIO */}
 
         <div className="perfil-seccion">
 
           <div className="perfil-titulo">
 
-            <h2>
-              Información de usuario
-            </h2>
+            <h2>Información de usuario</h2>
 
             {!editando && (
 
@@ -484,19 +344,11 @@ function Perfil() {
 
           <div className="perfil-datos">
 
-
             {/* ID */}
 
             <div className="perfil-dato">
-
-              <span>
-                ID de usuario
-              </span>
-
-              <strong>
-                {usuario.id_usuario}
-              </strong>
-
+              <span>ID de usuario</span>
+              <strong>{usuario.id_usuario}</strong>
             </div>
 
 
@@ -504,28 +356,20 @@ function Perfil() {
 
             <div className="perfil-dato">
 
-              <span>
-                Nombre de usuario
-              </span>
+              <span>Nombre de usuario</span>
 
               {editando ? (
 
                 <input
                   type="text"
                   value={nombreEditado}
-                  onChange={(e) =>
-                    setNombreEditado(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setNombreEditado(e.target.value)}
                   className="input-editar"
                 />
 
               ) : (
 
-                <strong>
-                  {usuario.nombre}
-                </strong>
+                <strong>{usuario.nombre}</strong>
 
               )}
 
@@ -536,28 +380,20 @@ function Perfil() {
 
             <div className="perfil-dato">
 
-              <span>
-                Correo electrónico
-              </span>
+              <span>Correo electrónico</span>
 
               {editando ? (
 
                 <input
                   type="email"
                   value={correoEditado}
-                  onChange={(e) =>
-                    setCorreoEditado(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setCorreoEditado(e.target.value)}
                   className="input-editar"
                 />
 
               ) : (
 
-                <strong>
-                  {usuario.correo}
-                </strong>
+                <strong>{usuario.correo}</strong>
 
               )}
 
@@ -572,18 +408,12 @@ function Perfil() {
 
                 <div className="perfil-dato">
 
-                  <span>
-                    Contraseña actual
-                  </span>
+                  <span>Contraseña actual</span>
 
                   <input
                     type="password"
                     value={contrasenaActual}
-                    onChange={(e) =>
-                      setContrasenaActual(
-                        e.target.value
-                      )
-                    }
+                    onChange={(e) => setContrasenaActual(e.target.value)}
                     placeholder="Contraseña actual"
                     className="input-editar"
                   />
@@ -593,18 +423,12 @@ function Perfil() {
 
                 <div className="perfil-dato">
 
-                  <span>
-                    Nueva contraseña
-                  </span>
+                  <span>Nueva contraseña</span>
 
                   <input
                     type="password"
                     value={nuevaContrasena}
-                    onChange={(e) =>
-                      setNuevaContrasena(
-                        e.target.value
-                      )
-                    }
+                    onChange={(e) => setNuevaContrasena(e.target.value)}
                     placeholder="Nueva contraseña"
                     className="input-editar"
                   />
@@ -620,13 +444,10 @@ function Perfil() {
 
             <div className="perfil-dato">
 
-              <span>
-                Fecha de registro
-              </span>
+              <span>Fecha de registro</span>
 
               <strong>
-                {usuario.fecha_registro ||
-                  "No disponible"}
+                {usuario.fecha_registro || "No disponible"}
               </strong>
 
             </div>
@@ -636,23 +457,16 @@ function Perfil() {
 
             <div className="perfil-dato">
 
-              <span>
-                Rol
-              </span>
+              <span>Rol</span>
 
-              <strong>
-                {usuario.rol || "Usuario"}
-              </strong>
+              <strong>{usuario.rol || "Usuario"}</strong>
 
             </div>
-
 
           </div>
 
 
-          {/* =====================================
-              BOTONES DE EDICIÓN
-          ===================================== */}
+          {/* BOTONES DE EDICIÓN */}
 
           {editando && (
 
@@ -663,13 +477,8 @@ function Perfil() {
                 onClick={guardarCambios}
                 disabled={guardando}
               >
-
-                {guardando
-                  ? "Guardando..."
-                  : "💾 Guardar cambios"}
-
+                {guardando ? "Guardando..." : "💾 Guardar cambios"}
               </button>
-
 
               <button
                 className="boton-cancelar"
@@ -684,9 +493,7 @@ function Perfil() {
           )}
 
 
-          {/* =====================================
-              MENSAJE
-          ===================================== */}
+          {/* MENSAJE */}
 
           {mensaje && (
 
@@ -699,50 +506,35 @@ function Perfil() {
         </div>
 
 
-        {/* =====================================
-            PLATAFORMAS
-        ===================================== */}
+        {/* PLATAFORMAS */}
 
         <div className="perfil-seccion">
 
-          <h2>
-            Mis plataformas
-          </h2>
+          <h2>Mis plataformas</h2>
 
           <p className="crossplay-descripcion">
             Plataformas vinculadas a tu cuenta.
           </p>
 
-
           <div className="plataformas">
-
 
             {/* STEAM */}
 
             <div className="plataforma">
 
               <div className="plataforma-nombre">
-
                 <FaSteam />
-
-                <span>
-                  Steam
-                </span>
-
+                <span>Steam</span>
               </div>
 
               <span
                 className={
-                  estaConectada(
-                    crossplay?.steam
-                  )
+                  estaConectada(crossplay?.steam)
                     ? "estado conectado"
                     : "estado"
                 }
               >
-                {estadoPlataforma(
-                  crossplay?.steam
-                )}
+                {estadoPlataforma(crossplay?.steam)}
               </span>
 
             </div>
@@ -753,29 +545,18 @@ function Perfil() {
             <div className="plataforma">
 
               <div className="plataforma-nombre">
-
-                <span className="icono-texto">
-                  🎮
-                </span>
-
-                <span>
-                  Epic Games
-                </span>
-
+                <span className="icono-texto">🎮</span>
+                <span>Epic Games</span>
               </div>
 
               <span
                 className={
-                  estaConectada(
-                    crossplay?.epic_games
-                  )
+                  estaConectada(crossplay?.epic_games)
                     ? "estado conectado"
                     : "estado"
                 }
               >
-                {estadoPlataforma(
-                  crossplay?.epic_games
-                )}
+                {estadoPlataforma(crossplay?.epic_games)}
               </span>
 
             </div>
@@ -786,27 +567,18 @@ function Perfil() {
             <div className="plataforma">
 
               <div className="plataforma-nombre">
-
                 <FaXbox />
-
-                <span>
-                  Xbox
-                </span>
-
+                <span>Xbox</span>
               </div>
 
               <span
                 className={
-                  estaConectada(
-                    crossplay?.xbox_store
-                  )
+                  estaConectada(crossplay?.xbox_store)
                     ? "estado conectado"
                     : "estado"
                 }
               >
-                {estadoPlataforma(
-                  crossplay?.xbox_store
-                )}
+                {estadoPlataforma(crossplay?.xbox_store)}
               </span>
 
             </div>
@@ -817,27 +589,18 @@ function Perfil() {
             <div className="plataforma">
 
               <div className="plataforma-nombre">
-
                 <FaPlaystation />
-
-                <span>
-                  PlayStation
-                </span>
-
+                <span>PlayStation</span>
               </div>
 
               <span
                 className={
-                  estaConectada(
-                    crossplay?.playstation_store
-                  )
+                  estaConectada(crossplay?.playstation_store)
                     ? "estado conectado"
                     : "estado"
                 }
               >
-                {estadoPlataforma(
-                  crossplay?.playstation_store
-                )}
+                {estadoPlataforma(crossplay?.playstation_store)}
               </span>
 
             </div>
@@ -848,63 +611,46 @@ function Perfil() {
             <div className="plataforma">
 
               <div className="plataforma-nombre">
-
-                <span className="icono-texto">
-                  🎯
-                </span>
-
-                <span>
-                  Riot Games
-                </span>
-
+                <span className="icono-texto">🎯</span>
+                <span>Riot Games</span>
               </div>
 
               <span
                 className={
-                  estaConectada(
-                    crossplay?.riot_games
-                  )
+                  estaConectada(crossplay?.riot_games)
                     ? "estado conectado"
                     : "estado"
                 }
               >
-                {estadoPlataforma(
-                  crossplay?.riot_games
-                )}
+                {estadoPlataforma(crossplay?.riot_games)}
               </span>
 
             </div>
-
 
           </div>
 
         </div>
 
 
-      {/* =====================================
-      ADMINISTRACIÓN
-      ===================================== */}
+        {/* ADMINISTRACIÓN */}
 
-{usuario.rol?.toLowerCase() === "admin" && (
+        {usuario.rol?.toLowerCase() === "admin" && (
 
-  <div className="perfil-botones">
+          <div className="perfil-botones">
 
-    <button
-      onClick={() => navigate("/admin")}
-      className="boton-admin"
-    >
-      ⚙️ Panel de administrador
-    </button>
+            <button
+              onClick={() => navigate("/admin")}
+              className="boton-admin"
+            >
+              ⚙️ Panel de administrador
+            </button>
 
-  </div>
+          </div>
 
-)}
-              
+        )}
 
 
-        {/* =====================================
-            CERRAR SESIÓN
-        ===================================== */}
+        {/* CERRAR SESIÓN */}
 
         <div className="perfil-botones">
 
@@ -916,7 +662,6 @@ function Perfil() {
           </button>
 
         </div>
-
 
       </div>
 
