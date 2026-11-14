@@ -1,0 +1,136 @@
+/* Estilos compartidos de los formularios del panel de administrador */
+
+.adm-aviso {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+
+.adm-aviso.ok {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+
+.adm-aviso.error {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #f87171;
+}
+
+/* Cuerpo del modal con scroll para formularios largos */
+.adm-modal-cuerpo {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 6px;
+  margin-top: 8px;
+}
+
+.adm-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.adm-seccion {
+  grid-column: 1 / -1;
+  margin: 6px 0 -4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #22d3ee;
+}
+
+.adm-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.adm-campo.ancho {
+  grid-column: 1 / -1;
+}
+
+.adm-campo label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.adm-campo small {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.adm-campo input,
+.adm-campo select,
+.adm-campo textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #0b1220;
+  color: #f1f5f9;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.adm-campo textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.adm-campo input:focus,
+.adm-campo select:focus,
+.adm-campo textarea:focus {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+
+/* Texto largo en celdas de tabla */
+.adm-celda-corta {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Selector de calificación (1 a 5 estrellas) */
+.adm-estrellas {
+  display: flex;
+  gap: 6px;
+}
+
+.adm-estrellas button {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #0b1220;
+  color: #475569;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.adm-estrellas button:hover {
+  transform: translateY(-1px);
+  border-color: #22d3ee;
+}
+
+.adm-estrellas button.activa {
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.5);
+}
+
+@media (max-width: 600px) {
+  .adm-form {
+    grid-template-columns: 1fr;
+  }
+}
