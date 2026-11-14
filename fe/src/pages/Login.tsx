@@ -21,34 +21,26 @@ function Login() {
     setCargando(true);
 
     try {
-     const respuesta = await fetch(
-  `${API_URL}/api/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            correo: correo,
-            contrasena: contrasena,
-          }),
-        }
-      );
+      const respuesta = await fetch(`${API_URL}/api/v1/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo, contrasena }),
+      });
 
-      const datos = await respuesta.json();
+      const datos = await respuesta.json().catch(() => ({}));
 
       if (!respuesta.ok) {
-        setMensaje(
-          datos.mensaje || "Correo o contraseña incorrectos"
-        );
+        setMensaje(mensajeDeError(datos, "Correo o contraseña incorrectos"));
         setCargando(false);
         return;
       }
 
-      console.log("Usuario conectado:", datos.usuario);
+      setToken(datos.access_token);
 
-      navigate((location.state as { desde?: string } | null)?.desde ?? "/");
+      // Recarga completa para que el Header vuelva a consultar la sesión
+      const destino = (location.state as { desde?: string } | null)?.desde ?? "/";
+      window.location.assign(destino);
+      return;
     } catch (error) {
       console.error("Error iniciando sesión:", error);
       setMensaje("No se pudo conectar con el servidor");
@@ -56,8 +48,7 @@ function Login() {
 
     setCargando(false);
   };
-
-  return (
+return (
     <section className="login-page">
       <div className="wrapper">
 
