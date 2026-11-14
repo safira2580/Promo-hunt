@@ -184,7 +184,9 @@ def calificar_juego(
         raise HTTPException(status_code=422, detail="La calificación debe ser de 1 a 5")
     comentario = (datos.comentario or "").strip()[:1000] or None
     titulo = (datos.titulo or "").strip()[:100] or None
-    juego = db.execute(text("SELECT 1 FROM juego WHERE id_juego = :j"), {"j": datos.id_juego}).first()
+    juego = db.execute(
+        text("SELECT 1 FROM juego WHERE id_juego = :j"), {"j": datos.id_juego}
+    ).first()
     if not juego:
         raise HTTPException(status_code=404, detail="Juego no encontrado")
     previa = db.execute(
@@ -205,7 +207,13 @@ def calificar_juego(
                 "INSERT INTO resena (id_usuario, id_juego, titulo, comentario, calificacion) "
                 "VALUES (:u, :j, :t, :m, :c)"
             ),
-            {"u": current_user.id_usuario, "j": datos.id_juego, "t": titulo, "m": comentario, "c": datos.calificacion},
+            {
+                "u": current_user.id_usuario,
+                "j": datos.id_juego,
+                "t": titulo,
+                "m": comentario,
+                "c": datos.calificacion,
+            },
         )
     db.commit()
     return {"ok": True}
