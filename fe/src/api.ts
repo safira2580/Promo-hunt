@@ -1,3 +1,4 @@
+(import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "")
 /**
  * Cliente HTTP central de PromoHunt.
  *
