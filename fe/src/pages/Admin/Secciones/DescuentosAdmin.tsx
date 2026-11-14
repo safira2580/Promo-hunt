@@ -30,6 +30,14 @@ const dinero = (v: number | string | null | undefined) =>
 
 const soloFecha = (v?: string | null) => (v ? v.slice(0, 10) : "");
 
+const hoyLocal = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+/** La fecha de fin es el último día de vigencia: vencida si ya pasó ese día. */
+const vencida = (fin?: string | null) => !!fin && fin < hoyLocal();
+
 const formularioVacio = (): Descuento => ({
   id_juego: "",
   id_plataforma: "",
@@ -222,7 +230,7 @@ function DescuentosAdmin() {
             precio_descuento: Number(editando.precio_descuento),
             fecha_inicio: editando.fecha_inicio || null,
             fecha_fin: editando.fecha_fin || null,
-            estado: editando.estado,
+            estado: vencida(editando.fecha_fin) ? "Inactivo" : editando.estado,
           }),
         }
       );
@@ -624,6 +632,12 @@ function DescuentosAdmin() {
                   value={editando.fecha_fin ?? ""}
                   onChange={(e) => cambiar("fecha_fin", e.target.value)}
                 />
+
+                <small>
+                  {vencida(editando.fecha_fin)
+                    ? "Esta fecha ya pasó: el descuento se guardará como Inactivo."
+                    : "Al terminar este día, el descuento pasa solo a Inactivo."}
+                </small>
 
               </div>
 

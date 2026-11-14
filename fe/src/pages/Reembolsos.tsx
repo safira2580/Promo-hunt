@@ -4,6 +4,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { API_URL } from "../config";
 import { imagenJuego } from "../imagenJuego";
 import "../components/Extras.css";
+import "./Reembolsos.css";
 
 interface JuegoLista {
   id_juego: number;
@@ -84,7 +85,7 @@ function Reembolsos() {
   };
 
   return (
-    <section className="container pagina-extra">
+    <section className="container pagina-extra pagina-reembolsos">
       <button className="boton-volver" type="button" onClick={() => navigate("/")}>
         <FaArrowLeft /> Volver
       </button>
