@@ -152,6 +152,13 @@ function Products({ categoriaActiva = null }: ProductsProps) {
                     -{juego.porcentaje_descuento}%
                   </span>
 
+                  {/* CORAZÓN FIJO CUANDO ES FAVORITO */}
+                  {favoritos.includes(juego.id_juego) && (
+                    <span className="fav-badge" aria-hidden="true">
+                      <FaHeart />
+                    </span>
+                  )}
+
                   {/* ICONOS */}
                   <div className="button-group">
                     <span
