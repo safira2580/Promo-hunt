@@ -19,6 +19,7 @@ import fc26 from "../assets/img/fc26.jpg";
 import spider2 from "../assets/img/spider2.jpg";
 import forza6 from "../assets/img/Forza6.jpg";
 import { API_URL } from "../config";
+import { apiFetch, getToken, setToken } from "../api";
 
 
 interface Juego {
@@ -45,23 +46,14 @@ interface Usuario {
    ========================================== */
 
 const imagenes: { [key: string]: string } = {
-
   "GTA V": gta5,
-
   "F1 25": f125,
-
   "resident evil requiem": requiem,
-
   "Dying Light The Beast": dytb,
-
   "Assassins Creed Mirage": mirage,
-
   "EA FC 26": fc26,
-
   "Spiderman 2": spider2,
-
   "Forza Horizon 6": forza6,
-
 };
 
 
@@ -74,71 +66,55 @@ function Header() {
   const navigate = useNavigate();
 
 
-  /* ==========================================
-     BUSCADOR
-     ========================================== */
+  /* BUSCADOR */
 
   const [busqueda, setBusqueda] = useState("");
-
   const [juegos, setJuegos] = useState<Juego[]>([]);
-
   const [mostrarResultados, setMostrarResultados] = useState(false);
 
 
-  /* ==========================================
-     USUARIO
-     ========================================== */
+  /* USUARIO */
 
   const [usuario, setUsuario] = useState<Usuario | null>(null);
 
 
   /* ==========================================
      COMPROBAR SESIÓN
+     El backend usa token Bearer (guardado en localStorage),
+     no cookies. /api/v1/auth/me devuelve el usuario directamente.
      ========================================== */
 
   useEffect(() => {
 
-    fetch(
-      `${API_URL}/api/usuario/me`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    )
+    // Sin token no hay sesión: se evita una petición inútil en cada carga
+    if (!getToken()) {
+      return;
+    }
+
+    apiFetch("/api/v1/auth/me")
 
       .then(async (respuesta) => {
 
         if (!respuesta.ok) {
 
-          setUsuario(null);
+          // Solo se descarta el token si el servidor dice que no es válido.
+          // Un 404/500 temporal no debe cerrar la sesión.
+          if (respuesta.status === 401) {
+            setToken(null);
+          }
 
+          setUsuario(null);
           return;
 
         }
 
-
-        const datos = await respuesta.json();
-
-
-        if (datos.logueado) {
-
-          setUsuario(datos.usuario);
-
-        } else {
-
-          setUsuario(null);
-
-        }
+        setUsuario(await respuesta.json());
 
       })
 
       .catch((error) => {
 
-        console.error(
-          "Error comprobando sesión:",
-          error
-        );
-
+        console.error("Error comprobando sesión:", error);
         setUsuario(null);
 
       });
@@ -153,53 +129,38 @@ function Header() {
   useEffect(() => {
 
     if (busqueda.trim() === "") {
-
       setJuegos([]);
-
       setMostrarResultados(false);
-
       return;
-
     }
 
+    fetch(`${API_URL}/api/v1/juegos?buscar=${encodeURIComponent(busqueda)}`)
 
-    fetch(
-      `${API_URL}/api/v1/juegos?buscar=${encodeURIComponent(busqueda)}`
-    )
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
 
-      .then(res => res.json())
-
-      .then(data => {
-
-        setJuegos(data);
-
+      .then((data) => {
+        setJuegos(Array.isArray(data) ? data : []);
         setMostrarResultados(true);
-
       })
 
-      .catch(error => {
-
-        console.error(
-          "Error buscando juegos:",
-          error
-        );
-
+      .catch((error) => {
+        console.error("Error buscando juegos:", error);
         setJuegos([]);
-
       });
 
   }, [busqueda]);
 
 
-  /* ==========================================
-     ABRIR JUEGO
-     ========================================== */
+  /* ABRIR JUEGO */
 
   const abrirJuego = (id: number) => {
-
     window.location.href = `/juego/${id}`;
-
   };
+
+
+  const resultados = juegos.filter((juego) =>
+    juego.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
 
   /* ==========================================
@@ -210,14 +171,11 @@ function Header() {
 
     <header>
 
-      {/* ======================================
-          PARTE SUPERIOR
-          ====================================== */}
+      {/* PARTE SUPERIOR */}
 
       <div className="container-hero">
 
         <div className="container hero">
-
 
           {/* SOPORTE */}
 
@@ -244,51 +202,29 @@ function Header() {
 
           <div className="container-logo">
 
-            <img
-              src={logo}
-              alt="Logo"
-            />
+            <img src={logo} alt="Logo" />
 
             <h1 className="logo">
-
-              <a href="/">
-                PromoHunt
-              </a>
-
+              <a href="/">PromoHunt</a>
             </h1>
 
           </div>
 
 
-          {/* ==================================
-              USUARIO
-              ================================== */}
+          {/* USUARIO */}
 
           <div className="container-user">
 
             <button
               className="user-button"
-
               onClick={() => {
-
                 if (usuario) {
-
                   navigate("/perfil");
-
                 } else {
-
                   navigate("/login");
-
                 }
-
               }}
-
-              title={
-                usuario
-                  ? "Ver perfil"
-                  : "Iniciar sesión"
-              }
-
+              title={usuario ? "Ver perfil" : "Iniciar sesión"}
             >
 
               {usuario?.foto_perfil ? (
@@ -309,229 +245,101 @@ function Header() {
 
           </div>
 
-
         </div>
 
       </div>
 
 
-      {/* ======================================
-          NAVBAR
-          ====================================== */}
+      {/* NAVBAR */}
 
       <div className="container-navbar">
 
         <nav className="navbar container">
 
-
           <FaBars />
 
-
           <ul className="menu">
-
-            <li>
-
-              <a href="/">
-                Inicio
-              </a>
-
-            </li>
-
-
-            <li>
-
-              <a href="#">
-                Descuentos
-              </a>
-
-            </li>
-
-
-            <li>
-
-              <a href="#">
-                Juegos
-              </a>
-
-            </li>
-
-
-            <li>
-
-              <a href="#">
-                Plataformas
-              </a>
-
-            </li>
-
-
-            <li>
-
-              <a href="#">
-                Comunidad
-              </a>
-
-            </li>
-
+            <li><a href="/">Inicio</a></li>
+            <li><a href="#">Descuentos</a></li>
+            <li><a href="#">Juegos</a></li>
+            <li><a href="#">Plataformas</a></li>
+            <li><a href="#">Comunidad</a></li>
           </ul>
 
 
-          {/* ==================================
-              BUSCADOR
-              ================================== */}
+          {/* BUSCADOR */}
 
           <form
             className="search-form"
-
-            onSubmit={(e) =>
-              e.preventDefault()
-            }
+            onSubmit={(e) => e.preventDefault()}
           >
 
-
             <input
-
               type="search"
-
               placeholder="Buscar juegos..."
-
               value={busqueda}
-
               onChange={(e) => {
-
                 setBusqueda(e.target.value);
-
               }}
-
               onFocus={() => {
-
-                if (
-                  busqueda.trim() !== ""
-                ) {
-
+                if (busqueda.trim() !== "") {
                   setMostrarResultados(true);
-
                 }
-
               }}
-
             />
 
-
-            <button
-              type="submit"
-              className="btn-search"
-            >
-
+            <button type="submit" className="btn-search">
               <FaMagnifyingGlass />
-
             </button>
 
 
-            {/* ==================================
-                RESULTADOS
-                ================================== */}
+            {/* RESULTADOS */}
 
-            {mostrarResultados &&
-              busqueda.trim() !== "" && (
+            {mostrarResultados && busqueda.trim() !== "" && (
 
               <div className="search-results">
 
+                {resultados.length > 0 ? (
 
-                {juegos.filter((juego) =>
+                  resultados.map((juego) => (
 
-                  juego.nombre
-                    .toLowerCase()
-                    .includes(
-                      busqueda.toLowerCase()
-                    )
+                    <div
+                      className="search-result"
+                      key={juego.id_juego}
+                      onClick={() => abrirJuego(juego.id_juego)}
+                    >
 
-                ).length > 0 ? (
-
-
-                  juegos
-
-                    .filter((juego) =>
-
-                      juego.nombre
-                        .toLowerCase()
-                        .includes(
-                          busqueda.toLowerCase()
-                        )
-
-                    )
-
-                    .map((juego) => (
-
-                      <div
-
-                        className="search-result"
-
-                        key={juego.id_juego}
-
-                        onClick={() =>
-                          abrirJuego(
-                            juego.id_juego
-                          )
-                        }
-
-                      >
-
-
-                        <div className="search-result-info">
-
-                          <FaMagnifyingGlass />
-
-                          <span>
-                            {juego.nombre}
-                          </span>
-
-                        </div>
-
-
-                        <img
-
-                          src={
-                            imagenes[
-                              juego.nombre
-                            ] || ""
-                          }
-
-                          alt={juego.nombre}
-
-                        />
-
-
+                      <div className="search-result-info">
+                        <FaMagnifyingGlass />
+                        <span>{juego.nombre}</span>
                       </div>
 
-                    ))
+                      <img
+                        src={imagenes[juego.nombre] || ""}
+                        alt={juego.nombre}
+                      />
 
+                    </div>
+
+                  ))
 
                 ) : (
 
-
                   <div className="no-results">
-
                     No se encontraron juegos
-
                   </div>
 
-
                 )}
-
 
               </div>
 
             )}
 
-
           </form>
-
 
         </nav>
 
       </div>
-
 
     </header>
 
