@@ -25,7 +25,8 @@ def list_juegos(
             descuento.porcentaje_descuento,
             descuento.ahorro,
             descuento.estado,
-            plataforma.nombre AS plataforma
+            plataforma.nombre AS plataforma,
+            plataforma.url_tienda
         FROM juego
         INNER JOIN descuento ON juego.id_juego = descuento.id_juego
         INNER JOIN plataforma ON descuento.id_plataforma = plataforma.id_plataforma

@@ -3,14 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import gta5 from "../assets/img/gta5.jpg";
-import f125 from "../assets/img/f125.jpg";
-import requiem from "../assets/img/requiem.jpg";
-import dytb from "../assets/img/DYTB.jpg";
-import mirage from "../assets/img/asc mirage.jpg";
-import fc26 from "../assets/img/fc26.jpg";
-import spider2 from "../assets/img/spider2.jpg";
-import forza6 from "../assets/img/Forza6.jpg";
+import { imagenJuego } from "../imagenJuego";
 
 
 
@@ -51,16 +44,6 @@ interface Descuento {
 
 }
 
-const imagenesJuegos: { [key: number]: string } = {
-  1: gta5,
-  2: f125,
-  3: spider2,
-  4: requiem,
-  5: dytb,
-  6: mirage,
-  7: fc26,
-  8: forza6,
-};
 
 
 function JuegoDetalle() {
@@ -207,9 +190,7 @@ function JuegoDetalle() {
   // IMAGEN
   // ==========================================
 
-const imagenJuego =
-  imagenesJuegos[juego.id_juego] ||
-  "/default-game.jpg";
+const imagenPortada = imagenJuego(juego.nombre, juego.imagen);
 
 
   return (
@@ -231,7 +212,7 @@ const imagenJuego =
           <div className="juego-imagen">
 
             <img
-              src={imagenJuego}
+              src={imagenPortada}
               alt={juego.nombre}
             />
 

@@ -10,14 +10,7 @@ import {
 
 import logo from "../assets/img/logo.png";
 
-import gta5 from "../assets/img/gta5.jpg";
-import f125 from "../assets/img/f125.jpg";
-import requiem from "../assets/img/requiem.jpg";
-import dytb from "../assets/img/DYTB.jpg";
-import mirage from "../assets/img/asc mirage.jpg";
-import fc26 from "../assets/img/fc26.jpg";
-import spider2 from "../assets/img/spider2.jpg";
-import forza6 from "../assets/img/Forza6.jpg";
+import { imagenJuego } from "../imagenJuego";
 import { API_URL } from "../config";
 import { apiFetch, getToken, setToken } from "../api";
 
@@ -28,6 +21,7 @@ interface Juego {
   porcentaje_descuento?: number;
   precio_descuento?: number;
   precio_original?: number;
+  imagen?: string | null;
 }
 
 
@@ -45,16 +39,6 @@ interface Usuario {
    IMÁGENES DE LOS JUEGOS
    ========================================== */
 
-const imagenes: { [key: string]: string } = {
-  "GTA V": gta5,
-  "F1 25": f125,
-  "resident evil requiem": requiem,
-  "Dying Light The Beast": dytb,
-  "Assassins Creed Mirage": mirage,
-  "EA FC 26": fc26,
-  "Spiderman 2": spider2,
-  "Forza Horizon 6": forza6,
-};
 
 
 /* ==========================================
@@ -315,7 +299,7 @@ function Header() {
                       </div>
 
                       <img
-                        src={imagenes[juego.nombre] || ""}
+                        src={imagenJuego(juego.nombre, juego.imagen)}
                         alt={juego.nombre}
                       />
 

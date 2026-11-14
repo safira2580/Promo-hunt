@@ -3,26 +3,7 @@ import { FaHeart } from "react-icons/fa6";
 import { useFavoritos } from "../useFavoritos";
 import "../components/Extras.css";
 
-import gta5 from "../assets/img/gta5.jpg";
-import f125 from "../assets/img/f125.jpg";
-import requiem from "../assets/img/requiem.jpg";
-import dytb from "../assets/img/DYTB.jpg";
-import mirage from "../assets/img/asc mirage.jpg";
-import fc26 from "../assets/img/fc26.jpg";
-import spider2 from "../assets/img/spider2.jpg";
-import forza6 from "../assets/img/Forza6.jpg";
-import defaultImg from "../assets/img/default.jpg";
-
-const imagenes: Record<string, string> = {
-  "GTA V": gta5,
-  "F1 25": f125,
-  "resident evil requiem": requiem,
-  "Dying Light The Beast": dytb,
-  "Assassins Creed Mirage": mirage,
-  "EA FC 26": fc26,
-  "Spiderman 2": spider2,
-  "Forza Horizon 6": forza6,
-};
+import { imagenJuego } from "../imagenJuego";
 
 function Favoritos() {
   const navigate = useNavigate();
@@ -50,7 +31,7 @@ function Favoritos() {
         {items.map((juego) => (
           <div className="card-product" key={juego.id_juego}>
             <div className="container-img">
-              <img src={imagenes[juego.nombre] || defaultImg} alt={juego.nombre} />
+              <img src={imagenJuego(juego.nombre, juego.imagen)} alt={juego.nombre} />
               {juego.porcentaje_descuento && <span className="discount">-{juego.porcentaje_descuento}%</span>}
               <div className="button-group" style={{ opacity: 1, visibility: "visible" }}>
                 <span

@@ -1,13 +1,12 @@
-import { imagenJuego } from "../imagenJuego";
 import {
   FaEye,
   FaHeart,
-  FaCodeCompare,
+  FaArrowUpRightFromSquare,
 } from "react-icons/fa6";
 
+import { imagenJuego } from "../imagenJuego";
 
 function ProductCard({ juego }: { juego: any }) {
-
 
   const imagen = imagenJuego(juego.nombre, juego.imagen);
 
@@ -21,7 +20,19 @@ function ProductCard({ juego }: { juego: any }) {
         <div className="button-group">
           <span><FaEye /></span>
           <span><FaHeart /></span>
-          <span><FaCodeCompare /></span>
+          {juego.url_tienda ? (
+            <a
+              href={juego.url_tienda}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Ver ${juego.nombre} en ${juego.plataforma}`}
+              title={`Ver en ${juego.plataforma}`}
+            >
+              <FaArrowUpRightFromSquare />
+            </a>
+          ) : (
+            <span><FaArrowUpRightFromSquare /></span>
+          )}
         </div>
       </div>
 

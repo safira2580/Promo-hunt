@@ -35,9 +35,8 @@ for (const [ruta, url] of Object.entries(archivos)) {
   porArchivo[ruta.split("/").pop()!.toLowerCase()] = url;
 }
 
-// "DiRT Rally 2.0" -> "dirt_rally_2_0"; "Civilization VI" -> "civilization_vi"
-function slug(nombre: string): string {
-  return nombre
+function slug(texto: string): string {
+  return texto
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
@@ -53,13 +52,9 @@ export function imagenJuego(nombre?: string | null, imagenBD?: string | null): s
   if (archivo && porArchivo[archivo]) return porArchivo[archivo];
   if (archivo.startsWith("http")) return imagenBD as string;
 
-  // 3) Por convención: assets/img/<nombre_del_juego>.<ext>
-  const base = slug(nombre ?? "");
-  if (base) {
-    for (const ext of ["jpg", "jpeg", "png", "webp"]) {
-      if (porArchivo[`${base}.${ext}`]) return porArchivo[`${base}.${ext}`];
-    }
-  }
+  // Si la BD no trae un archivo válido, probar con el nombre del juego (ej. the_witcher_3_wild_hunt.jpg)
+  const porSlug = porArchivo[`${slug(nombre ?? "")}.jpg`];
+  if (porSlug) return porSlug;
 
   return defaultImg;
 }

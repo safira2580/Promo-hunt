@@ -847,7 +847,8 @@ input {
     right: 1rem;
 }
 
-.button-group span {
+.button-group span,
+.button-group a {
     width: 3.5rem;
     height: 3.5rem;
 
@@ -866,7 +867,8 @@ input {
     transition: 0.3s ease;
 }
 
-.button-group span:hover {
+.button-group span:hover,
+.button-group a:hover {
     background-color: var(--primary-color);
     color: white;
 }

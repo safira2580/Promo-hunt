@@ -1,13 +1,13 @@
-import { imagenJuego } from "../imagenJuego";
 import { useEffect, useState } from "react";
 
 import {
   FaEye,
   FaHeart,
-  FaCodeCompare,
+  FaArrowUpRightFromSquare,
 } from "react-icons/fa6";
 
 import { API_URL } from "../config";
+import { imagenJuego } from "../imagenJuego";
 import { useFavoritos } from "../useFavoritos";
 import "./Extras.css";
 
@@ -22,6 +22,7 @@ interface Juego {
   id_categoria?: number;
   categoria?: string;
   imagen?: string | null;
+  url_tienda?: string | null;
 }
 
 interface ProductsProps {
@@ -35,7 +36,6 @@ function Products({ categoriaActiva = null }: ProductsProps) {
 
   const [filtro, setFiltro] = useState("destacados");
   const { ids: favoritos, alternar } = useFavoritos();
-
 
   /*
    * OBTENER JUEGOS DESDE FLASK
@@ -158,9 +158,21 @@ function Products({ categoriaActiva = null }: ProductsProps) {
                     >
                       <FaHeart />
                     </span>
-                    <span>
-                      <FaCodeCompare />
-                    </span>
+                    {juego.url_tienda ? (
+                      <a
+                        href={juego.url_tienda}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Ver ${juego.nombre} en ${juego.plataforma}`}
+                        title={`Ver en ${juego.plataforma}`}
+                      >
+                        <FaArrowUpRightFromSquare />
+                      </a>
+                    ) : (
+                      <span aria-disabled="true">
+                        <FaArrowUpRightFromSquare />
+                      </span>
+                    )}
                   </div>
                 </div>
 
