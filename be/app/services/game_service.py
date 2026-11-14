@@ -89,7 +89,8 @@ def get_juego_detalle(db: Session, id_juego: int) -> dict:
                 d.porcentaje_descuento,
                 d.ahorro,
                 d.estado,
-                p.nombre AS plataforma
+                p.nombre AS plataforma,
+                p.url_tienda
             FROM descuento d
             INNER JOIN plataforma p ON d.id_plataforma = p.id_plataforma
             WHERE d.id_juego = :id AND d.estado = 'Activo'

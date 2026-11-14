@@ -1,9 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa6";
+import { FaArrowLeft, FaWallet } from "react-icons/fa6";
 import { API_URL } from "../config";
 import { authFetch, getToken, mensajeDeError } from "../api";
 import { imagenJuego } from "../imagenJuego";
+import { items as destacados, type Destacado } from "../components/featuresData";
 import "../components/Extras.css";
 
 interface JuegoLista {
@@ -87,93 +88,120 @@ function Reembolsos() {
     setEnviando(false);
   };
 
+  const tarjetaLado = (d: Destacado) => (
+    <button
+      key={d.titulo}
+      type="button"
+      className={`lado-card${d.titulo === "Reembolsos" ? " lado-activo" : ""}`}
+      onClick={() => d.accion && navigate(d.accion.ruta)}
+      disabled={!d.accion || d.titulo === "Reembolsos"}
+    >
+      {d.icono}
+      <span className="lado-texto">
+        <strong>{d.titulo}</strong>
+        <small>{d.resumen}</small>
+      </span>
+    </button>
+  );
+
   return (
-    <section className="container pagina-extra">
-      <button className="boton-volver" type="button" onClick={() => navigate("/")}>
-        <FaArrowLeft /> Volver
-      </button>
-      <h1 className="heading-1">Solicitar reembolso</h1>
-      <p className="texto-ayuda">Garantía de devolución del 100% dentro de los 14 días posteriores a la compra.</p>
+    <section className="container reembolso-pagina">
+      <div className="reembolso-cabecera">
+        <button className="boton-volver" type="button" onClick={() => navigate("/")}>
+          <FaArrowLeft /> Volver
+        </button>
+        <span className="reembolso-icono">
+          <FaWallet />
+        </span>
+        <h1 className="heading-1">Solicitar reembolso</h1>
+        <p className="texto-ayuda">Garantía de devolución del 100% dentro de los 14 días posteriores a la compra.</p>
+      </div>
 
-      {sesion === false && (
-        <div className="estado-vacio">
-          <p>Inicia sesión para solicitar un reembolso.</p>
-          <button className="boton-principal" type="button" onClick={() => navigate("/login")}>
-            Iniciar sesión
-          </button>
-        </div>
-      )}
+      <div className="reembolso-grid">
+        <aside className="reembolso-lado">{destacados.slice(0, 2).map(tarjetaLado)}</aside>
 
-      {sesion && (
-        <>
-          <form className="form-extra" onSubmit={enviar}>
-            <label>
-              Juego a reembolsar
-              <div className="combo-juegos">
-                <input
-                  value={juego}
-                  onChange={(e) => {
-                    setJuego(e.target.value);
-                    setAbierta(true);
-                  }}
-                  onFocus={() => setAbierta(true)}
-                  onBlur={() => setTimeout(() => setAbierta(false), 150)}
-                  placeholder="Haz clic para ver todos los juegos"
-                  maxLength={150}
-                  autoComplete="off"
-                  required
-                />
-                {abierta && (
-                  <ul className="combo-lista">
-                    {(juegos.some((j) => j.nombre === juego)
-                      ? juegos
-                      : juegos.filter((j) => j.nombre.toLowerCase().includes(juego.trim().toLowerCase()))
-                    ).map((j) => (
-                      <li
-                        key={j.id_juego}
-                        onMouseDown={() => {
-                          setJuego(j.nombre);
-                          setAbierta(false);
-                        }}
-                      >
-                        <img src={imagenJuego(j.nombre, j.imagen)} alt="" />
-                        {j.nombre}
-                      </li>
-                    ))}
-                    {juegos.length === 0 && !errorLista && <li className="combo-vacio">Cargando juegos...</li>}
-                    {errorLista && <li className="combo-vacio">No se pudo cargar la lista. Reinicia el backend.</li>}
-                  </ul>
-                )}
-              </div>
-            </label>
-            <label>
-              Motivo
-              <textarea value={motivo} onChange={(e) => setMotivo(e.target.value)} rows={4} maxLength={1000} required />
-            </label>
-            <button className="boton-principal" type="submit" disabled={enviando}>
-              {enviando ? "Enviando..." : "Solicitar reembolso"}
-            </button>
-            {mensaje && <p className={mensaje.ok ? "msg-ok" : "msg-error"}>{mensaje.texto}</p>}
-          </form>
-
-          {lista.length > 0 && (
-            <>
-              <h2 className="subtitulo-extra">Mis solicitudes</h2>
-              <div className="lista-resenas">
-                {lista.map((x) => (
-                  <article className="resena-card" key={x.id_reembolso}>
-                    <header>
-                      <h3>{x.juego}</h3>
-                      <span className="etiqueta-estado">{x.estado}</span>
-                    </header>
-                    <p>{x.motivo}</p>
-                    <footer>{new Date(x.fecha_solicitud).toLocaleDateString("es-CO")}</footer>
-                  </article>
-                ))}
-              </div>
-            </>
+        <div className="reembolso-centro">
+          {sesion === false && (
+            <div className="estado-vacio">
+              <p>Inicia sesión para solicitar un reembolso.</p>
+              <button className="boton-principal" type="button" onClick={() => navigate("/login")}>
+                Iniciar sesión
+              </button>
+            </div>
           )}
-        </>
+
+          {sesion && (
+            <form className="form-extra" onSubmit={enviar}>
+              <label>
+                Juego a reembolsar
+                <div className="combo-juegos">
+                  <input
+                    value={juego}
+                    onChange={(e) => {
+                      setJuego(e.target.value);
+                      setAbierta(true);
+                    }}
+                    onFocus={() => setAbierta(true)}
+                    onBlur={() => setTimeout(() => setAbierta(false), 150)}
+                    placeholder="Haz clic para ver todos los juegos"
+                    maxLength={150}
+                    autoComplete="off"
+                    required
+                  />
+                  {abierta && (
+                    <ul className="combo-lista">
+                      {(juegos.some((j) => j.nombre === juego)
+                        ? juegos
+                        : juegos.filter((j) => j.nombre.toLowerCase().includes(juego.trim().toLowerCase()))
+                      ).map((j) => (
+                        <li
+                          key={j.id_juego}
+                          onMouseDown={() => {
+                            setJuego(j.nombre);
+                            setAbierta(false);
+                          }}
+                        >
+                          <img src={imagenJuego(j.nombre, j.imagen)} alt="" />
+                          {j.nombre}
+                        </li>
+                      ))}
+                      {juegos.length === 0 && !errorLista && <li className="combo-vacio">Cargando juegos...</li>}
+                      {errorLista && <li className="combo-vacio">No se pudo cargar la lista. Reinicia el backend.</li>}
+                    </ul>
+                  )}
+                </div>
+              </label>
+              <label>
+                Motivo
+                <textarea value={motivo} onChange={(e) => setMotivo(e.target.value)} rows={4} maxLength={1000} required />
+              </label>
+              <button className="boton-principal" type="submit" disabled={enviando}>
+                {enviando ? "Enviando..." : "Solicitar reembolso"}
+              </button>
+              {mensaje && <p className={mensaje.ok ? "msg-ok" : "msg-error"}>{mensaje.texto}</p>}
+            </form>
+          )}
+        </div>
+
+        <aside className="reembolso-lado">{destacados.slice(2, 4).map(tarjetaLado)}</aside>
+      </div>
+
+      {sesion && lista.length > 0 && (
+        <div className="reembolso-solicitudes">
+          <h2 className="subtitulo-extra">Mis solicitudes</h2>
+          <div className="lista-resenas">
+            {lista.map((x) => (
+              <article className="resena-card" key={x.id_reembolso}>
+                <header>
+                  <h3>{x.juego}</h3>
+                  <span className="etiqueta-estado">{x.estado}</span>
+                </header>
+                <p>{x.motivo}</p>
+                <footer>{new Date(x.fecha_solicitud).toLocaleDateString("es-CO")}</footer>
+              </article>
+            ))}
+          </div>
+        </div>
       )}
     </section>
   );

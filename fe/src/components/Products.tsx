@@ -8,6 +8,7 @@ import {
 
 import { API_URL } from "../config";
 import { imagenJuego } from "../imagenJuego";
+import JuegoModal from "./JuegoModal";
 import { useFavoritos } from "../useFavoritos";
 import "./Extras.css";
 
@@ -35,6 +36,7 @@ function Products({ categoriaActiva = null }: ProductsProps) {
   const [error, setError] = useState<string | null>(null);
 
   const [filtro, setFiltro] = useState("destacados");
+  const [modal, setModal] = useState<{ juego: Juego; completo: boolean } | null>(null);
   const { ids: favoritos, alternar } = useFavoritos();
 
   /*
@@ -49,8 +51,15 @@ function Products({ categoriaActiva = null }: ProductsProps) {
         return respuesta.json();
       })
       .then((datos: Juego[]) => {
-        console.log("Juegos recibidos:", datos);
-        setJuegos(datos);
+        // El API devuelve una fila por cada tienda; mostramos una tarjeta por juego con su mejor precio.
+        const mejores = new Map<number, Juego>();
+        for (const j of datos) {
+          const previo = mejores.get(j.id_juego);
+          if (!previo || Number(j.precio_descuento) < Number(previo.precio_descuento)) {
+            mejores.set(j.id_juego, j);
+          }
+        }
+        setJuegos([...mejores.values()]);
         setCargando(false);
       })
       .catch((error) => {
@@ -145,7 +154,14 @@ function Products({ categoriaActiva = null }: ProductsProps) {
 
                   {/* ICONOS */}
                   <div className="button-group">
-                    <span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Ver detalles de ${juego.nombre}`}
+                      title="Ver detalles"
+                      onClick={() => setModal({ juego, completo: true })}
+                      onKeyDown={(e) => e.key === "Enter" && setModal({ juego, completo: true })}
+                    >
                       <FaEye />
                     </span>
                     <span
@@ -158,21 +174,16 @@ function Products({ categoriaActiva = null }: ProductsProps) {
                     >
                       <FaHeart />
                     </span>
-                    {juego.url_tienda ? (
-                      <a
-                        href={juego.url_tienda}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Ver ${juego.nombre} en ${juego.plataforma}`}
-                        title={`Ver en ${juego.plataforma}`}
-                      >
-                        <FaArrowUpRightFromSquare />
-                      </a>
-                    ) : (
-                      <span aria-disabled="true">
-                        <FaArrowUpRightFromSquare />
-                      </span>
-                    )}
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Ver tiendas donde está ${juego.nombre}`}
+                      title="Ver tiendas"
+                      onClick={() => setModal({ juego, completo: false })}
+                      onKeyDown={(e) => e.key === "Enter" && setModal({ juego, completo: false })}
+                    >
+                      <FaArrowUpRightFromSquare />
+                    </span>
                   </div>
                 </div>
 
@@ -189,6 +200,16 @@ function Products({ categoriaActiva = null }: ProductsProps) {
             );
           })}
       </div>
+
+      {modal && (
+        <JuegoModal
+          idJuego={modal.juego.id_juego}
+          nombre={modal.juego.nombre}
+          imagen={modal.juego.imagen}
+          completo={modal.completo}
+          onCerrar={() => setModal(null)}
+        />
+      )}
     </section>
   );
 }
