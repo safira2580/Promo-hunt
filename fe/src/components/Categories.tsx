@@ -17,7 +17,7 @@ function Categories({ categoriaActiva, onSeleccionar }: CategoriesProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/categorias`)
+    fetch(`${API_URL}/api/v1/categorias`)
       .then((res) => {
         if (!res.ok) throw new Error("No se pudieron cargar las categorías");
         return res.json();

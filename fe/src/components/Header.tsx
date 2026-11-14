@@ -164,7 +164,7 @@ function Header() {
 
 
     fetch(
-      `${API_URL}/api/juegos?buscar=${encodeURIComponent(busqueda)}`
+      `${API_URL}/api/v1/juegos?buscar=${encodeURIComponent(busqueda)}`
     )
 
       .then(res => res.json())
