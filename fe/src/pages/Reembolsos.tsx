@@ -4,7 +4,6 @@ import { FaArrowLeft, FaWallet } from "react-icons/fa6";
 import { API_URL } from "../config";
 import { authFetch, getToken, mensajeDeError } from "../api";
 import { imagenJuego } from "../imagenJuego";
-import { items as destacados, type Destacado } from "../components/featuresData";
 import "../components/Extras.css";
 
 interface JuegoLista {
@@ -88,22 +87,6 @@ function Reembolsos() {
     setEnviando(false);
   };
 
-  const tarjetaLado = (d: Destacado) => (
-    <button
-      key={d.titulo}
-      type="button"
-      className={`lado-card${d.titulo === "Reembolsos" ? " lado-activo" : ""}`}
-      onClick={() => d.accion && navigate(d.accion.ruta)}
-      disabled={!d.accion || d.titulo === "Reembolsos"}
-    >
-      {d.icono}
-      <span className="lado-texto">
-        <strong>{d.titulo}</strong>
-        <small>{d.resumen}</small>
-      </span>
-    </button>
-  );
-
   return (
     <section className="container reembolso-pagina">
       <div className="reembolso-cabecera">
@@ -117,9 +100,7 @@ function Reembolsos() {
         <p className="texto-ayuda">Garantía de devolución del 100% dentro de los 14 días posteriores a la compra.</p>
       </div>
 
-      <div className="reembolso-grid">
-        <aside className="reembolso-lado">{destacados.slice(0, 2).map(tarjetaLado)}</aside>
-
+      <div className="reembolso-grid" style={{ gridTemplateColumns: "minmax(0, 52rem)", justifyContent: "center" }}>
         <div className="reembolso-centro">
           {sesion === false && (
             <div className="estado-vacio">
@@ -182,8 +163,6 @@ function Reembolsos() {
             </form>
           )}
         </div>
-
-        <aside className="reembolso-lado">{destacados.slice(2, 4).map(tarjetaLado)}</aside>
       </div>
 
       {sesion && lista.length > 0 && (
