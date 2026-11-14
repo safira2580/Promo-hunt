@@ -147,3 +147,24 @@
   .jm-tienda { grid-template-columns: minmax(0, 1fr) auto; }
   .jm-ir { grid-column: 1 / -1; justify-content: center; }
 }
+
+/* ===== Tarjetas de características: las 4 iguales, resaltado solo al pasar el mouse ===== */
+.container-features .card-feature { background: #1e293b !important; border: 1px solid #334155 !important; transform: none; }
+.container-features .card-feature:hover { background: linear-gradient(145deg, #0f1f3d, #0b1630) !important; border-color: #3b82f6 !important; transform: translateY(-5px); }
+.container-features .card-feature:focus:not(:focus-visible) { outline: none; background: #1e293b !important; border-color: #334155 !important; }
+.container-features .card-feature:focus:not(:focus-visible):hover { background: linear-gradient(145deg, #0f1f3d, #0b1630) !important; border-color: #3b82f6 !important; }
+
+/* ===== Ojo: tarjeta de visualización casi a pantalla completa ===== */
+.jm-completo { width: 98vw; height: 96vh; grid-template-columns: minmax(0, 50%) minmax(0, 1fr); }
+.jm-completo .jm-info { padding: 4rem; }
+.jm-completo .jm-info h2 { font-size: 3.6rem; }
+.jm-completo .jm-desc { font-size: 1.8rem; }
+
+/* ===== Corazón: queda fijo en la esquina de la tarjeta del juego marcado como favorito ===== */
+.card-product .container-img { position: relative; }
+.fav-badge { position: absolute; bottom: 1rem; right: 1rem; width: 3.5rem; height: 3.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #fff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); z-index: 3; pointer-events: none; }
+.fav-badge svg { font-size: 1.5rem; color: #ef4444; fill: #ef4444; }
+
+/* ===== Últimas noticias: sin iconos sobre la imagen y sin botón "Leer más" ===== */
+.card-blog .button-group-blog,
+.card-blog .btn-read-more { display: none !important; }
