@@ -1,7 +1,10 @@
 """
-Punto de entrada FastAPI — PromoHunt API.
+Punto de entrada FastAPI - PromoHunt API.
 """
 
+import asyncio
+import contextlib
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
@@ -18,17 +21,69 @@ from app.routers import admin, auth, games, users
 settings = get_settings()
 settings.validate_for_production()
 
+logger = logging.getLogger("promohunt")
+
+# Cada cuantos segundos se revisan los descuentos cuya fecha de fin ya paso
+INTERVALO_EXPIRACION_SEG = 60
+
+
+def expirar_descuentos() -> int:
+    """
+    Pasa a 'Inactivo' los descuentos activos cuya fecha de fin ya termino.
+
+    La fecha de fin se toma como el ultimo dia de vigencia: el descuento sigue
+    activo durante todo ese dia y se desactiva al comenzar el siguiente
+    (hora de Colombia). Es idempotente, asi que puede ejecutarse varias veces.
+    """
+    generador = get_db()
+    db = next(generador)
+    try:
+        resultado = db.execute(
+            text(
+                """
+                UPDATE descuento
+                SET estado = 'Inactivo'
+                WHERE estado = 'Activo'
+                  AND fecha_fin IS NOT NULL
+                  AND fecha_fin::date < (NOW() AT TIME ZONE 'America/Bogota')::date
+                """
+            )
+        )
+        db.commit()
+        return resultado.rowcount or 0
+    except Exception:
+        db.rollback()
+        logger.exception("No se pudieron expirar los descuentos vencidos")
+        return 0
+    finally:
+        generador.close()
+
+
+async def _vigilar_descuentos() -> None:
+    while True:
+        try:
+            cantidad = await asyncio.to_thread(expirar_descuentos)
+            if cantidad:
+                logger.info("Descuentos desactivados por fecha de fin: %s", cantidad)
+        except Exception:
+            logger.exception("Error en la revision de descuentos")
+        await asyncio.sleep(INTERVALO_EXPIRACION_SEG)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("✅ PromoHunt API iniciando...")
+    print("\u2705 PromoHunt API iniciando...")
+    tarea = asyncio.create_task(_vigilar_descuentos())
     yield
-    print("🛑 PromoHunt API cerrando...")
+    tarea.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await tarea
+    print("\U0001F6D1 PromoHunt API cerrando...")
 
 
 app = FastAPI(
     title="PromoHunt API",
-    description="Descuentos y ofertas en videojuegos — FastAPI + PostgreSQL",
+    description="Descuentos y ofertas en videojuegos \u2014 FastAPI + PostgreSQL",
     version="1.0.0",
     docs_url="/docs" if settings.ENVIRONMENT != "production" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT != "production" else None,
@@ -65,6 +120,6 @@ def health():
 
 @app.get("/health/ready")
 def ready(db: Session = Depends(get_db)):
-    """Readiness: además verifica la conexión a PostgreSQL (usa la sesión inyectada)."""
+    """Readiness: ademas verifica la conexion a PostgreSQL (usa la sesion inyectada)."""
     db.execute(text("SELECT 1"))
     return {"status": "ready"}
