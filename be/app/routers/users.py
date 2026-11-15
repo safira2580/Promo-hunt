@@ -1,12 +1,9 @@
 """Perfil del usuario autenticado (consultar y editar)."""
 
 import os
-import shutil
 from pathlib import Path
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -17,15 +14,6 @@ from app.schemas.user import UserResponse
 from app.utils.security import hash_password, verify_password
 
 router = APIRouter(prefix="/api/v1/usuario", tags=["usuario"])
-
-
-class PerfilIn(BaseModel):
-    model_config = ConfigDict(extra="ignore", str_strip_whitespace=True)
-
-    nombre: str = Field(..., min_length=2, max_length=100)
-    correo: EmailStr
-    contrasena_actual: str | None = Field(None, max_length=128)
-    nueva_contrasena: str | None = Field(None, min_length=6, max_length=128)
 
 
 @router.get("/perfil")
@@ -45,27 +33,38 @@ def perfil(current_user: User = Depends(get_current_user), db: Session = Depends
 
 
 @router.put("/editar")
-def editar(
-    nombre: Annotated[str | None, Form()] = None,
-    correo: Annotated[EmailStr | None, Form()] = None,
-    contrasena_actual: Annotated[str | None, Form(max_length=128)] = None,
-    nueva_contrasena: Annotated[str | None, Form(min_length=6, max_length=128)] = None,
-    foto: Annotated[UploadFile | None, File()] = None,
-    payload: PerfilIn | None = None,
+async def editar(
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # Soportar tanto formato Form (frontend web) como JSON (tests automatizados)
-    if payload:
-        nombre_val = payload.nombre
-        correo_val = payload.correo
-        contrasena_actual_val = payload.contrasena_actual
-        nueva_contrasena_val = payload.nueva_contrasena
+    content_type = request.headers.get("content-type", "")
+
+    nombre_val = current_user.nombre
+    correo_val = current_user.correo
+    contrasena_actual_val = None
+    nueva_contrasena_val = None
+    foto = None
+
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        nombre_val = body.get("nombre", current_user.nombre)
+        correo_val = body.get("correo", current_user.correo)
+        contrasena_actual_val = body.get("contrasena_actual")
+        nueva_contrasena_val = body.get("nueva_contrasena")
     else:
-        nombre_val = nombre if nombre is not None else current_user.nombre
-        correo_val = correo if correo is not None else current_user.correo
-        contrasena_actual_val = contrasena_actual
-        nueva_contrasena_val = nueva_contrasena
+        form = await request.form()
+        nombre_val = form.get("nombre", current_user.nombre)
+        correo_val = form.get("correo", current_user.correo)
+        contrasena_actual_val = form.get("contrasena_actual")
+        nueva_contrasena_val = form.get("nueva_contrasena")
+        foto = form.get("foto")
+
+    if not nombre_val or len(nombre_val) < 2 or len(nombre_val) > 100:
+        raise HTTPException(422, "El nombre debe tener entre 2 y 100 caracteres")
 
     # 1. Verificar si el correo ya está en uso por otro usuario (409)
     otro = (
@@ -78,6 +77,8 @@ def editar(
 
     # 2. Validar contraseña si se proporciona nueva_contrasena (422 o 400)
     if nueva_contrasena_val:
+        if len(nueva_contrasena_val) < 6:
+            raise HTTPException(422, "La nueva contraseña debe tener al menos 6 caracteres")
         if not contrasena_actual_val:
             raise HTTPException(422, "Debes ingresar tu contraseña actual")
         if not verify_password(contrasena_actual_val, current_user.contrasena):
@@ -85,16 +86,14 @@ def editar(
         current_user.contrasena = hash_password(nueva_contrasena_val)
 
     # 3. Procesar la foto de perfil si el usuario subió una nueva
-    if foto is not None and foto.filename:
+    if foto is not None and hasattr(foto, "filename") and foto.filename:
         extension = Path(foto.filename).suffix.lower()
         if extension not in [".jpg", ".jpeg", ".png", ".webp"]:
             raise HTTPException(400, "Formato de imagen no permitido")
 
-        # Crear nombre único usando el ID del usuario y parte de su correo
         correo_limpio = current_user.correo.split("@")[0].replace(".", "_")
         nombre_archivo = f"user_{current_user.id_usuario}_{correo_limpio}{extension}"
 
-        # Apuntar al volumen en producción (/app/static/img) o local (static/img)
         if os.environ.get("ENVIRONMENT") == "production":
             ruta_base = "/app/static/img"
         else:
@@ -106,12 +105,12 @@ def editar(
         ruta_destino = directorio_destino / nombre_archivo
 
         try:
+            contents = await foto.read()
             with open(ruta_destino, "wb") as buffer:
-                shutil.copyfileobj(foto.file, buffer)
+                buffer.write(contents)
         except Exception as err:
             raise HTTPException(500, "Error al guardar la imagen en el servidor") from err
 
-        # Guardar el nombre del archivo en el campo correspondiente del modelo
         current_user.foto_perfil = nombre_archivo
 
     # 4. Actualizar datos de texto y guardar cambios en la base de datos
