@@ -1,6 +1,6 @@
 .admin-page {
   min-height: 100vh;
-  background: #f5f7fb;
+  background: var(--background-color);
 }
 
 .admin-layout {
@@ -14,7 +14,8 @@
 
 .admin-sidebar {
   width: 250px;
-  background: #071a5c;
+  background: var(--white);
+  border-right: 1px solid var(--light-gray);
   padding: 30px 18px;
   box-sizing: border-box;
 }
@@ -23,9 +24,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: white;
+  color: #fff;
   padding: 10px 12px 25px;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  border-bottom: 1px solid var(--light-gray);
 }
 
 .admin-sidebar-title > span {
@@ -40,7 +41,7 @@
 .admin-sidebar-title small {
   display: block;
   margin-top: 3px;
-  color: #aeb9df;
+  color: var(--gray);
   font-size: 12px;
 }
 
@@ -60,7 +61,7 @@
   border: none;
   border-radius: 10px;
   background: transparent;
-  color: #d9dff2;
+  color: var(--gray);
   font-size: 14px;
   text-align: left;
   cursor: pointer;
@@ -68,12 +69,12 @@
 }
 
 .admin-menu button:hover {
-  background: rgba(255,255,255,0.08);
-  color: white;
+  background: rgba(59, 130, 246, 0.12);
+  color: #fff;
 }
 
 .admin-menu-active {
-  background: #f74780 !important;
+  background: var(--gradient) !important;
   color: white !important;
 }
 
@@ -92,7 +93,7 @@
 }
 
 .admin-label {
-  color: #f74780;
+  color: var(--primary-color);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -101,13 +102,13 @@
 .admin-header h1,
 .admin-section h1 {
   margin: 8px 0;
-  color: #18203a;
+  color: var(--text-color);
   font-size: 32px;
 }
 
 .admin-header p,
 .admin-section > p {
-  color: #70788e;
+  color: var(--gray);
   margin: 0;
 }
 
@@ -123,8 +124,8 @@
 
 .admin-card {
   padding: 25px;
-  background: white;
-  border: 1px solid #e7eaf2;
+  background: var(--white);
+  border: 1px solid var(--light-gray);
   border-radius: 15px;
   cursor: pointer;
   transition: 0.2s ease;
@@ -132,7 +133,7 @@
 
 .admin-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(7,26,92,0.10);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 .admin-card-icon {
@@ -143,13 +144,13 @@
 
 .admin-card h3 {
   margin: 0 0 8px;
-  color: #18203a;
+  color: var(--text-color);
   font-size: 18px;
 }
 
 .admin-card p {
   margin: 0;
-  color: #7b8295;
+  color: var(--gray);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -169,23 +170,23 @@
   border: none;
   border-radius: 9px;
   padding: 12px 18px;
-  background: #f74780;
-  color: white;
+  background: var(--gradient);
+  color: #fff;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
 .admin-add-button:hover {
-  background: #e63870;
+  filter: brightness(1.15);
   transform: translateY(-2px);
 }
 
 .admin-empty {
   margin-top: 30px;
   padding: 70px 30px;
-  background: white;
-  border: 1px solid #e7eaf2;
+  background: var(--white);
+  border: 1px solid var(--light-gray);
   border-radius: 15px;
   text-align: center;
 }
@@ -196,12 +197,12 @@
 
 .admin-empty h2 {
   margin: 15px 0 8px;
-  color: #18203a;
+  color: var(--text-color);
 }
 
 .admin-empty p {
   margin: 0;
-  color: #7b8295;
+  color: var(--gray);
 }
 
 /* ==============================
@@ -251,8 +252,8 @@
 
 .admin-tabla {
   margin-top: 30px;
-  background: white;
-  border: 1px solid #e7eaf2;
+  background: var(--white);
+  border: 1px solid var(--light-gray);
   border-radius: 15px;
   overflow-x: auto;
 }
@@ -265,20 +266,20 @@
 .admin-tabla th {
   padding: 15px;
   text-align: left;
-  background: #f5f7fb;
-  color: #18203a;
+  background: var(--background-color);
+  color: var(--text-color);
   font-size: 13px;
 }
 
 .admin-tabla td {
   padding: 15px;
-  border-top: 1px solid #e7eaf2;
-  color: #5f6678;
+  border-top: 1px solid var(--light-gray);
+  color: var(--gray);
   font-size: 14px;
 }
 
 .admin-tabla td strong {
-  color: #18203a;
+  color: var(--text-color);
 }
 
 .admin-editar,
@@ -291,11 +292,13 @@
 }
 
 .admin-editar {
-  background: #eef2ff;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--primary-color);
 }
 
 .admin-eliminar {
-  background: #ffe9ee;
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
 }
 
 /* =================================
@@ -308,7 +311,8 @@
   padding: 8px 10px;
   margin-right: 6px;
   cursor: pointer;
-  background: #eef2ff;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--primary-color);
 }
 
 
@@ -322,7 +326,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(7, 26, 92, 0.55);
+  background: rgba(2, 6, 23, 0.75);
 
   display: flex;
   align-items: center;
@@ -340,7 +344,7 @@
   max-width: 900px;
   max-height: 90vh;
 
-  background: white;
+  background: var(--white);
   border-radius: 18px;
 
   padding: 30px;
@@ -349,7 +353,7 @@
 
   overflow-y: auto;
 
-  box-shadow: 0 20px 60px rgba(0,0,0,0.20);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -369,7 +373,7 @@
 .admin-modal-header h2 {
   margin: 8px 0 0;
 
-  color: #18203a;
+  color: var(--text-color);
 
   font-size: 28px;
 }
@@ -383,9 +387,9 @@
 
   border-radius: 50%;
 
-  background: #f5f7fb;
+  background: var(--background-color);
 
-  color: #18203a;
+  color: var(--text-color);
 
   font-size: 18px;
 
@@ -394,8 +398,8 @@
 
 
 .admin-modal-cerrar:hover {
-  background: #ffe9ee;
-  color: #f74780;
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
 }
 
 
@@ -418,7 +422,7 @@
 .admin-detalle {
   padding: 16px;
 
-  background: #f5f7fb;
+  background: var(--background-color);
 
   border-radius: 10px;
 }
@@ -431,7 +435,7 @@
 
   margin-bottom: 6px;
 
-  color: #7b8295;
+  color: var(--gray);
 
   font-size: 12px;
 
@@ -442,7 +446,7 @@
 
 
 .admin-detalle strong {
-  color: #18203a;
+  color: var(--text-color);
 
   font-size: 14px;
 }
@@ -457,7 +461,7 @@
 
   padding: 18px;
 
-  background: #f5f7fb;
+  background: var(--background-color);
 
   border-radius: 10px;
 }
@@ -466,7 +470,7 @@
 .admin-detalle-grande p {
   margin: 0;
 
-  color: #5f6678;
+  color: var(--gray);
 
   font-size: 14px;
 
@@ -495,7 +499,7 @@
 .admin-detalle-multimedia > div {
   padding: 16px;
 
-  background: #f5f7fb;
+  background: var(--background-color);
 
   border-radius: 10px;
 }
@@ -504,7 +508,7 @@
 .admin-detalle-multimedia p {
   margin: 0;
 
-  color: #5f6678;
+  color: var(--gray);
 
   font-size: 13px;
 
@@ -523,7 +527,7 @@
 
   padding-top: 10px;
 
-  border-top: 1px solid #e7eaf2;
+  border-top: 1px solid var(--light-gray);
 }
 
 
