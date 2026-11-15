@@ -25,6 +25,7 @@ def list_juegos(
             descuento.porcentaje_descuento,
             descuento.ahorro,
             descuento.estado,
+            descuento.url_juego,
             plataforma.nombre AS plataforma,
             plataforma.url_tienda
         FROM juego
@@ -89,6 +90,7 @@ def get_juego_detalle(db: Session, id_juego: int) -> dict:
                 d.porcentaje_descuento,
                 d.ahorro,
                 d.estado,
+                d.url_juego,
                 p.nombre AS plataforma,
                 p.url_tienda
             FROM descuento d

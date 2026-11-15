@@ -87,7 +87,8 @@ CREATE TABLE IF NOT EXISTS descuento (
   ahorro DECIMAL(10,2),
   fecha_inicio TIMESTAMP,
   fecha_fin TIMESTAMP,
-  estado VARCHAR(50) DEFAULT 'Activo'
+  estado VARCHAR(50) DEFAULT 'Activo',
+  url_juego VARCHAR(500)
 );
 
 CREATE TABLE IF NOT EXISTS alerta (
@@ -125,6 +126,17 @@ CREATE TABLE IF NOT EXISTS resena (
   comentario TEXT,
   calificacion INTEGER,
   fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS calificacion_tienda (
+  id_calificacion SERIAL PRIMARY KEY,
+  id_juego INTEGER NOT NULL REFERENCES juego(id_juego) ON DELETE CASCADE,
+  id_plataforma INTEGER NOT NULL REFERENCES plataforma(id_plataforma) ON DELETE CASCADE,
+  puntuacion NUMERIC(2,1) CHECK (puntuacion BETWEEN 0 AND 5),
+  total_votos INTEGER NOT NULL DEFAULT 0,
+  votos_positivos INTEGER,
+  votos_negativos INTEGER,
+  UNIQUE (id_juego, id_plataforma)
 );
 
 CREATE TABLE IF NOT EXISTS venta (

@@ -668,6 +668,19 @@
 .tienda-calif-nota { font-size: 30px; font-weight: 700; color: #f74780; line-height: 1; }
 .tienda-calif .votos { color: #888; font-size: 13px; }
 
+.tienda-likes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed #e5e5e5;
+  font-weight: 600;
+}
+.tienda-likes .like-si { display: inline-flex; align-items: center; gap: 6px; color: #16a34a; }
+.tienda-likes .like-no { display: inline-flex; align-items: center; gap: 6px; color: #dc2626; }
+.tienda-likes .like-porcentaje { margin-left: auto; color: #888; font-size: 13px; font-weight: 400; }
+
 @media (max-width: 900px) {
   .tiendas-grid { grid-template-columns: 1fr; }
 }

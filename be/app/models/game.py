@@ -62,5 +62,6 @@ class Descuento(Base):
     porcentaje_descuento: Mapped[Decimal | None] = mapped_column(Numeric(5, 2), nullable=True)
     ahorro: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), nullable=True)
     estado: Mapped[str] = mapped_column(String(50), default="Activo")
+    url_juego: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     juego: Mapped["Juego"] = relationship(back_populates="descuentos")

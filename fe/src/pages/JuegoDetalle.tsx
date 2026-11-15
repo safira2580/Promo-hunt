@@ -4,8 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa6";
 import Estrellas from "../components/Estrellas";
 import { imagenJuego } from "../imagenJuego";
+import { urlTiendaJuego } from "../tiendas";
 
 import "./JuegoDetalle.css";
 import { API_URL } from "../config";
@@ -27,11 +29,14 @@ interface Descuento {
   estado: string;
   plataforma: string;
   url_tienda?: string | null;
+  url_juego?: string | null;
 }
 
 interface Calificacion {
   promedio: number | null;
   total: number;
+  positivos?: number | null;
+  negativos?: number | null;
 }
 
 interface ResenasData extends Calificacion {
@@ -40,11 +45,13 @@ interface ResenasData extends Calificacion {
 
 const precio = (n: number) => `COL$${Number(n).toLocaleString("es-CO")}`;
 
-function Ofertas({ ofertas, vacio }: { ofertas: Descuento[]; vacio: string }) {
+function Ofertas({ ofertas, vacio, juego }: { ofertas: Descuento[]; vacio: string; juego: string }) {
   if (ofertas.length === 0) return <p className="tienda-vacio">{vacio}</p>;
   return (
     <div className="tienda-ofertas">
-      {ofertas.map((d) => (
+      {ofertas.map((d) => {
+        const url = d.url_juego || urlTiendaJuego(d.plataforma, juego, d.url_tienda);
+        return (
         <div className="tienda-oferta" key={d.id_descuento}>
           <div className="tienda-precios">
             {ofertas.length > 1 && <span className="tienda-nombre-extra">{d.plataforma}</span>}
@@ -54,18 +61,40 @@ function Ofertas({ ofertas, vacio }: { ofertas: Descuento[]; vacio: string }) {
           </div>
           <button
             className="boton-oferta"
-            onClick={() => d.url_tienda && window.open(d.url_tienda, "_blank", "noopener")}
+            disabled={!url}
+            onClick={() => url && window.open(url, "_blank", "noopener")}
           >
             Ver oferta
           </button>
         </div>
-      ))}
+        );
+      })}
+    </div>
+  );
+}
+
+function BloqueLikes({ calif }: { calif: Calificacion }) {
+  const pos = calif.positivos ?? 0;
+  const neg = calif.negativos ?? 0;
+  const total = pos + neg;
+  const porcentaje = total > 0 ? Math.round((pos / total) * 100) : null;
+  const num = (n: number) => n.toLocaleString("es-CO");
+  return (
+    <div className="tienda-likes">
+      <span className="like-si" title="Reseñas positivas">
+        <FaThumbsUp /> {num(pos)}
+      </span>
+      <span className="like-no" title="Reseñas negativas">
+        <FaThumbsDown /> {num(neg)}
+      </span>
+      {porcentaje !== null && <span className="like-porcentaje">{porcentaje}% positivas</span>}
     </div>
   );
 }
 
 function BloqueCalificacion({ calif }: { calif: Calificacion }) {
-  if (calif.total === 0 || calif.promedio === null) {
+  if (calif.positivos != null || calif.negativos != null) return <BloqueLikes calif={calif} />;
+  if (calif.promedio === null) {
     return <p className="tienda-vacio">Aún sin calificaciones.</p>;
   }
   return (
@@ -73,9 +102,11 @@ function BloqueCalificacion({ calif }: { calif: Calificacion }) {
       <span className="tienda-calif-nota">{calif.promedio}</span>
       <div>
         <Estrellas valor={calif.promedio} />
-        <span className="votos">
-          {calif.total} {calif.total === 1 ? "voto" : "votos"}
-        </span>
+        {calif.total > 0 && (
+          <span className="votos">
+            {calif.total} {calif.total === 1 ? "voto" : "votos"}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -85,13 +116,14 @@ interface TarjetaProps {
   clase: string;
   logo: string;
   nombre: string;
+  juego?: string;
   ofertas?: Descuento[];
   vacio?: string;
   calif?: Calificacion;
   children?: ReactNode;
 }
 
-function TarjetaTienda({ clase, logo, nombre, ofertas, vacio, calif, children }: TarjetaProps) {
+function TarjetaTienda({ clase, logo, nombre, juego, ofertas, vacio, calif, children }: TarjetaProps) {
   return (
     <article className={`tienda-card tienda-${clase}`}>
       <header className="tienda-cabecera">
@@ -99,7 +131,7 @@ function TarjetaTienda({ clase, logo, nombre, ofertas, vacio, calif, children }:
         <h3>{nombre}</h3>
       </header>
       <div className="tienda-cuerpo">
-        {ofertas && <Ofertas ofertas={ofertas} vacio={vacio ?? "Sin oferta por ahora."} />}
+        {ofertas && <Ofertas ofertas={ofertas} vacio={vacio ?? "Sin oferta por ahora."} juego={juego ?? ""} />}
         {calif && <BloqueCalificacion calif={calif} />}
         {children}
       </div>
@@ -167,7 +199,6 @@ function JuegoDetalle() {
   const imagenPortada = imagenJuego(juego.nombre, juego.imagen);
 
   const nombre = (d: Descuento) => d.plataforma.toLowerCase();
-  const epic = descuentos.filter((d) => nombre(d).includes("epic"));
   const steam = descuentos.filter((d) => nombre(d).includes("steam"));
 
   const califPromoHunt: Calificacion | undefined = resenas
@@ -209,18 +240,17 @@ function JuegoDetalle() {
               clase="epic"
               logo="E"
               nombre="Epic Games"
-              ofertas={epic}
-              vacio="Sin oferta en Epic por ahora."
-              calif={resenas?.por_tienda?.epic}
+              calif={resenas?.por_tienda?.epic ?? { promedio: null, total: 0 }}
             />
 
             <TarjetaTienda
               clase="steam"
               logo="S"
               nombre="Steam"
+              juego={juego.nombre}
               ofertas={steam}
               vacio="Sin oferta en Steam por ahora."
-              calif={resenas?.por_tienda?.steam}
+              calif={resenas?.por_tienda?.steam ?? { promedio: null, total: 0 }}
             />
 
             <TarjetaTienda clase="promohunt" logo="P" nombre="PromoHunt" calif={califPromoHunt}>

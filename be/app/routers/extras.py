@@ -265,4 +265,34 @@ def resenas_de_juego(id_juego: int, db: Session = Depends(get_db)):
     items = [dict(r) for r in rows]
     notas = [r["calificacion"] for r in items if r["calificacion"]]
     promedio = round(sum(notas) / len(notas), 1) if notas else None
-    return {"promedio": promedio, "total": len(notas), "resenas": items}
+
+    # Calificación del juego en cada tienda (Epic, Steam...), escala de 0 a 5 estrellas.
+    tiendas = (
+        db.execute(
+            text(
+                """
+            SELECT p.nombre AS plataforma, c.puntuacion, c.total_votos,
+                   c.votos_positivos, c.votos_negativos
+            FROM calificacion_tienda c
+            INNER JOIN plataforma p ON p.id_plataforma = c.id_plataforma
+            WHERE c.id_juego = :j
+            """
+            ),
+            {"j": id_juego},
+        )
+        .mappings()
+        .all()
+    )
+    por_tienda = {}
+    for t in tiendas:
+        nombre = t["plataforma"].lower()
+        clave = "epic" if "epic" in nombre else "steam" if "steam" in nombre else nombre
+        pos, neg = t["votos_positivos"], t["votos_negativos"]
+        por_tienda[clave] = {
+            "promedio": float(t["puntuacion"]) if t["puntuacion"] is not None else None,
+            "total": (pos or 0) + (neg or 0) if pos is not None or neg is not None else t["total_votos"],
+            "positivos": pos,
+            "negativos": neg,
+        }
+
+    return {"promedio": promedio, "total": len(notas), "resenas": items, "por_tienda": por_tienda}
