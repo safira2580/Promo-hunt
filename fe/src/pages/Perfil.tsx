@@ -46,6 +46,23 @@ function Perfil() {
   const [nuevaContrasena, setNuevaContrasena] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
+  
+  // NUEVO: Estados añadidos para la foto local
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [archivoFoto, setArchivoFoto] = useState<File | null>(null);
+
+
+  // ==========================================
+  // NUEVO: Manejar cambio de foto local
+  // ==========================================
+  const manejarCambioFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const archivo = e.target.files?.[0];
+    if (archivo) {
+      setArchivoFoto(archivo);
+      const urlTemporal = URL.createObjectURL(archivo);
+      setFotoPreview(urlTemporal);
+    }
+  };
 
 
   // ==========================================
@@ -125,6 +142,8 @@ function Perfil() {
     setCorreoEditado(usuario.correo);
     setContrasenaActual("");
     setNuevaContrasena("");
+    setFotoPreview(null);
+    setArchivoFoto(null);
     setMensaje("");
     setEditando(true);
 
@@ -140,6 +159,8 @@ function Perfil() {
     setCorreoEditado(usuario.correo);
     setContrasenaActual("");
     setNuevaContrasena("");
+    setFotoPreview(null);
+    setArchivoFoto(null);
     setMensaje("");
     setEditando(false);
 
@@ -214,7 +235,8 @@ function Perfil() {
       setUsuario({
         ...usuario,
         nombre: nombreEditado.trim(),
-        correo: correoEditado.trim()
+        correo: correoEditado.trim(),
+        foto_perfil: fotoPreview || usuario.foto_perfil
       });
 
       // LIMPIAR CONTRASEÑAS
@@ -274,12 +296,6 @@ function Perfil() {
 
 
   // ==========================================
-  // FOTO
-  // ==========================================
-
-
-
-  // ==========================================
   // PLATAFORMAS
   // ==========================================
 
@@ -310,7 +326,8 @@ function Perfil() {
 
         <div className="perfil-cabecera">
 
-          <Avatar src={usuario.foto_perfil} className="perfil-foto" />
+          {/* Actualizado para mostrar la vista previa local si existe */}
+          <Avatar src={fotoPreview || usuario.foto_perfil} className="perfil-foto" />
 
           <h1>{usuario.nombre}</h1>
 
@@ -397,6 +414,26 @@ function Perfil() {
               )}
 
             </div>
+
+
+            {/* NUEVO: Input para la foto de perfil en modo edición */}
+
+            {editando && (
+
+              <div className="perfil-dato">
+
+                <span>Foto de perfil</span>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={manejarCambioFoto}
+                  className="input-editar"
+                />
+
+              </div>
+
+            )}
 
 
             {/* CONTRASEÑAS */}
