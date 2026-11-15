@@ -168,7 +168,7 @@ function Perfil() {
 
 
   // ==========================================
-  // GUARDAR CAMBIOS (Actualizado con FormData para enviar imagen)
+  // GUARDAR CAMBIOS (Con FormData para texto e imagen)
   // ==========================================
 
   const guardarCambios = async () => {
@@ -202,21 +202,22 @@ function Perfil() {
     setGuardando(true);
 
     try {
-
-      // Empaquetamos texto e imagen en FormData para enviarlo a FastAPI
+      // Creamos el FormData para empaquetar texto y archivo juntos
       const formData = new FormData();
       formData.append("nombre", nombreEditado.trim());
       formData.append("correo", correoEditado.trim());
       if (contrasenaActual) formData.append("contrasena_actual", contrasenaActual);
       if (nuevaContrasena) formData.append("nueva_contrasena", nuevaContrasena);
       
+      // Si el usuario seleccionó una foto nueva, la adjuntamos
       if (archivoFoto) {
         formData.append("foto", archivoFoto);
       }
 
       const respuesta = await authFetch(`${API_URL}/api/v1/usuario/editar`, {
         method: "PUT",
-        // NOTA: Al enviar FormData, NO se incluye el header Content-Type de JSON
+        // NOTA: Al enviar FormData, NO se le coloca la cabecera Content-Type de JSON, 
+        // el navegador se encarga de poner el multipart automáticamente.
         body: formData
       });
 
