@@ -12,10 +12,10 @@ from sqlalchemy.orm import Session
 import os
 from fastapi.staticfiles import StaticFiles
 
-# Definir directorio estático seguro según el entorno (Railway usa /tmp para escritura)
+# Definir directorio estático seguro apuntando al Volumen de Railway en producción (/app/static)
 if os.environ.get("ENVIRONMENT") == "production":
-    STATIC_DIR = "/tmp/static/img"
-    STATIC_MOUNT_DIR = "/tmp/static"
+    STATIC_DIR = "/app/static/img"
+    STATIC_MOUNT_DIR = "/app/static"
 else:
     STATIC_DIR = "static/img"
     STATIC_MOUNT_DIR = "static"
@@ -51,7 +51,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Montaje seguro de archivos estáticos si la carpeta está disponible
+# Montaje seguro de archivos estáticos si la carpeta está disponible en el volumen
 try:
     if os.path.exists(STATIC_MOUNT_DIR):
         app.mount("/static", StaticFiles(directory=STATIC_MOUNT_DIR), name="static")
