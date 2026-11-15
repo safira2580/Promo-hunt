@@ -16,6 +16,8 @@ services:
       - promohunt_data:/var/lib/postgresql/data
       - ./be/descuentos_juegos_postgres.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
       - ./be/migrations/001_integridad_referencial.sql:/docker-entrypoint-initdb.d/02_integridad.sql:ro
+      - ./be/migrations/002_favoritos_reembolsos.sql:/docker-entrypoint-initdb.d/03_favoritos.sql:ro
+      - ./be/migrations/006_biblioteca_compras.sql:/docker-entrypoint-initdb.d/04_biblioteca.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U promohunt -d descuentos_juegos"]
       interval: 10s

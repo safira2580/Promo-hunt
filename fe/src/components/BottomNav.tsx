@@ -5,6 +5,7 @@ import {
   FaGamepad,
   FaHeart,
   FaUser,
+  FaBook,
 } from "react-icons/fa6";
 
 function BottomNav() {
@@ -60,6 +61,12 @@ function BottomNav() {
       label: "Favoritos",
       icon: <FaHeart />,
       match: (p: string) => p === "/favoritos",
+    },
+    {
+      path: "/biblioteca",
+      label: "Biblioteca",
+      icon: <FaBook />,
+      match: (p: string) => p === "/biblioteca",
     },
     {
       path: "/Perfil",

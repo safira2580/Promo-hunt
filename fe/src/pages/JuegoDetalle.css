@@ -692,3 +692,12 @@
 .tienda-card .tienda-calif { margin: 14px 0; }
 .tienda-card .tienda-calif-nota { font-size: 2.2rem; font-weight: 700; }
 .tienda-card .tienda-calif svg { font-size: 1.4rem; }
+
+/* Botón de compra de la cabecera */
+.juego-compra { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 22px; }
+.boton-comprar { display: inline-flex; align-items: center; gap: 10px; border: none; border-radius: 10px; padding: 14px 26px; background: #f74780; color: white; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 16px rgba(247, 71, 128, 0.3); transition: transform 0.2s ease, background 0.2s ease; }
+.boton-comprar:hover:not(:disabled) { background: #e63870; transform: translateY(-2px); }
+.boton-comprar:disabled { background: #cfd3dc; color: #8a90a0; box-shadow: none; cursor: not-allowed; }
+.boton-comprar.en-biblioteca { background: #16a34a; box-shadow: 0 6px 16px rgba(22, 163, 74, 0.28); }
+.boton-comprar.en-biblioteca:hover { background: #15803d; }
+.juego-compra-nota { color: #777; font-size: 14px; }
