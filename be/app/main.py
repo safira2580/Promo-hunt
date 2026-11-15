@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.database import get_db
 from app.errors import register_error_handlers
-from app.routers import admin, auth, compras, extras, games, users
+from app.routers import admin, auth, compras, extras, games, resenas, users
 
 # Definir directorio estático seguro apuntando al Volumen de Railway en producción (/app/static)
 if os.environ.get("ENVIRONMENT") == "production":
@@ -78,6 +78,7 @@ register_error_handlers(app)
 
 app.include_router(auth.router)
 app.include_router(games.router)
+app.include_router(resenas.router)
 app.include_router(users.router)
 app.include_router(extras.router)
 app.include_router(compras.router)

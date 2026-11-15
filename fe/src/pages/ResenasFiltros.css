@@ -1,0 +1,71 @@
+/* Filtros de la página de reseñas */
+
+.filtros-resenas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  margin: 20px auto 8px;
+  max-width: 900px;
+}
+
+.filtros-resenas label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 220px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.filtros-resenas select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #0b1220;
+  color: #f1f5f9;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filtros-resenas select:focus {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+
+.filtros-limpiar {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: transparent;
+  color: #22d3ee;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.filtros-limpiar:hover {
+  background: rgba(34, 211, 238, 0.1);
+  border-color: #22d3ee;
+}
+
+.filtros-contador {
+  margin: 4px 0 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.resena-meta {
+  margin: 4px 0 8px;
+  font-size: 13px;
+  color: #94a3b8;
+}
