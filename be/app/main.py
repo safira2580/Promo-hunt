@@ -9,15 +9,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from fastapi.staticfiles import StaticFiles
 import os
+from fastapi.staticfiles import StaticFiles
 
-# Asegurar carpeta estática de forma protegida para evitar errores de permisos en producción
+# Definir directorio estático seguro según el entorno (Railway usa /tmp para escritura)
+if os.environ.get("ENVIRONMENT") == "production":
+    STATIC_DIR = "/tmp/static/img"
+    STATIC_MOUNT_DIR = "/tmp/static"
+else:
+    STATIC_DIR = "static/img"
+    STATIC_MOUNT_DIR = "static"
+
+# Crear la carpeta de forma segura con manejo de errores
 try:
-    os.makedirs("static/img", exist_ok=True)
-    app_mount_path = "static"
-except Exception:
-    app_mount_path = None
+    os.makedirs(STATIC_DIR, exist_ok=True)
+except Exception as e:
+    print(f"⚠️ No se pudo crear la carpeta estática: {e}")
 
 from app.config import get_settings
 from app.database import get_db
@@ -45,8 +52,11 @@ app = FastAPI(
 )
 
 # Montaje seguro de archivos estáticos si la carpeta está disponible
-if app_mount_path and os.path.exists(app_mount_path):
-    app.mount("/static", StaticFiles(directory=app_mount_path), name="static")
+try:
+    if os.path.exists(STATIC_MOUNT_DIR):
+        app.mount("/static", StaticFiles(directory=STATIC_MOUNT_DIR), name="static")
+except Exception as e:
+    print(f"⚠️ No se pudo montar /static: {e}")
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
 orígenes_permitidos = [
