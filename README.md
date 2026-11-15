@@ -78,19 +78,6 @@ PromoHunt/
 7. Corregido **merge conflict** en el antiguo `database.py`
 8. Prefijo de API: `/api/v1/...` (Swagger en `/docs`)
 
-## Pagos y biblioteca
-
-Comprar un juego crea una **compra** (`POST /api/v1/compras`) cuyo precio fija siempre el
-servidor a partir de la oferta, nunca el navegador. El pago se valida en
-`POST /api/v1/compras/{id}/pago` y solo las compras `pagada` aparecen en `GET /api/v1/biblioteca`.
-
-- `PAYMENTS_MODE=simulado` (por defecto): aprueba o rechaza **sin cobrar dinero real**. Sirve para demos.
-  Con `PAYMENTS_MODE=desactivado` el endpoint de pago responde 501.
-- **Antes de cobrar de verdad** hay que integrar una pasarela (p. ej. Wompi, Mercado Pago, Stripe):
-  la compra solo debe pasar a `pagada` cuando la pasarela lo confirme por *webhook con firma verificada*,
-  nunca por una petición del navegador. Esa parte aún no está implementada.
-- Migración: `be/migrations/006_biblioteca_compras.sql` (idempotente; en BD existentes hay que ejecutarla a mano).
-
 ## Frontend
 
 Copia la carpeta `fe/` de tu repo original.  
