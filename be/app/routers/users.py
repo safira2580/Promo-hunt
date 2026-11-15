@@ -102,7 +102,6 @@ def editar(
         current_user.foto_perfil = nombre_archivo
 
     # 4. Actualizar datos de texto y guardar cambios en la base de datos
-    # 4. Actualizar datos de texto y guardar cambios en la base de datos
     current_user.nombre = nombre
     current_user.correo = correo
     db.commit()
@@ -113,4 +112,3 @@ def editar(
         "mensaje": "Perfil actualizado correctamente",
         "foto_perfil": current_user.foto_perfil,
     }
-    
