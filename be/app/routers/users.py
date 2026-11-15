@@ -1,9 +1,9 @@
 """Perfil del usuario autenticado (consultar y editar)."""
+import os
+from pathlib import Path
 import shutil
 
-from pathlib import Path
-from fastapi import File, Form, UploadFile
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -78,18 +78,19 @@ def editar(
         # Crear nombre único usando el ID del usuario y parte de su correo
         correo_limpio = current_user.correo.split("@")[0].replace(".", "_")
         nombre_archivo = f"user_{current_user.id_usuario}_{correo_limpio}{extension}"
-        
-        # Asegurar que la carpeta static/img exista en el backend
-        directorio_destino = Path("static/img")
+
+        # Apuntar al volumen en producción (/app/static/img) o local (static/img)
+        ruta_base = "/app/static/img" if os.environ.get("ENVIRONMENT") == "production" else "static/img"
+        directorio_destino = Path(ruta_base)
         directorio_destino.mkdir(parents=True, exist_ok=True)
-        
+
         ruta_destino = directorio_destino / nombre_archivo
 
         try:
             with open(ruta_destino, "wb") as buffer:
                 shutil.copyfileobj(foto.file, buffer)
-        except Exception:
-            raise HTTPException(500, "Error al guardar la imagen en el servidor")
+        except Exception as err:
+            raise HTTPException(500, "Error al guardar la imagen en el servidor") from err
 
         # Guardar el nombre del archivo en el campo correspondiente del modelo
         current_user.foto_perfil = nombre_archivo
@@ -101,7 +102,7 @@ def editar(
     db.refresh(current_user)
 
     return {
-        "ok": True, 
+        "ok": True,
         "mensaje": "Perfil actualizado correctamente",
-        "foto_perfil": current_user.foto_perfil
+        "foto_perfil": current_user.foto_perfil,
     }

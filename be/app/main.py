@@ -3,14 +3,19 @@ Punto de entrada FastAPI — PromoHunt API.
 """
 
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-import os
-from fastapi.staticfiles import StaticFiles
+
+from app.config import get_settings
+from app.database import get_db
+from app.errors import register_error_handlers
+from app.routers import admin, auth, extras, games, users
 
 # Definir directorio estático seguro apuntando al Volumen de Railway en producción (/app/static)
 if os.environ.get("ENVIRONMENT") == "production":
@@ -25,11 +30,6 @@ try:
     os.makedirs(STATIC_DIR, exist_ok=True)
 except Exception as e:
     print(f"⚠️ No se pudo crear la carpeta estática: {e}")
-
-from app.config import get_settings
-from app.database import get_db
-from app.errors import register_error_handlers
-from app.routers import admin, auth, extras, games, users
 
 settings = get_settings()
 settings.validate_for_production()
@@ -73,8 +73,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
 
 register_error_handlers(app)
 
