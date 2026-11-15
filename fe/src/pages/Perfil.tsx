@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -47,14 +47,14 @@ function Perfil() {
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
   
-  // NUEVO: Estados añadidos para la foto local
+  // FOTO LOCAL Y VISTA PREVIA
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [archivoFoto, setArchivoFoto] = useState<File | null>(null);
 
+  // Referencia para disparar el explorador de archivos al hacer clic en el avatar
+  const inputArchivoRef = useRef<HTMLInputElement>(null);
 
-  // ==========================================
-  // NUEVO: Manejar cambio de foto local
-  // ==========================================
+  // Manejar cambio de foto local
   const manejarCambioFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0];
     if (archivo) {
@@ -168,7 +168,7 @@ function Perfil() {
 
 
   // ==========================================
-  // GUARDAR CAMBIOS
+  // GUARDAR CAMBIOS (Actualizado con FormData para enviar imagen)
   // ==========================================
 
   const guardarCambios = async () => {
@@ -203,15 +203,21 @@ function Perfil() {
 
     try {
 
+      // Empaquetamos texto e imagen en FormData para enviarlo a FastAPI
+      const formData = new FormData();
+      formData.append("nombre", nombreEditado.trim());
+      formData.append("correo", correoEditado.trim());
+      if (contrasenaActual) formData.append("contrasena_actual", contrasenaActual);
+      if (nuevaContrasena) formData.append("nueva_contrasena", nuevaContrasena);
+      
+      if (archivoFoto) {
+        formData.append("foto", archivoFoto);
+      }
+
       const respuesta = await authFetch(`${API_URL}/api/v1/usuario/editar`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: nombreEditado.trim(),
-          correo: correoEditado.trim(),
-          contrasena_actual: contrasenaActual,
-          nueva_contrasena: nuevaContrasena
-        })
+        // NOTA: Al enviar FormData, NO se incluye el header Content-Type de JSON
+        body: formData
       });
 
       const datos = await respuesta.json().catch(() => ({}));
@@ -236,12 +242,13 @@ function Perfil() {
         ...usuario,
         nombre: nombreEditado.trim(),
         correo: correoEditado.trim(),
-        foto_perfil: fotoPreview || usuario.foto_perfil
+        foto_perfil: datos.foto_perfil ? `${API_URL}/static/img/${datos.foto_perfil}` : (fotoPreview || usuario.foto_perfil)
       });
 
-      // LIMPIAR CONTRASEÑAS
+      // LIMPIAR CONTRASEÑAS Y ARCHIVO
       setContrasenaActual("");
       setNuevaContrasena("");
+      setArchivoFoto(null);
 
       setMensaje("Perfil actualizado correctamente ✓");
       setEditando(false);
@@ -260,15 +267,11 @@ function Perfil() {
 
   // ==========================================
   // CERRAR SESIÓN
-  // El backend no tiene /logout: el token vive en el navegador,
-  // así que basta con descartarlo y recargar.
   // ==========================================
 
   const cerrarSesion = () => {
-
     setToken(null);
     window.location.assign("/");
-
   };
 
 
@@ -277,21 +280,17 @@ function Perfil() {
   // ==========================================
 
   if (cargando) {
-
     return (
       <div className="perfil-cargando">
         Cargando perfil...
       </div>
     );
-
   }
 
   if (!usuario) {
-
     return mensaje ? (
       <div className="perfil-cargando">{mensaje}</div>
     ) : null;
-
   }
 
 
@@ -322,12 +321,55 @@ function Perfil() {
           <FaArrowLeft /> Volver
         </button>
 
-        {/* CABECERA */}
+        {/* CABECERA (Interactiva para cambiar foto al hacer clic en edición) */}
 
         <div className="perfil-cabecera">
 
-          {/* Actualizado para mostrar la vista previa local si existe */}
-          <Avatar src={fotoPreview || usuario.foto_perfil} className="perfil-foto" />
+          <div 
+            onClick={() => {
+              if (editando && inputArchivoRef.current) {
+                inputArchivoRef.current.click();
+              }
+            }}
+            style={{ 
+              cursor: editando ? "pointer" : "default", 
+              display: "inline-block", 
+              position: "relative" 
+            }}
+            title={editando ? "Haz clic para cambiar tu foto" : ""}
+          >
+            <Avatar src={fotoPreview || usuario.foto_perfil} className="perfil-foto" />
+
+            {/* Aviso visual sutil al pasar el cursor sobre la foto editando */}
+            {editando && (
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                background: 'rgba(0, 0, 0, 0.7)',
+                color: '#fff',
+                textAlign: 'center',
+                fontSize: '11px',
+                padding: '4px 0',
+                borderBottomLeftRadius: '50px',
+                borderBottomRightRadius: '50px'
+              }}>
+                📷 Cambiar
+              </div>
+            )}
+          </div>
+
+          {/* Input de archivo oculto que filtra únicamente imágenes PNG o JPG */}
+          {editando && (
+            <input
+              type="file"
+              ref={inputArchivoRef}
+              onChange={manejarCambioFoto}
+              accept="image/png, image/jpeg, image/jpg"
+              style={{ display: "none" }}
+            />
+          )}
 
           <h1>{usuario.nombre}</h1>
 
@@ -414,26 +456,6 @@ function Perfil() {
               )}
 
             </div>
-
-
-            {/* NUEVO: Input para la foto de perfil en modo edición */}
-
-            {editando && (
-
-              <div className="perfil-dato">
-
-                <span>Foto de perfil</span>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={manejarCambioFoto}
-                  className="input-editar"
-                />
-
-              </div>
-
-            )}
 
 
             {/* CONTRASEÑAS */}
