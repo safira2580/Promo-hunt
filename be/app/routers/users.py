@@ -67,8 +67,7 @@ def editar(
         contrasena_actual_val = contrasena_actual
         nueva_contrasena_val = nueva_contrasena
 
-    # 1. Verificar si el correo ya está en uso por otro usuario
-    # (Debe ir PRIMERO para disparar el 409)
+    # 1. Verificar si el correo ya está en uso por otro usuario (409)
     otro = (
         db.query(User)
         .filter(User.correo == correo_val, User.id_usuario != current_user.id_usuario)
@@ -77,8 +76,7 @@ def editar(
     if otro:
         raise HTTPException(409, "Ese correo ya está siendo utilizado")
 
-    # 2. Validar contraseña si se proporciona nueva_contrasena
-    # (Debe disparar el 422 si falta la actual)
+    # 2. Validar contraseña si se proporciona nueva_contrasena (422 o 400)
     if nueva_contrasena_val:
         if not contrasena_actual_val:
             raise HTTPException(422, "Debes ingresar tu contraseña actual")
