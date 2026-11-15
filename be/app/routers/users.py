@@ -1,7 +1,9 @@
 """Perfil del usuario autenticado (consultar y editar)."""
+
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -44,11 +46,11 @@ def perfil(current_user: User = Depends(get_current_user), db: Session = Depends
 
 @router.put("/editar")
 def editar(
-    nombre: str = Form(..., min_length=2, max_length=100),
-    correo: EmailStr = Form(...),
-    contrasena_actual: str | None = Form(None, max_length=128),
-    nueva_contrasena: str | None = Form(None, min_length=6, max_length=128),
-    foto: UploadFile | None = File(None),
+    nombre: Annotated[str, Form(min_length=2, max_length=100)],
+    correo: Annotated[EmailStr, Form()],
+    contrasena_actual: Annotated[str | None, Form(max_length=128)] = None,
+    nueva_contrasena: Annotated[str | None, Form(min_length=6, max_length=128)] = None,
+    foto: Annotated[UploadFile | None, File()] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
