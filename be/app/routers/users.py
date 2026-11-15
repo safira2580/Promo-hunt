@@ -125,4 +125,3 @@ def editar(
         "mensaje": "Perfil actualizado correctamente",
         "foto_perfil": current_user.foto_perfil,
     }
-    
