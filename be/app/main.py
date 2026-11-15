@@ -61,6 +61,7 @@ except Exception as e:
 app.add_middleware(GZipMiddleware, minimum_size=500)
 orígenes_permitidos = [
     "https://promo-hunt-production.up.railway.app",
+    "https://lucky-unity-production-fb8a.up.railway.app",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
@@ -72,6 +73,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 register_error_handlers(app)
 
