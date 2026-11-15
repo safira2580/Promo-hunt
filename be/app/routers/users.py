@@ -80,7 +80,11 @@ def editar(
         nombre_archivo = f"user_{current_user.id_usuario}_{correo_limpio}{extension}"
 
         # Apuntar al volumen en producción (/app/static/img) o local (static/img)
-        ruta_base = "/app/static/img" if os.environ.get("ENVIRONMENT") == "production" else "static/img"
+        if os.environ.get("ENVIRONMENT") == "production":
+            ruta_base = "/app/static/img"
+        else:
+            ruta_base = "static/img"
+
         directorio_destino = Path(ruta_base)
         directorio_destino.mkdir(parents=True, exist_ok=True)
 
