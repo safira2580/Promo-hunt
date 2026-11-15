@@ -290,7 +290,9 @@ def resenas_de_juego(id_juego: int, db: Session = Depends(get_db)):
         pos, neg = t["votos_positivos"], t["votos_negativos"]
         por_tienda[clave] = {
             "promedio": float(t["puntuacion"]) if t["puntuacion"] is not None else None,
-            "total": (pos or 0) + (neg or 0) if pos is not None or neg is not None else t["total_votos"],
+            "total": (
+                (pos or 0) + (neg or 0) if pos is not None or neg is not None else t["total_votos"]
+            ),
             "positivos": pos,
             "negativos": neg,
         }
