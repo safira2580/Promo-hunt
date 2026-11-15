@@ -110,5 +110,6 @@ def editar(
     return {
         "ok": True,
         "mensaje": "Perfil actualizado correctamente",
-        "foto_perfil": current_user.foto_perfil,
+        "foto_perfil": current_user.foto_perfil,    
     }
+    
