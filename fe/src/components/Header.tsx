@@ -37,12 +37,6 @@ interface Usuario {
 
 
 /* ==========================================
-   IMÁGENES DE LOS JUEGOS
-   ========================================== */
-
-
-
-/* ==========================================
    HEADER
    ========================================== */
 
@@ -65,13 +59,10 @@ function Header() {
 
   /* ==========================================
      COMPROBAR SESIÓN
-     El backend usa token Bearer (guardado en localStorage),
-     no cookies. /api/v1/auth/me devuelve el usuario directamente.
      ========================================== */
 
   useEffect(() => {
 
-    // Sin token no hay sesión: se evita una petición inútil en cada carga
     if (!getToken()) {
       return;
     }
@@ -81,27 +72,29 @@ function Header() {
       .then(async (respuesta) => {
 
         if (!respuesta.ok) {
-
-          // Solo se descarta el token si el servidor dice que no es válido.
-          // Un 404/500 temporal no debe cerrar la sesión.
           if (respuesta.status === 401) {
             setToken(null);
           }
-
           setUsuario(null);
           return;
-
         }
 
-        setUsuario(await respuesta.json());
+        const data = await respuesta.json();
+
+        // 🔑 CORRECCIÓN: Si trae foto_perfil y es un archivo local, construir la ruta absoluta de Railway/Backend
+        if (data && data.foto_perfil) {
+          if (!data.foto_perfil.startsWith("http") && !data.foto_perfil.startsWith("blob:")) {
+            data.foto_perfil = `${API_URL}/static/img/${data.foto_perfil}`;
+          }
+        }
+
+        setUsuario(data);
 
       })
 
       .catch((error) => {
-
         console.error("Error comprobando sesión:", error);
         setUsuario(null);
-
       });
 
   }, []);
