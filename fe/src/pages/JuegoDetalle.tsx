@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { FaThumbsUp, FaThumbsDown, FaCartShopping, FaCircleCheck } from "react-icons/fa6";
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa6";
 import Estrellas from "../components/Estrellas";
+import FormularioResena from "../components/FormularioResena";
 import { imagenJuego } from "../imagenJuego";
 import { urlTiendaJuego } from "../tiendas";
+import { getToken } from "../api";
 
 import "./JuegoDetalle.css";
 import { API_URL } from "../config";
-import { apiFetch } from "../api";
 
 interface Juego {
   id_juego: number;
@@ -149,7 +150,15 @@ function JuegoDetalle() {
   const [descuentos, setDescuentos] = useState<Descuento[]>([]);
   const [resenas, setResenas] = useState<ResenasData | null>(null);
   const [cargando, setCargando] = useState(true);
-  const [enBiblioteca, setEnBiblioteca] = useState(false);
+  const [escribiendo, setEscribiendo] = useState(false);
+
+  // Promedio y total de reseñas de PromoHunt (también se llama tras publicar una)
+  const cargarResenas = useCallback(() => {
+    fetch(`${API_URL}/api/v1/juegos/${id}/resenas`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(setResenas)
+      .catch(() => setResenas(null));
+  }, [id]);
 
   useEffect(() => {
     const obtenerJuego = async () => {
@@ -169,20 +178,17 @@ function JuegoDetalle() {
       }
     };
     obtenerJuego();
+    cargarResenas();
+  }, [id, cargarResenas]);
 
-    fetch(`${API_URL}/api/v1/juegos/${id}/resenas`)
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(setResenas)
-      .catch(() => setResenas(null));
-  }, [id]);
-
-  // ¿Ya lo compró este usuario? (sin sesión, la biblioteca responde 401 y no pasa nada)
-  useEffect(() => {
-    apiFetch("/api/v1/biblioteca")
-      .then((r) => (r.ok ? r.json() : []))
-      .then((lista: { id_juego: number }[]) => setEnBiblioteca(lista.some((j) => j.id_juego === Number(id))))
-      .catch(() => setEnBiblioteca(false));
-  }, [id]);
+  // Sin sesión se envía al login y se vuelve a esta misma ficha
+  const abrirFormulario = () => {
+    if (!getToken()) {
+      navigate("/login", { state: { desde: `/juego/${id}` } });
+      return;
+    }
+    setEscribiendo(true);
+  };
 
   if (cargando) {
     return (
@@ -208,11 +214,6 @@ function JuegoDetalle() {
   }
 
   const imagenPortada = imagenJuego(juego.nombre, juego.imagen);
-
-  // Oferta con el mejor precio: es la que se compra desde el botón de la cabecera
-  const mejorOferta = descuentos.length
-    ? descuentos.reduce((a, b) => (Number(b.precio_descuento) < Number(a.precio_descuento) ? b : a))
-    : null;
 
   const nombre = (d: Descuento) => d.plataforma.toLowerCase();
   const steam = descuentos.filter((d) => nombre(d).includes("steam"));
@@ -244,26 +245,9 @@ function JuegoDetalle() {
               </div>
             )}
 
-            <div className="juego-compra">
-              {enBiblioteca ? (
-                <button className="boton-comprar en-biblioteca" onClick={() => navigate("/biblioteca")}>
-                  <FaCircleCheck /> En tu biblioteca
-                </button>
-              ) : mejorOferta ? (
-                <>
-                  <button className="boton-comprar" onClick={() => navigate(`/checkout/${mejorOferta.id_descuento}`)}>
-                    <FaCartShopping /> Comprar por {precio(mejorOferta.precio_descuento)}
-                  </button>
-                  <span className="juego-compra-nota">
-                    Mejor precio en {mejorOferta.plataforma} · -{mejorOferta.porcentaje_descuento}%
-                  </span>
-                </>
-              ) : (
-                <button className="boton-comprar" disabled>
-                  Sin ofertas disponibles
-                </button>
-              )}
-            </div>
+            <button type="button" className="boton-escribir-resena" onClick={abrirFormulario}>
+              ✍️ Escribir reseña
+            </button>
           </div>
         </section>
 
@@ -331,6 +315,15 @@ function JuegoDetalle() {
       </main>
 
       <Footer />
+
+      {/* MODAL: ESCRIBIR RESEÑA (con este juego ya elegido) */}
+      {escribiendo && (
+        <FormularioResena
+          juegoInicial={juego.id_juego}
+          onCerrar={() => setEscribiendo(false)}
+          onPublicada={cargarResenas}
+        />
+      )}
     </div>
   );
 }

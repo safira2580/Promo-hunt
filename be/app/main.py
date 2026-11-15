@@ -78,6 +78,7 @@ register_error_handlers(app)
 
 app.include_router(auth.router)
 app.include_router(games.router)
+app.include_router(resenas.router)
 app.include_router(users.router)
 app.include_router(extras.router)
 app.include_router(compras.router)
