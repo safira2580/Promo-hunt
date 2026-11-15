@@ -1,0 +1,8 @@
+/* Respaldo de foto de usuario + botón de usuario del encabezado */
+.avatar-fallback { display: grid; place-items: center; background: var(--gradient); color: #fff; border-radius: 50%; }
+
+.user-button { width: 4.5rem; height: 4.5rem; display: flex; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 50%; background: var(--gradient); color: #fff; cursor: pointer; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.user-button:hover { transform: scale(1.08); box-shadow: 0 0.5rem 1.5rem rgba(4, 26, 92, 0.3); }
+.user-button svg { font-size: 2rem; }
+.user-photo { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.user-photo.avatar-fallback { font-size: 2rem; }

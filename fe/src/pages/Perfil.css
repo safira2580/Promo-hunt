@@ -1,248 +1,137 @@
+/* Perfil — usa las variables del tema (App.css :root) para coincidir con el resto del sitio */
 .pagina-perfil {
   min-height: 100vh;
-  padding: 50px 20px;
-  background: #f5f5f5;
-  color: #1a1a2e;
+  padding: 3rem 2rem 11rem; /* el espacio inferior deja libre la barra de navegación */
+  color: var(--text-color);
 }
 
 .perfil-contenedor {
   width: 100%;
-  max-width: 850px;
-  margin: auto;
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
-  color: #1a1a2e;
+  max-width: 85rem;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--light-gray);
+  border-radius: 1.6rem;
+  padding: 3rem 4rem 4rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.35);
 }
 
-/* ==========================
-   CABECERA
-========================== */
-
-.perfil-cabecera {
-  text-align: center;
-  margin-bottom: 40px;
+/* Volver (mismo estilo "píldora" que la página de reembolsos) */
+.perfil-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--background-color);
+  border: 1px solid var(--light-gray);
+  border-radius: 999px;
+  color: var(--text-color);
+  padding: 0.8rem 1.6rem;
+  font: inherit;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
+.perfil-volver:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
+/* Cabecera */
+.perfil-cabecera { display: grid; justify-items: center; gap: 0.4rem; text-align: center; margin: 1rem 0 4rem; }
 .perfil-foto {
-  width: 150px;
-  height: 150px;
+  width: 15rem;
+  height: 15rem;
   object-fit: cover;
   border-radius: 50%;
-  border: 5px solid #f74780;
+  border: 0.4rem solid var(--primary-color);
+  box-shadow: 0 0 0 0.6rem rgba(59, 130, 246, 0.15);
 }
+.perfil-foto.avatar-fallback { font-size: 6.4rem; }
+.perfil-cabecera h1 { margin: 1.4rem 0 0; font-size: 3.2rem; color: var(--text-color); }
+.perfil-cabecera p { margin: 0; color: var(--gray); font-size: 1.5rem; }
 
-.perfil-cabecera h1 {
-  margin: 15px 0 5px;
-  color: #1a1a2e;
+/* Secciones */
+.perfil-seccion { margin-top: 3.5rem; }
+.perfil-titulo { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+.perfil-seccion h2 { margin: 0; font-size: 2.2rem; color: var(--text-color); }
+
+.boton-editar {
+  background: transparent;
+  border: 1px solid var(--light-gray);
+  border-radius: 999px;
+  color: var(--text-color);
+  padding: 0.8rem 1.6rem;
+  font: inherit;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
+.boton-editar:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
-.perfil-cabecera p {
-  color: #777;
-}
+.perfil-datos { background: var(--background-color); border: 1px solid var(--light-gray); border-radius: 1.2rem; overflow: hidden; }
+.perfil-dato { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.6rem 2rem; border-bottom: 1px solid var(--light-gray); font-size: 1.5rem; }
+.perfil-dato:last-child { border-bottom: none; }
+.perfil-dato span { color: var(--gray); }
+.perfil-dato strong { text-align: right; color: var(--text-color); font-weight: 600; overflow-wrap: anywhere; }
 
-/* ==========================
-   SECCIONES
-========================== */
-
-.perfil-seccion {
-  margin-top: 35px;
-}
-
-.perfil-seccion h2 {
-  margin-bottom: 15px;
-  color: #1a1a2e;
-}
-
-.perfil-datos {
-  border: 1px solid #eee;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.perfil-dato {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 16px 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.perfil-dato:last-child {
-  border-bottom: none;
-}
-
-.perfil-dato span {
-  color: #777;
-}
-
-.perfil-dato strong {
+/* Edición */
+.input-editar {
+  width: min(100%, 28rem);
+  background: var(--white);
+  border: 1px solid var(--light-gray);
+  border-radius: 0.8rem;
+  color: var(--text-color);
+  padding: 0.8rem 1.2rem;
+  font: inherit;
+  font-size: 1.5rem;
   text-align: right;
-  color: #1a1a2e;
-  font-weight: 600;
 }
+.input-editar:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 0.3rem rgba(59, 130, 246, 0.2); }
+.botones-edicion { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.6rem; }
+.boton-guardar { background: var(--gradient); border: 0; border-radius: 999px; color: #fff; padding: 1rem 2.4rem; font: inherit; font-size: 1.4rem; font-weight: 600; cursor: pointer; transition: filter 0.2s ease; }
+.boton-guardar:hover { filter: brightness(1.15); }
+.boton-cancelar { background: transparent; border: 1px solid var(--light-gray); border-radius: 999px; color: var(--gray); padding: 1rem 2.4rem; font: inherit; font-size: 1.4rem; cursor: pointer; }
+.boton-cancelar:hover { color: var(--text-color); border-color: var(--gray); }
+.mensaje-perfil { margin: 1.2rem 0 0; padding: 0.9rem 1.4rem; border-radius: 0.8rem; background: rgba(34, 211, 238, 0.1); color: var(--secondary-color); font-size: 1.4rem; text-align: center; }
 
-/* ==========================
-   CROSSPLAY
-========================== */
+/* Crossplay */
+.crossplay-descripcion { color: var(--gray); margin: 0 0 2rem; font-size: 1.5rem; }
+.plataformas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.plataforma { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.6rem 1.8rem; background: var(--background-color); border: 1px solid var(--light-gray); border-radius: 1.2rem; }
+.plataforma-nombre { display: flex; align-items: center; gap: 1rem; font-size: 1.6rem; font-weight: 600; color: var(--text-color); }
+.plataforma-nombre svg { font-size: 2.4rem; }
+.icono-texto { font-size: 2.2rem; }
+.estado { color: var(--gray); font-size: 1.4rem; }
+.estado.conectado { color: #4ade80; font-weight: 700; }
 
-.crossplay-descripcion {
-  color: #777;
-  margin-bottom: 20px;
-}
+/* Acciones */
+.perfil-botones { display: flex; justify-content: center; gap: 1.8rem; margin-top: 3rem; }
+.boton-admin { width: 100%; padding: 1.3rem; border: 0; border-radius: 999px; background: var(--gradient); color: #fff; font: inherit; font-size: 1.5rem; font-weight: 600; cursor: pointer; transition: filter 0.2s ease, transform 0.2s ease; }
+.boton-admin:hover { filter: brightness(1.15); transform: translateY(-2px); }
+.boton-cerrar { background: transparent; border: 1px solid #f87171; border-radius: 999px; color: #f87171; padding: 1.1rem 2.8rem; font: inherit; font-size: 1.5rem; font-weight: 600; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+.boton-cerrar:hover { background: #f87171; color: var(--background-color); }
 
-.plataformas {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-}
-
-.plataforma {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px;
-  background: #f8f8f8;
-  border-radius: 12px;
-}
-
-.plataforma-nombre {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  color: #1a1a2e;
-}
-
-.plataforma-nombre svg {
-  font-size: 24px;
-}
-
-.icono-texto {
-  font-size: 22px;
-}
-
-.estado {
-  color: #999;
-  font-size: 14px;
-}
-
-.estado.conectado {
-  color: #22a447;
-  font-weight: bold;
-}
-
-/* ==========================
-   BOTONES
-========================== */
-
-.perfil-botones {
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 40px;
-}
-
-.boton-volver,
-.boton-cerrar {
-  border: none;
+/* Estilo heredado: lo usan otras páginas (reseñas, etc.). No se toca para no alterarlas. */
+.boton-volver {
+  border: 2px solid #eeeeee;
   border-radius: 12px;
   padding: 13px 28px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-.boton-volver {
   background: white;
   color: #444;
-  border: 2px solid #eeeeee;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
+.boton-volver:hover { background: #f74780; color: white; border-color: #f74780; transform: translateY(-3px); box-shadow: 0 8px 18px rgba(247, 71, 128, 0.25); }
+.boton-volver:active { transform: translateY(0); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12); }
 
-.boton-volver:hover {
-  background: #f74780;
-  color: white;
-  border-color: #f74780;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(247, 71, 128, 0.25);
-}
-
-.boton-cerrar {
-  background: #f74780;
-  color: white;
-  box-shadow: 0 5px 15px rgba(247, 71, 128, 0.25);
-}
-
-.boton-cerrar:hover {
-  background: #e63870;
-  transform: translateY(-3px);
-  box-shadow: 0 9px 20px rgba(247, 71, 128, 0.35);
-}
-
-.boton-volver:active,
-.boton-cerrar:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-}
-
-/* ==========================
-   CARGANDO
-========================== */
-
-.perfil-cargando {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* ==========================
-   RESPONSIVE
-========================== */
+.perfil-cargando { min-height: 60vh; display: grid; place-items: center; color: var(--gray); font-size: 1.6rem; }
 
 @media (max-width: 650px) {
-  .perfil-contenedor {
-    padding: 25px;
-  }
-
-  .plataformas {
-    grid-template-columns: 1fr;
-  }
-
-  .perfil-dato {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .perfil-dato strong {
-    text-align: left;
-  }
-
-  .perfil-botones {
-    flex-direction: column;
-  }
-}
-
-.boton-admin {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  background: #071a5c;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.boton-admin:hover {
-  background: #0d2b8f;
-  transform: translateY(-2px);
+  .pagina-perfil { padding: 2rem 1.2rem 11rem; }
+  .perfil-contenedor { padding: 2rem 1.8rem 3rem; }
+  .plataformas { grid-template-columns: 1fr; }
+  .perfil-dato { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .perfil-dato strong { text-align: left; }
+  .input-editar { width: 100%; text-align: left; }
+  .perfil-botones { flex-direction: column; }
 }

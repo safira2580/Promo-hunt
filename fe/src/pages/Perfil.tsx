@@ -7,6 +7,8 @@ import {
   FaPlaystation
 } from "react-icons/fa6";
 
+import { FaArrowLeft } from "react-icons/fa6";
+import Avatar from "../components/Avatar";
 import "./Perfil.css";
 import { API_URL } from "../config";
 import { authFetch, getToken, setToken, mensajeDeError } from "../api";
@@ -275,9 +277,6 @@ function Perfil() {
   // FOTO
   // ==========================================
 
-  const fotoPerfil = usuario.foto_perfil
-    ? usuario.foto_perfil
-    : "/img/default-user.jpg";
 
 
   // ==========================================
@@ -303,15 +302,15 @@ function Perfil() {
 
       <div className="perfil-contenedor">
 
+        <button className="perfil-volver" type="button" onClick={() => navigate("/")}>
+          <FaArrowLeft /> Volver
+        </button>
+
         {/* CABECERA */}
 
         <div className="perfil-cabecera">
 
-          <img
-            src={fotoPerfil}
-            alt="Foto de perfil"
-            className="perfil-foto"
-          />
+          <Avatar src={usuario.foto_perfil} className="perfil-foto" />
 
           <h1>{usuario.nombre}</h1>
 
