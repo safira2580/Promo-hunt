@@ -46,33 +46,46 @@ def perfil(current_user: User = Depends(get_current_user), db: Session = Depends
 
 @router.put("/editar")
 def editar(
-    nombre: Annotated[str, Form(min_length=2, max_length=100)],
-    correo: Annotated[EmailStr, Form()],
+    nombre: Annotated[str | None, Form()] = None,
+    correo: Annotated[EmailStr | None, Form()] = None,
     contrasena_actual: Annotated[str | None, Form(max_length=128)] = None,
     nueva_contrasena: Annotated[str | None, Form(min_length=6, max_length=128)] = None,
     foto: Annotated[UploadFile | None, File()] = None,
+    payload: PerfilIn | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    # Soportar tanto formato Form (frontend web) como JSON (tests automatizados)
+    if payload:
+        nombre_val = payload.nombre
+        correo_val = payload.correo
+        contrasena_actual_val = payload.contrasena_actual
+        nueva_contrasena_val = payload.nueva_contrasena
+    else:
+        nombre_val = nombre if nombre is not None else current_user.nombre
+        correo_val = correo if correo is not None else current_user.correo
+        contrasena_actual_val = contrasena_actual
+        nueva_contrasena_val = nueva_contrasena
+
     # 1. Verificar si el correo ya está en uso por otro usuario
     otro = (
         db.query(User)
-        .filter(User.correo == correo, User.id_usuario != current_user.id_usuario)
+        .filter(User.correo == correo_val, User.id_usuario != current_user.id_usuario)
         .first()
     )
     if otro:
         raise HTTPException(409, "Ese correo ya está siendo utilizado")
 
     # 2. Validar y actualizar contraseña si se proporciona
-    if nueva_contrasena:
-        if not contrasena_actual:
+    if nueva_contrasena_val:
+        if not contrasena_actual_val:
             raise HTTPException(422, "Debes ingresar tu contraseña actual")
-        if not verify_password(contrasena_actual, current_user.contrasena):
+        if not verify_password(contrasena_actual_val, current_user.contrasena):
             raise HTTPException(400, "La contraseña actual es incorrecta")
-        current_user.contrasena = hash_password(nueva_contrasena)
+        current_user.contrasena = hash_password(nueva_contrasena_val)
 
     # 3. Procesar la foto de perfil si el usuario subió una nueva
-    if foto is not None:
+    if foto is not None and foto.filename:
         extension = Path(foto.filename).suffix.lower()
         if extension not in [".jpg", ".jpeg", ".png", ".webp"]:
             raise HTTPException(400, "Formato de imagen no permitido")
@@ -102,8 +115,8 @@ def editar(
         current_user.foto_perfil = nombre_archivo
 
     # 4. Actualizar datos de texto y guardar cambios en la base de datos
-    current_user.nombre = nombre
-    current_user.correo = correo
+    current_user.nombre = nombre_val
+    current_user.correo = correo_val
     db.commit()
     db.refresh(current_user)
 
