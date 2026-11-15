@@ -118,7 +118,7 @@ function JuegoModal({ idJuego, nombre, imagen, completo, onCerrar }: Props) {
                   <s>{precio(o.precio_original)}</s>
                 </div>
                 <Link className="jm-ir" to={`/juego/${idJuego}`} onClick={onCerrar}>
-                  Ir a la tienda <FaArrowUpRightFromSquare />
+                  Ver juego <FaArrowUpRightFromSquare />
                 </Link>
               </li>
             ))}

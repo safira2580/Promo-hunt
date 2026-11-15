@@ -45,11 +45,11 @@ interface ResenasData extends Calificacion {
 
 const precio = (n: number) => `COL$${Number(n).toLocaleString("es-CO")}`;
 
-function Ofertas({ ofertas, vacio, juego }: { ofertas: Descuento[]; vacio: string; juego: string }) {
+function Ofertas({ ofertas, vacio, juego, resena }: { ofertas: Descuento[]; vacio: string; juego: string; resena?: ReactNode }) {
   if (ofertas.length === 0) return <p className="tienda-vacio">{vacio}</p>;
   return (
     <div className="tienda-ofertas">
-      {ofertas.map((d) => {
+      {ofertas.map((d, i) => {
         const url = d.url_juego || urlTiendaJuego(d.plataforma, juego, d.url_tienda);
         return (
         <div className="tienda-oferta" key={d.id_descuento}>
@@ -59,6 +59,7 @@ function Ofertas({ ofertas, vacio, juego }: { ofertas: Descuento[]; vacio: strin
             <strong className="precio-final">{precio(d.precio_descuento)}</strong>
             <span className="descuento">-{d.porcentaje_descuento}%</span>
           </div>
+          {i === 0 && resena}
           <button
             className="boton-oferta"
             disabled={!url}
@@ -131,8 +132,8 @@ function TarjetaTienda({ clase, logo, nombre, juego, ofertas, vacio, calif, chil
         <h3>{nombre}</h3>
       </header>
       <div className="tienda-cuerpo">
-        {ofertas && <Ofertas ofertas={ofertas} vacio={vacio ?? "Sin oferta por ahora."} juego={juego ?? ""} />}
-        {calif && <BloqueCalificacion calif={calif} />}
+        {ofertas && <Ofertas ofertas={ofertas} vacio={vacio ?? "Sin oferta por ahora."} juego={juego ?? ""} resena={calif ? <BloqueCalificacion calif={calif} /> : undefined} />}
+        {calif && !(ofertas && ofertas.length > 0) && <BloqueCalificacion calif={calif} />}
         {children}
       </div>
     </article>
@@ -200,6 +201,7 @@ function JuegoDetalle() {
 
   const nombre = (d: Descuento) => d.plataforma.toLowerCase();
   const steam = descuentos.filter((d) => nombre(d).includes("steam"));
+  const epic = descuentos.filter((d) => nombre(d).includes("epic"));
 
   const califPromoHunt: Calificacion | undefined = resenas
     ? { promedio: resenas.promedio, total: resenas.total }
@@ -239,7 +241,7 @@ function JuegoDetalle() {
             <TarjetaTienda
               clase="epic"
               logo="E"
-              nombre="Epic Games"
+              nombre="Epic Games" juego={juego.nombre} ofertas={epic} vacio="Sin oferta en Epic por ahora."
               calif={resenas?.por_tienda?.epic ?? { promedio: null, total: 0 }}
             />
 
