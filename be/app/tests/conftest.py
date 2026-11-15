@@ -26,6 +26,9 @@ SCHEMA = Path(__file__).resolve().parents[2] / "descuentos_juegos_postgres.sql"
 MIGRATION = Path(__file__).resolve().parents[2] / "migrations" / "001_integridad_referencial.sql"
 
 
+MIGRATION_3 = Path(__file__).resolve().parents[2] / "migrations" / "006_biblioteca_compras.sql"
+
+
 def _ejecutar_sql(eng, sql: str) -> None:
     raw = eng.raw_connection()  # DBAPI directo: el SQL contiene % de format()
     try:
@@ -48,6 +51,7 @@ def engine():
     _ejecutar_sql(eng, "DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
     _ejecutar_sql(eng, esquema)
     _ejecutar_sql(eng, MIGRATION.read_text(encoding="utf-8"))
+    _ejecutar_sql(eng, MIGRATION_3.read_text(encoding="utf-8"))
     yield eng
     _ejecutar_sql(eng, "DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
 
@@ -84,7 +88,7 @@ def limpiar_tablas(engine):
     _ejecutar_sql(
         engine,
         "TRUNCATE usuario, categoria, genero, desarrollador, noticia, plataforma, juego, "
-        "descuento, alerta, crossplay, historial_precios, resena, venta, wishlist "
+        "descuento, alerta, crossplay, historial_precios, resena, venta, wishlist, compra "
         "RESTART IDENTITY CASCADE;",
     )
 
