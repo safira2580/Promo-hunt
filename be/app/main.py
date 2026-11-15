@@ -9,6 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from fastapi.staticfiles import StaticFiles
+import os
+
+# Asegurar carpeta estática
+os.makedirs("static/img", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 from app.config import get_settings
 from app.database import get_db
@@ -36,9 +42,15 @@ app = FastAPI(
 )
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
+orígenes_permitidos = [
+    "https://promo-hunt-production.up.railway.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=orígenes_permitidos,  # Reemplazamos temporalmente para asegurar que entre
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
