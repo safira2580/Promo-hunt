@@ -8,6 +8,7 @@ import {
   FaMagnifyingGlass
 } from "react-icons/fa6";
 
+import Avatar from "./Avatar";
 import logo from "../assets/img/logo.png";
 
 import { imagenJuego } from "../imagenJuego";
@@ -211,18 +212,10 @@ function Header() {
               title={usuario ? "Ver perfil" : "Iniciar sesión"}
             >
 
-              {usuario?.foto_perfil ? (
-
-                <img
-                  src={usuario.foto_perfil}
-                  alt="Foto de perfil"
-                  className="user-photo"
-                />
-
+              {usuario ? (
+                <Avatar src={usuario.foto_perfil} className="user-photo" />
               ) : (
-
                 <FaUser />
-
               )}
 
             </button>
