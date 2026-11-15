@@ -12,9 +12,12 @@ from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
 import os
 
-# Asegurar carpeta estática
-os.makedirs("static/img", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Asegurar carpeta estática de forma protegida para evitar errores de permisos en producción
+try:
+    os.makedirs("static/img", exist_ok=True)
+    app_mount_path = "static"
+except Exception:
+    app_mount_path = None
 
 from app.config import get_settings
 from app.database import get_db
@@ -41,6 +44,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Montaje seguro de archivos estáticos si la carpeta está disponible
+if app_mount_path and os.path.exists(app_mount_path):
+    app.mount("/static", StaticFiles(directory=app_mount_path), name="static")
+
 app.add_middleware(GZipMiddleware, minimum_size=500)
 orígenes_permitidos = [
     "https://promo-hunt-production.up.railway.app",
@@ -50,7 +57,7 @@ orígenes_permitidos = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=orígenes_permitidos,  # Reemplazamos temporalmente para asegurar que entre
+    allow_origins=orígenes_permitidos,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
