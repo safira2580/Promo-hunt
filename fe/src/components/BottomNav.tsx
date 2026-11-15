@@ -2,9 +2,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaHouse,
   FaTags,
-  FaUser,
   FaGamepad,
   FaHeart,
+  FaUser,
 } from "react-icons/fa6";
 
 function BottomNav() {
@@ -15,6 +15,25 @@ function BottomNav() {
   const rutasOcultas = ["/Login", "/registro", "/admin"];
   if (rutasOcultas.some((ruta) => location.pathname.startsWith(ruta))) {
     return null;
+  }
+
+  // Recuperar los datos del usuario logueado desde localStorage (o tu estado global)
+  // Asegúrate de cambiar "user" por la clave exacta con la que guardas la sesión en tu app
+  let userFoto = null;
+  try {
+    const userData = localStorage.getItem("user") || localStorage.getItem("usuario");
+    if (userData) {
+      const parsed = JSON.parse(userData);
+      // Puede venir como parsed.foto_perfil o parsed.usuario.foto_perfil dependiendo de cómo guardes el login
+      const fotoFilename = parsed.foto_perfil || parsed.usuario?.foto_perfil;
+      if (fotoFilename) {
+        // Ajusta la URL base de tu backend en producción (Railway) o desarrollo (localhost)
+        const baseUrl = import.meta.env.VITE_API_URL || "https://lucky-unity-production-fb8a.up.railway.app";
+        userFoto = `${baseUrl}/static/img/${fotoFilename}`;
+      }
+    }
+  } catch (e) {
+    console.error("Error leyendo la foto del usuario", e);
   }
 
   const items = [
@@ -45,7 +64,21 @@ function BottomNav() {
     {
       path: "/Perfil",
       label: "Perfil",
-      icon: <FaUser />,
+      // Si el usuario tiene foto, usamos una etiqueta img redonda; si no, el icono FaUser
+      icon: userFoto ? (
+        <img
+          src={userFoto}
+          alt="Perfil"
+          style={{
+            width: "24px",
+            height: "24px",
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
+        <FaUser />
+      ),
       match: (p: string) => p === "/Perfil",
     },
   ];
