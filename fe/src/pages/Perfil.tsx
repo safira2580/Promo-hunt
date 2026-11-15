@@ -104,6 +104,11 @@ function Perfil() {
         // Admite { usuario, crossplay } o el usuario directamente
         const u: Usuario = datos.usuario ?? datos;
 
+        // Formatear foto_perfil si viene solo el nombre del archivo desde la BD
+        if (u.foto_perfil && !u.foto_perfil.startsWith("http") && !u.foto_perfil.startsWith("blob:")) {
+          u.foto_perfil = `${API_URL}/static/img/${u.foto_perfil}`;
+        }
+
         setUsuario(u);
         setCrossplay(datos.crossplay ?? null);
 
@@ -238,13 +243,41 @@ function Perfil() {
 
       }
 
+      // Procesar la ruta completa de la foto resultante
+      const nuevaFotoUrl = datos.foto_perfil 
+        ? (datos.foto_perfil.startsWith("http") ? datos.foto_perfil : `${API_URL}/static/img/${datos.foto_perfil}`)
+        : (fotoPreview || usuario.foto_perfil);
+
       // ACTUALIZAR DATOS EN PANTALLA
-      setUsuario({
+      const usuarioActualizado = {
         ...usuario,
         nombre: nombreEditado.trim(),
         correo: correoEditado.trim(),
-        foto_perfil: datos.foto_perfil ? `${API_URL}/static/img/${datos.foto_perfil}` : (fotoPreview || usuario.foto_perfil)
-      });
+        foto_perfil: nuevaFotoUrl
+      };
+
+      setUsuario(usuarioActualizado);
+
+      // 🔑 GUARDAR EN LOCALSTORAGE PARA QUE LA FOTO PERSISTA AL RECARGAR Y EN OTRAS VISTAS (BottomNav / Navbar)
+      try {
+        const storedUserStr = localStorage.getItem("user") || localStorage.getItem("usuario");
+        if (storedUserStr) {
+          const parsed = JSON.parse(storedUserStr);
+          if (parsed.usuario) {
+            parsed.usuario.nombre = usuarioActualizado.nombre;
+            parsed.usuario.correo = usuarioActualizado.correo;
+            parsed.usuario.foto_perfil = datos.foto_perfil; // Guardamos el nombre del archivo o URL
+          } else {
+            parsed.nombre = usuarioActualizado.nombre;
+            parsed.correo = usuarioActualizado.correo;
+            parsed.foto_perfil = datos.foto_perfil;
+          }
+          localStorage.setItem("user", JSON.stringify(parsed));
+          localStorage.setItem("usuario", JSON.stringify(parsed));
+        }
+      } catch (err) {
+        console.error("Error guardando en localStorage:", err);
+      }
 
       // LIMPIAR CONTRASEÑAS Y ARCHIVO
       setContrasenaActual("");
@@ -272,6 +305,8 @@ function Perfil() {
 
   const cerrarSesion = () => {
     setToken(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("usuario");
     window.location.assign("/");
   };
 
@@ -367,7 +402,7 @@ function Perfil() {
               type="file"
               ref={inputArchivoRef}
               onChange={manejarCambioFoto}
-              accept="image/png, image/jpeg, image/jpg"
+              accept="image/png, image/jpeg, image/jpg, image/webp"
               style={{ display: "none" }}
             />
           )}
