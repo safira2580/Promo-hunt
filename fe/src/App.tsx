@@ -19,6 +19,9 @@ import Favoritos from "./pages/Favoritos";
 import Resenas from "./pages/Resenas";
 import Reembolsos from "./pages/Reembolsos";
 import TarjetasRegalo from "./pages/TarjetasRegalo";
+import Biblioteca from "./pages/Biblioteca";
+import Checkout from "./pages/Checkout";
+import RutaProtegida from "./components/RutaProtegida";
 
 function Inicio() {
   const [categoriaActiva, setCategoriaActiva] = useState<number | null>(null);
@@ -102,6 +105,28 @@ function App() {
               <TarjetasRegalo />
               <BottomNav />
             </div>
+          }
+        />
+        <Route
+          path="/biblioteca"
+          element={
+            <RutaProtegida>
+              <div className="app">
+                <Biblioteca />
+                <BottomNav />
+              </div>
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/checkout/:idDescuento"
+          element={
+            <RutaProtegida>
+              <div className="app">
+                <Checkout />
+                <BottomNav />
+              </div>
+            </RutaProtegida>
           }
         />
         <Route path="/admin" element={<Admin />} />
