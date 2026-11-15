@@ -146,7 +146,8 @@
   .jm-info { padding: 2rem; }
   .jm-info h2 { font-size: 2.4rem; }
   .jm-tienda { grid-template-columns: minmax(0, 1fr) auto; }
-  }
+  .jm-ir { grid-column: 1 / -1; justify-content: center; }
+}
 
 /* ===== Tarjetas de características: las 4 iguales, resaltado solo al pasar el mouse ===== */
 .container-features .card-feature { background: #1e293b !important; border: 1px solid #334155 !important; transform: none; }
@@ -228,16 +229,3 @@
   background: transparent; color: #cbd5e1;
   border: 1px solid #334155; border-radius: 12px; padding: 10px 16px; cursor: pointer;
 }
-/* Checkout y biblioteca */
-.checkout-caja { display: grid; gap: 1.2rem; max-width: 52rem; background: var(--white); border: 1px solid var(--light-gray); border-radius: 1.2rem; padding: 2rem; }
-.aviso-demo { display: flex; align-items: center; gap: 0.8rem; margin: 0; padding: 1rem 1.2rem; border-radius: 0.8rem; background: rgba(250, 204, 21, 0.12); color: #facc15; font-size: 1.4rem; }
-.checkout-fila { display: flex; justify-content: space-between; gap: 1.6rem; font-size: 1.6rem; }
-.checkout-fila span { color: var(--gray); }
-.checkout-total { border-top: 1px solid var(--light-gray); padding-top: 1.2rem; font-size: 2rem; }
-.checkout-acciones { display: grid; gap: 0.8rem; margin-top: 0.6rem; }
-.boton-secundario { background: transparent; border: 1px solid var(--light-gray); color: var(--gray); border-radius: 999px; padding: 1rem 1.6rem; font: inherit; cursor: pointer; }
-.boton-secundario:disabled { opacity: 0.6; cursor: wait; }
-.checkout-icono { font-size: 6rem; }
-.checkout-icono.ok { color: #4ade80; }
-.checkout-icono.mal { color: #f87171; }
-.biblioteca-meta { margin: 0.4rem 0 0; font-size: 1.3rem; color: var(--gray); }

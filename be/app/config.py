@@ -44,10 +44,6 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     CORS_ORIGINS: str = "http://localhost:5173"
 
-    # Pagos: "simulado" (demo: aprueba sin cobrar dinero real) | "desactivado".
-    # Para cobrar de verdad hay que integrar una pasarela (ver README, sección Pagos).
-    PAYMENTS_MODE: str = "simulado"
-
     SMTP_HOST: str = "localhost"
     SMTP_PORT: int = 1025
     SMTP_FROM: str = "noreply@promohunt.local"
