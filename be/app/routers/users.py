@@ -67,7 +67,7 @@ def editar(
         contrasena_actual_val = contrasena_actual
         nueva_contrasena_val = nueva_contrasena
 
-    # 1. Verificar si el correo ya está en uso por otro usuario
+    # 1. Verificar si el correo ya está en uso por otro usuario (409)
     otro = (
         db.query(User)
         .filter(User.correo == correo_val, User.id_usuario != current_user.id_usuario)
