@@ -117,7 +117,7 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310
+        with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310
             cuerpo = resp.read().decode("utf-8", errors="replace")
             print(f"[RESEND OK] Status {resp.status}: {cuerpo}")
     except urllib.error.HTTPError as err:
