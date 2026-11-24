@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_URL } from "../config";
 import { mensajeDeError } from "../api";
+import "../styles/Login.css";
 
 export default function RestablecerContrasena() {
   const [searchParams] = useSearchParams();
