@@ -20,8 +20,9 @@ from app.utils.security import hash_password, verify_password
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 settings = get_settings()
-_default_secret = os.environ.get("SECRET_KEY", "cambia-esta-clave-secreta")
-SECRET_KEY = getattr(settings, "SECRET_KEY", _default_secret)
+SECRET_KEY = getattr(
+    settings, "SECRET_KEY", os.environ.get("SECRET_KEY", "cambia-esta-clave-secreta")
+)
 ALGORITHM = "HS256"
 
 
@@ -77,13 +78,15 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
         '<h2 style="margin-top: 0;">Recuperar contraseña — PromoHunt</h2>'
         f"<p>Solicitaste restablecer la contraseña de la cuenta "
         f"<strong>{destinatario}</strong>.</p>"
-        "<p>Haz clic en el botón para abrir el cambio de contraseña "
-        "(válido por 15 minutos):</p>"
+        "<p>Haz clic en el siguiente botón para abrir la página de cambio de "
+        "contraseña (válido por 15 minutos):</p>"
         '<div style="margin: 24px 0;">'
-        f'<a href="{enlace}" style="display: inline-block; '
-        "background: linear-gradient(90deg, #00b4db, #2563eb); "
+        f'<a href="{enlace}" '
+        'style="display: inline-block; background: linear-gradient(90deg, #00b4db, #2563eb); '
         "color: #ffffff; text-decoration: none; padding: 12px 24px; "
-        'border-radius: 8px; font-weight: bold;">Cambiar contraseña</a>'
+        'border-radius: 8px; font-weight: bold;">'
+        "Cambiar contraseña"
+        "</a>"
         "</div>"
         '<p style="font-size: 12px; color: #9ca3af;">'
         "Si no solicitaste este cambio, ignora este mensaje.</p>"
@@ -91,7 +94,7 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
     )
 
     if not resend_api_key:
-        print(f"[DEV EMAIL - SIN RESEND_API_KEY] Para: {destinatario} | Enlace: {enlace}")
+        print(f"[DEV EMAIL - SIN RESEND_API_KEY] Para: {destinatario} | Enlace reset: {enlace}")
         return
 
     payload = {
@@ -169,8 +172,7 @@ def restablecer_password(payload: ConfirmarResetRequest, db: Session = Depends(g
 
     if len(payload.nueva_contrasena) < 6:
         raise HTTPException(
-            status_code=422,
-            detail="La nueva contraseña debe tener al menos 6 caracteres",
+            status_code=422, detail="La nueva contraseña debe tener al menos 6 caracteres"
         )
 
     user = _buscar_usuario_por_correo(db, data["correo"])

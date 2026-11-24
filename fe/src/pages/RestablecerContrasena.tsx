@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { FaLock } from "react-icons/fa6";
+
+import "./Login.css";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
@@ -92,142 +95,89 @@ export default function RestablecerContrasena() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px",
-        background: "#090d16",
-        color: "#ffffff",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "400px",
-          padding: "32px",
-          borderRadius: "14px",
-          background: "rgba(15, 23, 42, 0.92)",
-          border: "1px solid rgba(255, 255, 255, 0.14)",
-        }}
-      >
-        <h1 style={{ fontSize: "1.6rem", marginBottom: "16px" }}>Cambiar contraseña</h1>
+    <section className="login-page">
+      <div className="wrapper">
+        <form onSubmit={handleSubmit}>
+          <h1>Cambiar contraseña</h1>
 
-        {verificando && <p>Validando enlace...</p>}
+          {verificando && (
+            <div className="register-link">
+              <p>Validando enlace...</p>
+            </div>
+          )}
 
-        {correo && (
-          <p style={{ marginBottom: "14px", fontSize: "0.9rem", color: "#cbd5e1" }}>
-            Cuenta a actualizar: <strong>{correo}</strong>
-          </p>
-        )}
+          {correo && (
+            <div className="register-link">
+              <p>
+                Cuenta a actualizar: <strong>{correo}</strong>
+              </p>
+            </div>
+          )}
 
-        {error && (
-          <div
-            style={{
-              marginBottom: "14px",
-              padding: "10px",
-              borderRadius: "8px",
-              background: "rgba(239, 68, 68, 0.18)",
-              color: "#fca5a5",
-              fontSize: "0.9rem",
-            }}
-          >
-            {error}
+          {error && <div className="error">{error}</div>}
+
+          {mensaje && (
+            <div className="register-link">
+              <p>{mensaje}</p>
+            </div>
+          )}
+
+          {!verificando && tokenValido && (
+            <>
+              <div className="input-box">
+                <input
+                  type="password"
+                  placeholder="Digite su contraseña actual"
+                  value={contrasenaActual}
+                  onChange={(e) => setContrasenaActual(e.target.value)}
+                  required
+                />
+                <FaLock />
+              </div>
+
+              <div className="input-box">
+                <input
+                  type="password"
+                  placeholder="Nueva contraseña"
+                  value={nuevaContrasena}
+                  onChange={(e) => setNuevaContrasena(e.target.value)}
+                  required
+                />
+                <FaLock />
+              </div>
+
+              <div className="input-box">
+                <input
+                  type="password"
+                  placeholder="Confirmar contraseña"
+                  value={confirmarContrasena}
+                  onChange={(e) => setConfirmarContrasena(e.target.value)}
+                  required
+                />
+                <FaLock />
+              </div>
+
+              <button type="submit" className="btn" disabled={enviando}>
+                {enviando ? "Guardando..." : "Guardar nueva contraseña"}
+              </button>
+            </>
+          )}
+
+          <div className="register-link">
+            <p>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/login");
+                }}
+              >
+                Volver al login
+              </a>
+            </p>
           </div>
-        )}
-
-        {mensaje && (
-          <div
-            style={{
-              marginBottom: "14px",
-              padding: "10px",
-              borderRadius: "8px",
-              background: "rgba(34, 197, 94, 0.18)",
-              color: "#86efac",
-              fontSize: "0.9rem",
-            }}
-          >
-            {mensaje}
-          </div>
-        )}
-
-        {!verificando && tokenValido && (
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: "14px" }}>
-              <input
-                type="password"
-                placeholder="Digite su contraseña actual"
-                value={contrasenaActual}
-                onChange={(e) => setContrasenaActual(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "11px 14px",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  background: "rgba(255,255,255,0.06)",
-                  color: "#fff",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "14px" }}>
-              <input
-                type="password"
-                placeholder="Nueva contraseña"
-                value={nuevaContrasena}
-                onChange={(e) => setNuevaContrasena(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "11px 14px",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  background: "rgba(255,255,255,0.06)",
-                  color: "#fff",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "18px" }}>
-              <input
-                type="password"
-                placeholder="Confirmar contraseña"
-                value={confirmarContrasena}
-                onChange={(e) => setConfirmarContrasena(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "11px 14px",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  background: "rgba(255,255,255,0.06)",
-                  color: "#fff",
-                }}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={enviando}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                fontWeight: "bold",
-                color: "#fff",
-                background: "linear-gradient(90deg, #1CB5E0, #020286)",
-              }}
-            >
-              {enviando ? "Guardando..." : "Guardar nueva contraseña"}
-            </button>
-          </form>
-        )}
+        </form>
       </div>
-    </div>
+    </section>
   );
 }
