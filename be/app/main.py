@@ -45,15 +45,9 @@ def _obtener_origenes_permitidos() -> list[str]:
         "http://localhost:5173",
         "http://localhost:3000",
     ]
-    extra_raw = (
-        os.environ.get("CORS_ORIGINS")
-        or os.environ.get("FRONTEND_URL")
-        or ""
-    )
+    extra_raw = os.environ.get("CORS_ORIGINS") or os.environ.get("FRONTEND_URL") or ""
     extras_limpios = [
-        origen.strip().rstrip("/")
-        for origen in extra_raw.split(",")
-        if origen.strip()
+        origen.strip().rstrip("/") for origen in extra_raw.split(",") if origen.strip()
     ]
 
     # Evita duplicados conservando el orden

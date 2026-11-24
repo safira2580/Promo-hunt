@@ -3,7 +3,8 @@ import os
 import urllib.error
 import urllib.request
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+from urllib.parse import urlparse
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException
@@ -11,15 +12,16 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
-
 from app.config import get_settings
 from app.database import get_db
 from app.models.user import User
 from app.utils.security import hash_password, verify_password
 
+router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+
 settings = get_settings()
-SECRET_KEY = getattr(settings, "SECRET_KEY", os.environ.get("SECRET_KEY", "cambia-esta-clave-secreta"))
+_default_secret = os.environ.get("SECRET_KEY", "cambia-esta-clave-secreta")
+SECRET_KEY = getattr(settings, "SECRET_KEY", _default_secret)
 ALGORITHM = "HS256"
 
 
@@ -40,7 +42,7 @@ def _buscar_usuario_por_correo(db: Session, correo: str) -> User | None:
 
 
 def _crear_token_reset(user: User) -> str:
-    ahora = datetime.now(timezone.utc)
+    ahora = datetime.now(UTC)
     payload = {
         "sub": str(user.id_usuario),
         "correo": user.correo.strip().lower(),
@@ -68,25 +70,28 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
     resend_api_key = os.environ.get("RESEND_API_KEY", "").strip()
     email_from = os.environ.get("EMAIL_FROM", "PromoHunt <onboarding@resend.dev>").strip()
 
-    html_body = f"""
-    <div style="font-family: Arial, sans-serif; background: #0b0f19; color: #ffffff; padding: 32px; border-radius: 12px; max-width: 520px; margin: 0 auto;">
-      <h2 style="margin-top: 0;">Recuperar contraseña — PromoHunt</h2>
-      <p>Solicitaste restablecer la contraseña de la cuenta <strong>{destinatario}</strong>.</p>
-      <p>Haz clic en el siguiente botón para abrir la página de cambio de contraseña (válido por 15 minutos):</p>
-      <div style="margin: 24px 0;">
-        <a href="{enlace}"
-           style="display: inline-block; background: linear-gradient(90deg, #00b4db, #2563eb);
-                  color: #ffffff; text-decoration: none; padding: 12px 24px;
-                  border-radius: 8px; font-weight: bold;">
-          Cambiar contraseña
-        </a>
-      </div>
-      <p style="font-size: 12px; color: #9ca3af;">Si no solicitaste este cambio, ignora este mensaje.</p>
-    </div>
-    """
+    html_body = (
+        '<div style="font-family: Arial, sans-serif; background: #0b0f19; '
+        'color: #ffffff; padding: 32px; border-radius: 12px; '
+        'max-width: 520px; margin: 0 auto;">'
+        '<h2 style="margin-top: 0;">Recuperar contraseña — PromoHunt</h2>'
+        f"<p>Solicitaste restablecer la contraseña de la cuenta "
+        f"<strong>{destinatario}</strong>.</p>"
+        "<p>Haz clic en el botón para abrir el cambio de contraseña "
+        "(válido por 15 minutos):</p>"
+        '<div style="margin: 24px 0;">'
+        f'<a href="{enlace}" style="display: inline-block; '
+        "background: linear-gradient(90deg, #00b4db, #2563eb); "
+        'color: #ffffff; text-decoration: none; padding: 12px 24px; '
+        'border-radius: 8px; font-weight: bold;">Cambiar contraseña</a>'
+        "</div>"
+        '<p style="font-size: 12px; color: #9ca3af;">'
+        "Si no solicitaste este cambio, ignora este mensaje.</p>"
+        "</div>"
+    )
 
     if not resend_api_key:
-        print(f"[DEV EMAIL - SIN RESEND_API_KEY] Para: {destinatario} | Enlace reset: {enlace}")
+        print(f"[DEV EMAIL - SIN RESEND_API_KEY] Para: {destinatario} | Enlace: {enlace}")
         return
 
     payload = {
@@ -96,8 +101,12 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
         "html": html_body,
     }
 
+    url = "https://api.resend.com/emails"
+    if urlparse(url).scheme != "https":
+        raise HTTPException(status_code=500, detail="Esquema de URL no permitido")
+
     req = urllib.request.Request(
-        url="https://api.resend.com/emails",
+        url=url,
         data=json.dumps(payload).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {resend_api_key}",
@@ -108,14 +117,18 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310
             cuerpo = resp.read().decode("utf-8", errors="replace")
             print(f"[RESEND OK] Status {resp.status}: {cuerpo}")
     except urllib.error.HTTPError as err:
         detalle = err.read().decode("utf-8", errors="replace")
-        raise HTTPException(status_code=502, detail=f"No se pudo enviar el correo: {detalle}") from err
+        raise HTTPException(
+            status_code=502, detail=f"No se pudo enviar el correo: {detalle}"
+        ) from err
     except urllib.error.URLError as err:
-        raise HTTPException(status_code=502, detail=f"Error de conexión con Resend: {err.reason}") from err
+        raise HTTPException(
+            status_code=502, detail=f"Error de conexión con Resend: {err.reason}"
+        ) from err
 
 
 @router.post("/recuperar-password")
@@ -124,7 +137,9 @@ def recuperar_password(payload: SolicitarResetRequest, db: Session = Depends(get
     if not user:
         raise HTTPException(status_code=404, detail="Ese correo no existe")
 
-    frontend_url = os.environ.get("FRONTEND_URL", "https://promo-hunt-production.up.railway.app").rstrip("/")
+    frontend_url = os.environ.get(
+        "FRONTEND_URL", "https://promo-hunt-production.up.railway.app"
+    ).rstrip("/")
     token = _crear_token_reset(user)
     enlace = f"{frontend_url}/restablecer-contrasena?token={token}"
     _enviar_correo_reset(user.correo, enlace)
@@ -150,10 +165,15 @@ def restablecer_password(payload: ConfirmarResetRequest, db: Session = Depends(g
     data = _leer_token_reset(payload.token)
 
     if payload.nueva_contrasena != payload.confirmar_contrasena:
-        raise HTTPException(status_code=400, detail="Las contraseñas nuevas no coinciden")
+        raise HTTPException(
+            status_code=400, detail="Las contraseñas nuevas no coinciden"
+        )
 
     if len(payload.nueva_contrasena) < 6:
-        raise HTTPException(status_code=422, detail="La nueva contraseña debe tener al menos 6 caracteres")
+        raise HTTPException(
+            status_code=422,
+            detail="La nueva contraseña debe tener al menos 6 caracteres",
+        )
 
     user = _buscar_usuario_por_correo(db, data["correo"])
     if not user:
