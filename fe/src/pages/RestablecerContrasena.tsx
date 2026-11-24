@@ -15,7 +15,6 @@ export default function RestablecerContrasena() {
   const [tokenValido, setTokenValido] = useState(false);
   const [verificando, setVerificando] = useState(true);
 
-  const [contrasenaActual, setContrasenaActual] = useState("");
   const [nuevaContrasena, setNuevaContrasena] = useState("");
   const [confirmarContrasena, setConfirmarContrasena] = useState("");
 
@@ -73,7 +72,6 @@ export default function RestablecerContrasena() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token,
-          contrasena_actual: contrasenaActual,
           nueva_contrasena: nuevaContrasena,
           confirmar_contrasena: confirmarContrasena,
         }),
@@ -83,7 +81,6 @@ export default function RestablecerContrasena() {
         throw new Error(data.detail || "No se pudo actualizar la contraseña.");
       }
       setMensaje(data.mensaje || "Contraseña actualizada correctamente.");
-      setContrasenaActual("");
       setNuevaContrasena("");
       setConfirmarContrasena("");
       setTimeout(() => navigate("/login"), 2000);
@@ -124,17 +121,6 @@ export default function RestablecerContrasena() {
 
           {!verificando && tokenValido && (
             <>
-              <div className="input-box">
-                <input
-                  type="password"
-                  placeholder="Digite su contraseña actual"
-                  value={contrasenaActual}
-                  onChange={(e) => setContrasenaActual(e.target.value)}
-                  required
-                />
-                <FaLock />
-              </div>
-
               <div className="input-box">
                 <input
                   type="password"

@@ -14,8 +14,11 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.database import get_db
+from app.dependencies import get_current_user
 from app.models.user import User
-from app.utils.security import hash_password, verify_password
+from app.schemas.user import TokenResponse, UserCreate, UserLogin, UserResponse
+from app.services import auth_service
+from app.utils.security import hash_password
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
@@ -32,9 +35,26 @@ class SolicitarResetRequest(BaseModel):
 
 class ConfirmarResetRequest(BaseModel):
     token: str
-    contrasena_actual: str
     nueva_contrasena: str
     confirmar_contrasena: str
+
+
+@router.post("/register", response_model=UserResponse, status_code=201)
+def register(data: UserCreate, db: Session = Depends(get_db)):
+    """Registra un nuevo usuario. La contraseña se guarda hasheada con bcrypt."""
+    return auth_service.register_user(db, data)
+
+
+@router.post("/login", response_model=TokenResponse)
+def login(data: UserLogin, db: Session = Depends(get_db)):
+    """Inicia sesión y devuelve access_token + refresh_token (JWT)."""
+    return auth_service.login_user(db, data)
+
+
+@router.get("/me", response_model=UserResponse)
+def me(current_user: User = Depends(get_current_user)):
+    """Usuario autenticado a partir del Bearer token."""
+    return UserResponse.model_validate(current_user)
 
 
 def _buscar_usuario_por_correo(db: Session, correo: str) -> User | None:
@@ -78,11 +98,6 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
         '<h2 style="margin-top: 0;">Recuperar contraseña — PromoHunt</h2>'
         f"<p>Solicitaste restablecer la contraseña de la cuenta "
         f"<strong>{destinatario}</strong>.</p>"
-        '<p style="background: rgba(255,255,255,0.06); padding: 10px 14px; '
-        'border-radius: 8px; font-size: 13px; color: #e2e8f0;">'
-        "Contraseña actual: por seguridad se almacena cifrada (hash) y no se envía "
-        "en texto plano; al abrir el enlace podrás verificarla y cambiarla."
-        "</p>"
         "<p>Haz clic en el siguiente botón para abrir la página de cambio de "
         "contraseña (válido por 15 minutos):</p>"
         '<div style="margin: 24px 0;">'
@@ -183,9 +198,6 @@ def restablecer_password(payload: ConfirmarResetRequest, db: Session = Depends(g
     user = _buscar_usuario_por_correo(db, data["correo"])
     if not user:
         raise HTTPException(status_code=404, detail="Ese correo no existe")
-
-    if not verify_password(payload.contrasena_actual, user.contrasena):
-        raise HTTPException(status_code=400, detail="La contraseña actual es incorrecta")
 
     user.contrasena = hash_password(payload.nueva_contrasena)
     db.commit()
