@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 from app.config import get_settings
 from app.database import get_db
