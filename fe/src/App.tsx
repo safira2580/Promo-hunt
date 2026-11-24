@@ -19,6 +19,8 @@ import Favoritos from "./pages/Favoritos";
 import Resenas from "./pages/Resenas";
 import Reembolsos from "./pages/Reembolsos";
 import TarjetasRegalo from "./pages/TarjetasRegalo";
+import RecuperarContrasena from "./pages/RecuperarContrasena";
+import RestablecerContrasena from "./pages/RestablecerContrasena";
 
 function Inicio() {
   const [categoriaActiva, setCategoriaActiva] = useState<number | null>(null);
@@ -49,7 +51,19 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Inicio />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
+        <Route
+          path="/restablecer-contrasena"
+          element={
+            <div className="app">
+              <Header />
+              <RestablecerContrasena />
+              <BottomNav />
+            </div>
+          }
+        />
         <Route
           path="/Perfil"
           element={

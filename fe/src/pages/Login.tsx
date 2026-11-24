@@ -88,7 +88,13 @@ return (
               {" "}Recuérdame
             </label>
 
-            <a href="#">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/recuperar-contrasena");
+              }}
+            >
               ¿Olvidaste tu contraseña?
             </a>
 
