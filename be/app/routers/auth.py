@@ -72,7 +72,7 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
 
     html_body = (
         '<div style="font-family: Arial, sans-serif; background: #0b0f19; '
-        'color: #ffffff; padding: 32px; border-radius: 12px; '
+        "color: #ffffff; padding: 32px; border-radius: 12px; "
         'max-width: 520px; margin: 0 auto;">'
         '<h2 style="margin-top: 0;">Recuperar contraseña — PromoHunt</h2>'
         f"<p>Solicitaste restablecer la contraseña de la cuenta "
@@ -82,7 +82,7 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
         '<div style="margin: 24px 0;">'
         f'<a href="{enlace}" style="display: inline-block; '
         "background: linear-gradient(90deg, #00b4db, #2563eb); "
-        'color: #ffffff; text-decoration: none; padding: 12px 24px; '
+        "color: #ffffff; text-decoration: none; padding: 12px 24px; "
         'border-radius: 8px; font-weight: bold;">Cambiar contraseña</a>'
         "</div>"
         '<p style="font-size: 12px; color: #9ca3af;">'
@@ -165,9 +165,7 @@ def restablecer_password(payload: ConfirmarResetRequest, db: Session = Depends(g
     data = _leer_token_reset(payload.token)
 
     if payload.nueva_contrasena != payload.confirmar_contrasena:
-        raise HTTPException(
-            status_code=400, detail="Las contraseñas nuevas no coinciden"
-        )
+        raise HTTPException(status_code=400, detail="Las contraseñas nuevas no coinciden")
 
     if len(payload.nueva_contrasena) < 6:
         raise HTTPException(
