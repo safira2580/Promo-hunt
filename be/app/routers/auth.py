@@ -1,14 +1,16 @@
+import json
 import os
-import smtplib
+import urllib.error
+import urllib.request
 import uuid
 from datetime import datetime, timedelta, timezone
-from email.message import EmailMessage
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 from app.config import get_settings
@@ -19,7 +21,6 @@ from app.utils.security import hash_password, verify_password
 settings = get_settings()
 SECRET_KEY = getattr(settings, "SECRET_KEY", os.environ.get("SECRET_KEY", "cambia-esta-clave-secreta"))
 ALGORITHM = "HS256"
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://promo-hunt-production.up.railway.app").rstrip("/")
 
 
 class SolicitarResetRequest(BaseModel):
@@ -63,20 +64,9 @@ def _leer_token_reset(token: str) -> dict:
         raise HTTPException(status_code=400, detail="Enlace inválido") from err
 
 
-def _obtener_puerto_smtp() -> int:
-    raw_port = os.environ.get("SMTP_PORT", "587")
-    try:
-        return int(raw_port)
-    except ValueError:
-        return 587
-
-
 def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
-    smtp_host = os.environ.get("SMTP_HOST")
-    smtp_port = _obtener_puerto_smtp()
-    smtp_user = os.environ.get("SMTP_USER")
-    smtp_pass = os.environ.get("SMTP_PASS")
-    smtp_from = os.environ.get("SMTP_FROM", smtp_user or "no-reply@promohunt.com")
+    resend_api_key = os.environ.get("RESEND_API_KEY", "").strip()
+    email_from = os.environ.get("EMAIL_FROM", "PromoHunt <onboarding@resend.dev>").strip()
 
     html_body = f"""
     <div style="font-family: Arial, sans-serif; background: #0b0f19; color: #ffffff; padding: 32px; border-radius: 12px; max-width: 520px; margin: 0 auto;">
@@ -95,21 +85,37 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
     </div>
     """
 
-    if not smtp_host or not smtp_user or not smtp_pass:
-        print(f"[DEV EMAIL] Para: {destinatario} | Enlace reset: {enlace}")
+    if not resend_api_key:
+        print(f"[DEV EMAIL - SIN RESEND_API_KEY] Para: {destinatario} | Enlace reset: {enlace}")
         return
 
-    msg = EmailMessage()
-    msg["Subject"] = "Restablece tu contraseña en PromoHunt"
-    msg["From"] = smtp_from
-    msg["To"] = destinatario
-    msg.set_content(f"Abre este enlace para restablecer tu contraseña: {enlace}")
-    msg.add_alternative(html_body, subtype="html")
+    payload = {
+        "from": email_from,
+        "to": [destinatario],
+        "subject": "Restablece tu contraseña en PromoHunt",
+        "html": html_body,
+    }
 
-    with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_pass)
-        server.send_message(msg)
+    req = urllib.request.Request(
+        url="https://api.resend.com/emails",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {resend_api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "PromoHunt-Backend/1.0",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            cuerpo = resp.read().decode("utf-8", errors="replace")
+            print(f"[RESEND OK] Status {resp.status}: {cuerpo}")
+    except urllib.error.HTTPError as err:
+        detalle = err.read().decode("utf-8", errors="replace")
+        raise HTTPException(status_code=502, detail=f"No se pudo enviar el correo: {detalle}") from err
+    except urllib.error.URLError as err:
+        raise HTTPException(status_code=502, detail=f"Error de conexión con Resend: {err.reason}") from err
 
 
 @router.post("/recuperar-password")
@@ -118,8 +124,9 @@ def recuperar_password(payload: SolicitarResetRequest, db: Session = Depends(get
     if not user:
         raise HTTPException(status_code=404, detail="Ese correo no existe")
 
+    frontend_url = os.environ.get("FRONTEND_URL", "https://promo-hunt-production.up.railway.app").rstrip("/")
     token = _crear_token_reset(user)
-    enlace = f"{FRONTEND_URL}/restablecer-contrasena?token={token}"
+    enlace = f"{frontend_url}/restablecer-contrasena?token={token}"
     _enviar_correo_reset(user.correo, enlace)
 
     return {
