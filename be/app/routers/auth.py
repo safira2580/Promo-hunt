@@ -78,6 +78,11 @@ def _enviar_correo_reset(destinatario: str, enlace: str) -> None:
         '<h2 style="margin-top: 0;">Recuperar contraseña — PromoHunt</h2>'
         f"<p>Solicitaste restablecer la contraseña de la cuenta "
         f"<strong>{destinatario}</strong>.</p>"
+        '<p style="background: rgba(255,255,255,0.06); padding: 10px 14px; '
+        'border-radius: 8px; font-size: 13px; color: #e2e8f0;">'
+        "Contraseña actual: por seguridad se almacena cifrada (hash) y no se envía "
+        "en texto plano; al abrir el enlace podrás verificarla y cambiarla."
+        "</p>"
         "<p>Haz clic en el siguiente botón para abrir la página de cambio de "
         "contraseña (válido por 15 minutos):</p>"
         '<div style="margin: 24px 0;">'
